@@ -149,3 +149,30 @@ form button:focus-visible {
         margin-top: 32px;
     }
 }
+
+/* Logo de l'application et icônes SVG de la navigation */
+.marque a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--couleur-principale);
+    text-decoration: none;
+}
+
+.marque img {
+    display: block;
+    width: 38px;
+    height: 38px;
+}
+
+nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 0;
+}
+
+nav a img {
+    width: 19px;
+    height: 19px;
+}
