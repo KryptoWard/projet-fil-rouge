@@ -32,12 +32,45 @@
                     <input type="text" id="search" placeholder="Rechercher...">
                 </form>
             </search>
-
+            <!-- Exemple de liste des conversations -->
             <ul>
                 <li><a href="#">Jean Dupont</a></li>
                 <li><a href="#">Justin Trudeau</a></li>
             </ul>
         </nav>
+        <section>
+            <h2>Discussion active</h2>
+                <ol>
+                <li>
+                    <article>
+                        <header>
+                            <h3>Jean Dupont</h3>
+                        </header>
+                        <p>Salut !</p>
+                        <footer>
+                            <time datetime="14:30">14:30</time>
+                        </footer>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <header>
+                            <h3>Moi</h3>
+                        </header>
+                        <p>Yo</p>
+                        <footer>
+                            <time datetime="14:32">14:32</time>
+                        </footer>
+                    </article>
+                </li>
+            </ol>
+            <!-- Écrire un message -->
+            <form>
+                <label for="message">Message :</label>
+                <textarea id="message" placeholder="Ton message..."></textarea>
+                <button type="submit">Envoyer</button>
+            </form>
+        </section>
     </main>
     <footer>
     </footer>
