@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Conversations</title>
-        <link rel="stylesheet" href="src/css/style.css">
-        <!-- /!\ REVOIR LE STYLE.CSS À METTRE À JOUR EN RAPPORT AVEC CONVERSATIONS.HTML /!\ -->
-    </head>
-    <body>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Conversations</title>
+    <link rel="stylesheet" href="src/css/style.css">
+    <!-- /!\ REVOIR LE STYLE.CSS À METTRE À JOUR EN RAPPORT AVEC CONVERSATIONS.HTML /!\ -->
+</head>
+<body>
+    <header>
         <h1>Mes conversations</h1>
-        <main>
             <nav>
                 <ul>
-                    <li><a href="contacts.html"></a>
-                        <button type="button"> Mes contacts</button></li>
-                </ul>
-                <ul>
-                    <li><a href="parametre.html"></a>
-                        <button type="button"> Paramètres</button></li>
-                </ul>
-                <ul>
-                    <button type="button"> Nouvelle Conversation</button>
+                    <li><a href="contact.html"><img src="src/assets/svg/contact.svg"><span>Contacts</span></a></li>
+                    <li><a href="settings.html"><img src="src/assets/svg/settings.svg"><span>Paramètres</span></a></li>
                 </ul>
             </nav>
+    </header>
+    <main>
+        <aside>
             <section>
-                <label for="nom">Message :</label>
-                <input type="text" id="nom" name="nom">
+                <h2>Discussions</h2>
+                <button type="button" class="new_chat">Nouvelle discussion</button>
             </section>
-            <ul>
-                <button type="button"> Envoyer</button>
-            </ul>
-        </main>
-    </body>
+            <search>
+                <form role="search">
+                    <label for="discussion">Rechercher une discussion</label>
+                    <input type="search" id="search" placeholder="Rechercher...">
+                </form>
+            </search>
+        </aside>
+    </main>
+</body>
 
 </html>
