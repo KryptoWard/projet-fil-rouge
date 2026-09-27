@@ -7,30 +7,41 @@
     <link rel="stylesheet" href="src/css/style.css">
     <!-- /!\ REVOIR LE STYLE.CSS À METTRE À JOUR EN RAPPORT AVEC CONVERSATIONS.HTML /!\ -->
 </head>
+
 <body>
     <header>
         <h1>Mes conversations</h1>
             <nav>
                 <ul>
+                    <li><a href="index.html"><img src="src/assets/svg/index.svg"><span>Accueil</span></a></li>
                     <li><a href="contact.html"><img src="src/assets/svg/contact.svg"><span>Contacts</span></a></li>
                     <li><a href="settings.html"><img src="src/assets/svg/settings.svg"><span>Paramètres</span></a></li>
                 </ul>
             </nav>
     </header>
     <main>
-        <aside>
+        <nav>
             <section>
                 <h2>Discussions</h2>
                 <button type="button" class="new_chat">Nouvelle discussion</button>
             </section>
+
             <search>
                 <form role="search">
-                    <label for="discussion">Rechercher une discussion</label>
-                    <input type="search" id="search" placeholder="Rechercher...">
+                    <label for="search">Rechercher une discussion</label>
+                    <input type="text" id="search" placeholder="Rechercher...">
                 </form>
             </search>
-        </aside>
+
+            <ul>
+                <li><a href="#">Jean Dupont</a></li>
+                <li><a href="#">Justin Trudeau</a></li>
+            </ul>
+        </nav>
     </main>
+    <footer>
+    </footer>
+    <script src="src/js/app.js"></script>
 </body>
 
 </html>
