@@ -176,3 +176,23 @@ nav a img {
     width: 19px;
     height: 19px;
 }
+
+/* Bouton de changement de langue */
+.bouton-langue {
+    padding: 6px 10px;
+    border: 1px solid var(--couleur-principale);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--couleur-principale);
+    font: inherit;
+    cursor: pointer;
+}
+
+.bouton-langue:hover {
+    background: var(--couleur-fond);
+}
+
+.bouton-langue:focus-visible {
+    outline: 2px solid var(--couleur-principale);
+    outline-offset: 2px;
+}
