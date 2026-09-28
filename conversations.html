@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -78,3 +79,43 @@
 </body>
 
 </html>
+=======
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title data-i18n="titre_conversations">Mes conversations</title>
+        <link rel="stylesheet" href="src/css/style.css">
+    </head>
+    <body>
+        <h1 data-i18n="titre_conversations">Mes conversations</h1>
+        <main>
+            <nav aria-label="Navigation principale / Main navigation">
+                <ul>
+                    <li><a href="contacts.html"></a>
+                        <button type="button" data-i18n="mes_contacts">Mes contacts</button></li>
+                </ul>
+                <ul>
+                    <li><a href="parametre.html"></a>
+                        <button type="button" data-i18n="parametres">Paramètres</button></li>
+                </ul>
+                <ul>
+                    <li><button type="button" data-i18n="nouvelle_conversation">Nouvelle conversation</button></li>
+                </ul>
+                <ul>
+                    <li><button type="button" class="bouton-langue" id="langue-switch" aria-label="Changer la langue d’affichage">English</button></li>
+                </ul>
+            </nav>
+            <section>
+                <label for="nom" data-i18n="message">Message :</label>
+                <input type="text" id="nom" name="nom">
+            </section>
+            <ul>
+                <li><button type="button" data-i18n="envoyer">Envoyer</button></li>
+            </ul>
+        </main>
+        <script src="src/js/app.js"></script>
+    </body>
+</html>
+>>>>>>> Stashed changes
