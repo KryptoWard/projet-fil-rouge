@@ -30,7 +30,7 @@ header {
     justify-content: space-between;
     gap: 24px;
     padding: 18px clamp(20px, 6vw, 80px);
-    background: #fff;
+    background: hwb(240 92% 6%);
     border-bottom: 1px solid var(--couleur-bordure);
 }
 
@@ -70,6 +70,7 @@ main section {
     padding: clamp(24px, 5vw, 36px); /* Marge de 24px à 36px en fonction de la taille de l'écran */
     background: #fff;
     border: 1px solid var(--couleur-bordure);
+    border-radius: 10px;
 }
 
 main h2 {
