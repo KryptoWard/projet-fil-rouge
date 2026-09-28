@@ -1,0 +1,199 @@
+/* Base visuelle partagée par les pages du projet */
+:root {
+    --couleur-principale: #34495e;
+    --couleur-texte: #252a30;
+    --couleur-secondaire: #68727d;
+    --couleur-fond: #f5f5f3;
+    --couleur-bordure: #d7d9da;
+}
+
+/* Mise en page */
+
+* {
+    box-sizing: border-box; /* Prend en compte les bordures et les remplissages */
+}
+
+body {
+    min-height: 100vh; /* Hauteur minimale de la fenêtre du navigateur */
+    margin: 0; /* Enlève les marges par défaut du navigateur... */
+    background: var(--couleur-fond);
+    color: var(--couleur-texte);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5; /* Espacement entre les lignes très important */
+}
+
+/* En-tête de la page */
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 18px clamp(20px, 6vw, 80px);
+    background: hwb(240 92% 6%);
+    border-bottom: 1px solid var(--couleur-bordure);
+}
+
+header h1 {
+    margin: 0;
+    color: var(--couleur-principale);
+    font-size: 1.2rem;
+}
+
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+nav a {
+    color: var(--couleur-secondaire);
+    text-decoration: none;
+}
+
+nav a:hover,
+nav a:focus-visible {
+    color: var(--couleur-principale);
+    text-decoration: underline;
+    text-underline-offset: 4px; /* Décalage de soulignement de la navigation */
+}
+
+main {
+    width: min(100% - 32px, 460px);
+    margin: 52px auto;
+}
+
+main section {
+    padding: clamp(24px, 5vw, 36px); /* Marge de 24px à 36px en fonction de la taille de l'écran */
+    background: #fff;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 10px;
+}
+
+main h2 {
+    margin: 0 0 24px;
+    font-size: 1.45rem;
+    font-weight: 600;
+}
+
+form {
+    display: grid; /* Disposition en grille */
+    gap: 9px;
+}
+
+/* Label */
+
+form label {
+    margin-top: 7px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Champ de saisie */
+
+form input {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 10px;
+    border: 1px solid #c8cccf;
+    border-radius: 5px;
+    background: #fff;
+    color: var(--couleur-texte);
+    font: inherit;
+}
+
+form input:focus-visible {
+    outline: 2px solid var(--couleur-principale);
+    outline-offset: 1px;
+}
+
+/* Bouton */
+
+form button {
+    min-height: 42px;
+    margin-top: 14px;
+    padding: 9px 14px;
+    border: 1px solid var(--couleur-principale);
+    border-radius: 5px;
+    background: var(--couleur-principale);
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+form button:hover {
+    background: #263746;
+}
+
+form button:focus-visible {
+    outline: 2px solid var(--couleur-principale);
+    outline-offset: 3px;
+}
+
+/* RWD */
+
+@media (max-width: 560px) {
+    header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    nav ul {
+        gap: 16px;
+    }
+
+    main {
+        margin-top: 32px;
+    }
+}
+
+/* Logo de l'application et icônes SVG de la navigation */
+.marque a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--couleur-principale);
+    text-decoration: none;
+}
+
+.marque img {
+    display: block;
+    width: 38px;
+    height: 38px;
+}
+
+nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 0;
+}
+
+nav a img {
+    width: 19px;
+    height: 19px;
+}
+
+/* Bouton de changement de langue */
+.bouton-langue {
+    padding: 6px 10px;
+    border: 1px solid var(--couleur-principale);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--couleur-principale);
+    font: inherit;
+    cursor: pointer;
+}
+
+.bouton-langue:hover {
+    background: var(--couleur-fond);
+}
+
+.bouton-langue:focus-visible {
+    outline: 2px solid var(--couleur-principale);
+    outline-offset: 2px;
+}
