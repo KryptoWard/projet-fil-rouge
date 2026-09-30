@@ -55,11 +55,3 @@ Quand on envoie le texte d’un message à une API externe, le service reçoit c
 ## Si on veut héberger l’API soi-même
 
 [LibreTranslate](https://docs.libretranslate.com/) est un logiciel libre avec une API. On peut l’installer sur son ordinateur pour faire des essais sans payer d’abonnement à une API. Pour que le site soit accessible à tout le monde, il faut ensuite un ordinateur ou un serveur qui reste en ligne. Le service hébergé public peut demander une clé API, donc il faut vérifier ses conditions avant de le choisir. [Installation](https://docs.libretranslate.com/guides/installation/) · [Exemple d’appel API](https://docs.libretranslate.com/guides/api_usage/).
-
-## Ordre conseillé pour la suite
-
-1. Finir les textes français et anglais de chaque page.
-2. Tester le bouton sur toutes les pages du site.
-3. Essayer l’API avec quelques phrases non personnelles.
-4. Ajouter la traduction à une conversation de test, en gardant toujours le message original.
-5. Vérifier les limites et les conditions de l’API avant de publier le site.
