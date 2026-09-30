@@ -4,4 +4,9 @@
 # projet-fil-rouge
 L'objectif est de créer une messagerie instantanée avec une fonctionnalité insolite supplémentaire. Par groupe de deux.
 
-La fonctionnalité que nous avons choisi est le fait le fait de pouvoir taper certaines commandes qui permettront de consulter la météo, de traduire du texte en temps réel, de créer des sondages, de lire un texte à voix haute grâce à la synthèse vocale (TTS) et de programmer des rappels. Une commande cachée donnera également accès à un Easter egg, une surprise ludique à découvrir dans l’application.
+## Fonctionnalité supplémentaire : commandes interactives et fonctionnalités cachées
+Notre projet consiste à intégrer un système de commandes interactives à notre messagerie instantanée. Le périmètre prioritaire comprend des commandes permettant de déclencher des Easter eggs et des mini-jeux directement dans l’interface.
+Des commandes utilitaires sont également envisagées : consultation de la météo, lecture vocale de messages, traduction, création de sondages et rappels. Elles seront intégrées progressivement, après validation des contraintes techniques, des services externes nécessaires et de la compatibilité des navigateurs.
+L’interface sera développée en HTML, CSS et JavaScript et hébergée sur GitHub Pages.
+
+Nous attendrons donc la validation du professeur pour pouvoir valider entièrement nos objectifs.
