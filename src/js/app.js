@@ -1,4 +1,53 @@
+// Récupération des données d'un commit effacé pour restaurer le fichier.
+// Textes disponibles pour le bouton de langue (pour l'instant : français et anglais).
+
+
+const traductionsLocales = {
+    fr: {
+        titre_site: "Messagerie instantanée",
+        nom_appli: "Messagerie instantanée",
+        accueil: "Accueil",
+        contacts: "Contacts",
+        parametres: "Paramètres",
+        titre_inscription: "Créer un compte",
+        nom: "Nom",
+        prenom: "Prénom",
+        email: "Adresse e-mail",
+        mot_de_passe: "Mot de passe",
+        inscrire: "S'inscrire",
+        titre_conversations: "Mes conversations",
+        mes_contacts: "Mes contacts",
+        nouvelle_conversation: "Nouvelle conversation",
+        message: "Message :",
+        envoyer: "Envoyer",
+        changer_langue: "English",
+        aria_langue: "Changer la langue d’affichage"
+    },
+    en: {
+        titre_site: "Instant messaging",
+        nom_appli: "Instant messaging",
+        accueil: "Home",
+        contacts: "Contacts",
+        parametres: "Settings",
+        titre_inscription: "Create an account",
+        nom: "Last name",
+        prenom: "First name",
+        email: "Email address",
+        mot_de_passe: "Password",
+        inscrire: "Sign up",
+        titre_conversations: "My conversations",
+        mes_contacts: "My contacts",
+        nouvelle_conversation: "New conversation",
+        message: "Message:",
+        envoyer: "Send",
+        changer_langue: "Français",
+        aria_langue: "Change the display language"
+    }
+};
+
 // Corriger le fait que le boutonLangue ne fonctionne pas.
+
+const boutonLangue = document.getElementById("bouton-langue");
 
 // Applique le choix enregistré; français est la langue par défaut.
 let langueActuelle = "fr";
