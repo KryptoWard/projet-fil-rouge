@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperçu du thème d’automne — Messagerie</title>
+    <style>
+        /* Palette automnale : papier clair, brun, rouille et olive */
+        :root {
+            --encre: #342e27;
+            --brun: #574333;
+            --rouille: #a64f32;
+            --ocre: #c58a3b;
+            --olive: #6b7051;
+            --papier: #f7f2e8;
+            --fond: #e8dfd1;
+            --ligne: #d2c5b2;
+            --texte-doux: #756b5f;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: var(--fond);
+            color: var(--encre);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Barre simple, avec un accent rouille */
+        .barre-haute {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+            min-height: 68px;
+            padding: 0 5vw;
+            border-top: 4px solid var(--rouille);
+            border-bottom: 1px solid var(--ligne);
+            background: var(--papier);
+        }
+
+        .marque {
+            color: var(--brun);
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .marque span {
+            display: inline-block;
+            margin-right: 9px;
+            color: var(--rouille);
+            font-size: 1.35rem;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .navigation a {
+            padding: 23px 0 19px;
+            border-bottom: 3px solid transparent;
+            color: var(--texte-doux);
+            font-size: 0.94rem;
+            text-decoration: none;
+        }
+
+        .navigation a:hover,
+        .navigation a.active {
+            border-bottom-color: var(--rouille);
+            color: var(--brun);
+        }
+
+        .langue {
+            padding: 7px 10px;
+            border: 1px solid var(--brun);
+            background: transparent;
+            color: var(--brun);
+            font: inherit;
+        }
+
+        main {
+            width: min(1100px, calc(100% - 40px));
+            margin: 34px auto;
+        }
+
+        .intro {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 0 0 16px;
+        }
+
+        .intro h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .intro p {
+            margin: 0;
+            color: var(--texte-doux);
+            font-size: 0.9rem;
+        }
+
+        /* Fenêtre de messagerie */
+        .messagerie {
+            display: grid;
+            grid-template-columns: 290px minmax(0, 1fr);
+            min-height: 570px;
+            border: 1px solid var(--ligne);
+            background: var(--papier);
+        }
+
+        .panneau-discussions {
+            padding: 20px 0;
+            border-right: 1px solid var(--ligne);
+        }
+
+        .titre-discussions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 0 18px 16px;
+        }
+
+        .titre-discussions h2 {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+
+        .nouvelle {
+            padding: 7px 9px;
+            border: 1px solid var(--rouille);
+            background: transparent;
+            color: var(--rouille);
+            font: inherit;
+            font-size: 0.82rem;
+        }
+
+        .recherche {
+            width: calc(100% - 36px);
+            margin: 0 18px 16px;
+            padding: 9px 10px;
+            border: 1px solid var(--ligne);
+            background: #fffdf9;
+            color: var(--encre);
+            font: inherit;
+        }
+
+        .liste {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .contact {
+            display: grid;
+            grid-template-columns: 38px minmax(0, 1fr);
+            gap: 11px;
+            padding: 13px 18px;
+            border-left: 3px solid transparent;
+        }
+
+        .contact.actif {
+            border-left-color: var(--rouille);
+            background: #efe5d5;
+        }
+
+        /* Initiales carrées pour garder le style anguleux */
+        .initiales {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            background: #d9c6a7;
+            color: var(--brun);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .contact strong {
+            display: block;
+            margin: 1px 0 4px;
+            font-size: 0.92rem;
+        }
+
+        .contact p {
+            overflow: hidden;
+            margin: 0;
+            color: var(--texte-doux);
+            font-size: 0.83rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .zone-conversation {
+            display: flex;
+            min-width: 0;
+            flex-direction: column;
+        }
+
+        .entete-conversation {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 72px;
+            padding: 14px 22px;
+            border-bottom: 1px solid var(--ligne);
+        }
+
+        .entete-conversation h2 {
+            margin: 0 0 3px;
+            font-size: 1rem;
+        }
+
+        .statut {
+            margin: 0;
+            color: var(--olive);
+            font-size: 0.82rem;
+        }
+
+        .messages {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 24px;
+        }
+
+        .date {
+            align-self: center;
+            margin: 0 0 6px;
+            color: var(--texte-doux);
+            font-size: 0.8rem;
+        }
+
+        .message {
+            max-width: min(76%, 420px);
+            padding: 10px 13px;
+            border-left: 3px solid var(--ocre);
+            background: #eee6d8;
+        }
+
+        .message p {
+            margin: 0;
+            line-height: 1.45;
+        }
+
+        .message time {
+            display: block;
+            margin-top: 5px;
+            color: var(--texte-doux);
+            font-size: 0.75rem;
+            text-align: right;
+        }
+
+        .message.envoye {
+            align-self: flex-end;
+            border-left-color: var(--rouille);
+            background: #f2e2d5;
+        }
+
+        .compose {
+            display: flex;
+            gap: 10px;
+            padding: 14px 18px;
+            border-top: 1px solid var(--ligne);
+            background: #f1eadf;
+        }
+
+        .compose textarea {
+            min-height: 42px;
+            flex: 1;
+            resize: vertical;
+            padding: 10px;
+            border: 1px solid var(--ligne);
+            background: #fffdf9;
+            color: var(--encre);
+            font: inherit;
+        }
+
+        .envoyer {
+            align-self: flex-end;
+            min-height: 42px;
+            padding: 0 16px;
+            border: 1px solid var(--rouille);
+            background: var(--rouille);
+            color: white;
+            font: inherit;
+        }
+
+        .note {
+            margin: 12px 0;
+            color: var(--texte-doux);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 700px) {
+            .barre-haute {
+                flex-wrap: wrap;
+                gap: 0 16px;
+                padding: 12px 18px;
+            }
+
+            .navigation {
+                order: 3;
+                width: 100%;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            .navigation a {
+                padding: 12px 0 9px;
+                font-size: 0.86rem;
+            }
+
+            main {
+                width: calc(100% - 24px);
+                margin: 20px auto;
+            }
+
+            .intro {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .messagerie {
+                grid-template-columns: 1fr;
+            }
+
+            .panneau-discussions {
+                padding-bottom: 8px;
+                border-right: 0;
+                border-bottom: 1px solid var(--ligne);
+            }
+
+            .liste {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .contact {
+                padding: 10px;
+            }
+
+            .messages {
+                min-height: 300px;
+                padding: 18px 14px;
+            }
+
+            .message {
+                max-width: 88%;
+            }
+        }
+
+        /* Trois mouvements séparés : chute, balancement et rotation. */
+        .feuilles-automne {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .feuille {
+            position: absolute;
+            top: -60px;
+            left: var(--position);
+            width: var(--taille);
+            height: var(--taille);
+            color: var(--couleur);
+            opacity: var(--opacite);
+            animation: chute var(--duree) var(--retard) linear infinite;
+            will-change: transform;
+        }
+
+        .feuille-balancement {
+            display: block;
+            width: 100%;
+            height: 100%;
+            animation: balancement var(--oscillation) var(--retard) ease-in-out infinite alternate;
+        }
+
+        .feuille svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            animation: tourbillon var(--rotation) var(--retard) linear infinite;
+        }
+
+        @keyframes chute {
+            from { transform: translate3d(0, -40px, 0); }
+            to { transform: translate3d(var(--derive), calc(100vh + 120px), 0); }
+        }
+
+        @keyframes balancement {
+            from { transform: translateX(-22px) rotate(-18deg); }
+            to { transform: translateX(22px) rotate(18deg); }
+        }
+
+        @keyframes tourbillon {
+            0% { transform: rotate(0deg) rotateY(0deg); }
+            50% { transform: rotate(180deg) rotateY(65deg); }
+            100% { transform: rotate(360deg) rotateY(0deg); }
+        }
+
+        .pause-feuilles {
+            padding: 7px 10px;
+            border: 1px solid var(--ligne);
+            background: var(--papier);
+            color: var(--brun);
+            font: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .pause-feuilles:hover { border-color: var(--rouille); }
+
+        .pause-feuilles:focus-visible {
+            outline: 2px solid var(--rouille);
+            outline-offset: 3px;
+        }
+
+        .feuilles-en-pause .feuille,
+        .feuilles-en-pause .feuille-balancement,
+        .feuilles-en-pause .feuille svg {
+            animation-play-state: paused;
+        }
+
+        @media (max-width: 700px) {
+            .feuille:nth-child(n + 13) { display: none; }
+        }
+
+        /* Respecte le réglage du navigateur pour réduire les animations. */
+        @media (prefers-reduced-motion: reduce) {
+            .feuilles-automne, .pause-feuilles { display: none; }
+            .feuille, .feuille-balancement, .feuille svg { animation: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Décor uniquement : les feuilles ne bloquent pas les clics. -->
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden">
+        <defs>
+            <symbol id="feuille-erable" viewBox="0 0 64 64">
+                <path fill="currentColor" d="M31 5 39 20 45 14 44 28 58 23 51 37 58 40 39 48 34 47 34 59 30 59 30 47 25 48 7 40 14 37 6 23 20 28 19 14 25 20Z"/>
+                <path d="M32 18V52M32 37 20 30M32 37 44 30M32 43 21 40M32 43 43 40" fill="none" stroke="#65432b" stroke-width="1.5" opacity=".5"/>
+            </symbol>
+            <symbol id="feuille-longue" viewBox="0 0 64 64">
+                <path fill="currentColor" d="M32 5C16 12 10 25 15 38 18 46 25 49 30 50L29 60 33 60 34 50C44 46 51 35 48 24 46 15 40 9 32 5Z"/>
+                <path d="M32 13 32 53M32 27 23 22M32 34 42 27M32 42 22 35" fill="none" stroke="#65432b" stroke-width="1.5" opacity=".5"/>
+            </symbol>
+        </defs>
+    </svg>
+    <div class="feuilles-automne" aria-hidden="true"></div>
+    <header class="barre-haute">
+        <a class="marque" href="../index.html"><span>MF</span>Messagerie</a>
+        <nav class="navigation" aria-label="Navigation principale">
+            <a class="active" href="../conversations.html">Conversations</a>
+            <a href="../contact.html">Contacts</a>
+            <a href="../settings.html">Paramètres</a>
+        </nav>
+        <button class="langue" type="button">EN</button>
+    </header>
+
+    <main>
+        <div class="intro">
+            <h1>Aperçu du thème d’automne</h1>
+            <button class="pause-feuilles" type="button" aria-pressed="false">Mettre les feuilles en pause</button>
+        </div>
+
+        <div class="messagerie">
+            <aside class="panneau-discussions">
+                <div class="titre-discussions">
+                    <h2>Discussions</h2>
+                    <button class="nouvelle" type="button">Nouvelle</button>
+                </div>
+                <input class="recherche" type="search" placeholder="Rechercher..." aria-label="Rechercher une discussion">
+
+                <ul class="liste">
+                    <li class="contact actif">
+                        <span class="initiales">JD</span>
+                        <div>
+                            <strong>Jean Dupont</strong>
+                            <p>À tout à l’heure !</p>
+                        </div>
+                    </li>
+                    <li class="contact">
+                        <span class="initiales">CM</span>
+                        <div>
+                            <strong>Camille Martin</strong>
+                            <p>J’ai envoyé le document.</p>
+                        </div>
+                    </li>
+                </ul>
+            </aside>
+
+            <section class="zone-conversation" aria-label="Conversation avec Jean Dupont">
+                <header class="entete-conversation">
+                    <span class="initiales">JD</span>
+                    <div>
+                        <h2>Jean Dupont</h2>
+                        <p class="statut">En ligne</p>
+                    </div>
+                </header>
+
+                <div class="messages">
+                    <p class="date">Aujourd’hui</p>
+                    <article class="message">
+                        <p>Salut ! Tu as pu regarder les idées pour le projet ?</p>
+                        <time datetime="16:00">16:00</time>
+                    </article>
+                    <article class="message envoye">
+                        <p>Oui, je viens de les relire. Je t’envoie mes notes ce soir.</p>
+                        <time datetime="16:02">16:02</time>
+                    </article>
+                    <article class="message">
+                        <p>Parfait, merci !</p>
+                        <time datetime="16:03">16:03</time>
+                    </article>
+                </div>
+
+                <div class="compose">
+                    <textarea aria-label="Écrire un message" placeholder="Écrire un message..."></textarea>
+                    <button class="envoyer" type="button">Envoyer</button>
+                </div>
+            </section>
+        </div>
+
+        <p class="note">Aperçu séparé : le thème du site actuel n’a pas été modifié.</p>
+    </main>
+    <script>
+        // Des feuilles variées, déjà réparties dans la chute dès l'ouverture.
+        const decorFeuilles = document.querySelector(".feuilles-automne");
+        const couleursFeuilles = ["#b24e2c", "#c98a30", "#8e5939", "#a96726", "#858052"];
+        const fragmentsFeuilles = document.createDocumentFragment();
+
+        for (let index = 0; index < 24; index += 1) {
+            const feuille = document.createElement("span");
+            feuille.className = "feuille";
+            feuille.style.setProperty("--position", ((index * 37 + 3) % 100) + "%");
+            feuille.style.setProperty("--taille", (20 + (index * 7) % 23) + "px");
+            feuille.style.setProperty("--couleur", couleursFeuilles[index % couleursFeuilles.length]);
+            feuille.style.setProperty("--opacite", (0.35 + (index % 4) * 0.12).toFixed(2));
+            feuille.style.setProperty("--duree", (14 + index % 11) + "s");
+            feuille.style.setProperty("--retard", -(index * 2.7 + 4) + "s");
+            feuille.style.setProperty("--derive", ((index % 2 ? 1 : -1) * (30 + index % 6 * 12)) + "px");
+            feuille.style.setProperty("--oscillation", (2.8 + index % 4 * 0.6) + "s");
+            feuille.style.setProperty("--rotation", (6 + index % 7) + "s");
+
+            const forme = index % 3 === 0 ? "feuille-longue" : "feuille-erable";
+            feuille.innerHTML = '<span class="feuille-balancement"><svg viewBox="0 0 64 64"><use href="#' + forme + '"></use></svg></span>';
+            fragmentsFeuilles.appendChild(feuille);
+        }
+
+        decorFeuilles.appendChild(fragmentsFeuilles);
+
+        // Le bouton permet de figer puis de reprendre le décor.
+        const boutonPause = document.querySelector(".pause-feuilles");
+        boutonPause.addEventListener("click", () => {
+            const enPause = document.body.classList.toggle("feuilles-en-pause");
+            boutonPause.setAttribute("aria-pressed", String(enPause));
+            boutonPause.textContent = enPause ? "Reprendre les feuilles" : "Mettre les feuilles en pause";
+        });
+    </script>
+</body>
+</html>

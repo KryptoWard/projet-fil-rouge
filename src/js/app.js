@@ -1,3 +1,4 @@
+// Corriger le fait que le boutonLangue ne fonctionne pas.
 
 // Applique le choix enregistré; français est la langue par défaut.
 let langueActuelle = "fr";
@@ -34,7 +35,7 @@ function afficherLangue(langue) {
     }
 }
 
-if (boutonLangue) {
+if (boutonLangue) { // boutonLangue is not defined, pourquoi ?
     boutonLangue.addEventListener("click", () => {
         afficherLangue(langueActuelle === "fr" ? "en" : "fr");
     });
