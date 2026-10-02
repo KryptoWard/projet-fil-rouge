@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messagerie instantanée</title>
+    <title data-i18n="site_title">Messagerie instantanée</title>
     <link rel="stylesheet" href="src/css/styles.css">
     <script>
         console.log("bonjour ! je suis un exemple du cours d'introduction au JS :)");
@@ -16,32 +16,32 @@
         <h1 class="marque">
             <a href="index.html">
                 <img src="src/assets/svg/logo-messagerie.svg" alt="">
-                <span>Messagerie instantanée</span>
+                <span data-i18n="brand">Messagerie instantanée</span>
             </a>
         </h1>
         <nav aria-label="Navigation principale">
             <ul>
-                <li><a href="conversations.html"><img src="src/assets/svg/conversations.svg" alt=""><span>Conversations</span></a></li>
-                <li><a href="contact.html"><img src="src/assets/svg/contacts.svg" alt=""><span>Contacts</span></a></li>
-                <li><a href="settings.html"><img src="src/assets/svg/parametres.svg" alt=""><span>Paramètres</span></a></li>
+                <li><a href="conversations.html"><img src="src/assets/svg/conversations.svg" alt=""><span data-i18n="conversations">Conversations</span></a></li>
+                <li><a href="contact.html"><img src="src/assets/svg/contacts.svg" alt=""><span data-i18n="contacts">Contacts</span></a></li>
+                <li><a href="settings.html"><img src="src/assets/svg/parametres.svg" alt=""><span data-i18n="settings">Paramètres</span></a></li>
                 <li><button type="button" class="bouton-langue" id="langue-switch" aria-label="Changer la langue d’affichage">English</button></li>
             </ul>
         </nav>
     </header>
     <main>
         <section>
-            <h2>Créer un compte</h2> <!-- Informations à donner pour avoir un compte -->
+            <h2 data-i18n="create_account">Créer un compte</h2> <!-- Informations à donner pour avoir un compte -->
             <form action="">
-                <label for="nom">Nom</label>
+                <label for="nom" data-i18n="last_name">Nom</label>
                 <input type="text" id="nom" name="nom" autocomplete="family-name">
-                <label for="prenom">Prénom</label>
+                <label for="prenom" data-i18n="first_name">Prénom</label>
                 <input type="text" id="prenom" name="prenom" autocomplete="given-name">
-                <label for="email">Adresse e-mail</label>
+                <label for="email" data-i18n="email">Adresse e-mail</label>
                 <input type="email" id="email" name="email" autocomplete="email">
-                <label for="mdp">Mot de passe</label>
+                <label for="mdp" data-i18n="password">Mot de passe</label>
                 <input type="password" id="mdp" name="mdp" autocomplete="new-password">
-                <button type="submit">S'inscrire</button>
-                <a href="pwdforgotten.html">Mot de passe oublié</a>
+                <button type="submit" data-i18n="signup">S'inscrire</button>
+                <a href="pwdforgotten.html" data-i18n="forgot_password">Mot de passe oublié</a>
             </form>
         </section>
     </main>

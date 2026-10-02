@@ -3,17 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contacts</title>
+    <title data-i18n="contacts_page_title">Contacts</title>
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
     <header>
-        <h1>Mes contacts</h1> <!-- Navigation principale -->
+        <h1 data-i18n="my_contacts">Mes contacts</h1> <!-- Navigation principale -->
             <nav>
                 <ul>
-                    <li><a href="index.html"><img src="src/assets/svg/index.svg"><span>Accueil</span></a></li>
-                    <li><a href="conversations.html"><img src="src/assets/svg/conversations.svg"><span>Conversations</span></a></li>
-                    <li><a href="settings.html"><img src="src/assets/svg/settings.svg"><span>Paramètres</span></a></li>
+                    <li><a href="index.html"><img src="src/assets/svg/conversations.svg"><span data-i18n="home">Accueil</span></a></li>
+                    <li><a href="conversations.html"><img src="src/assets/svg/conversations.svg"><span data-i18n="conversations">Conversations</span></a></li>
+                    <li><a href="settings.html"><img src="src/assets/svg/parametres.svg"><span data-i18n="settings">Paramètres</span></a></li>
+                <li><button type="button" class="bouton-langue" id="langue-switch" aria-label="Changer de langue">English</button></li>
                 </ul>
             </nav>
     </header>
