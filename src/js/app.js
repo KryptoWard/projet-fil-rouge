@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    // Les mêmes clés sont utilisées dans les attributs data-i18n des pages.
+    // 1. Traductions générales
     const traductions = {
         fr: {
             site_title: "Messagerie instantanée",
@@ -71,17 +71,32 @@
         }
     };
 
+    // 2. Messages d'erreurs de validation
+    const messagesErreurs = {
+        fr: {
+            nom_majuscule: "Le nom doit commencer par une majuscule et comporter au moins 2 lettres.",
+            prenom_majuscule: "Le prénom doit commencer par une majuscule et comporter au moins 2 lettres.",
+            mdp_longueur: "Le mot de passe doit comporter au moins 8 caractères.",
+            mdp_special: "Le mot de passe doit contenir au moins un chiffre ou un caractère spécial."
+        },
+        en: {
+            nom_majuscule: "Last name must start with an uppercase letter and have at least 2 characters.",
+            prenom_majuscule: "First name must start with an uppercase letter and have at least 2 characters.",
+            mdp_longueur: "Password must be at least 8 characters long.",
+            mdp_special: "Password must include at least one number or special character."
+        }
+    };
+
     const boutonLangue = document.querySelector("#langue-switch");
     let langueActuelle = "fr";
 
-    // Le choix reste disponible en passant d’une page à l’autre.
     try {
         const langueEnregistree = window.localStorage.getItem("langue-interface");
         if (Object.prototype.hasOwnProperty.call(traductions, langueEnregistree)) {
             langueActuelle = langueEnregistree;
         }
     } catch (erreur) {
-        // Le site garde le français par défaut si le stockage est désactivé.
+        // Stockage désactivé
     }
 
     function appliquerLangue(langue) {
@@ -111,7 +126,7 @@
         try {
             window.localStorage.setItem("langue-interface", langue);
         } catch (erreur) {
-            // Le changement s’applique même si le navigateur ne mémorise pas le choix.
+            // Pas de stockage
         }
     }
 
@@ -122,6 +137,75 @@
     }
 
     appliquerLangue(langueActuelle);
-})();
 
-// Ajouter message par exemple quand on clique sur l'un des 4 champs
+    // 3. Validation formulaire d'inscription
+    const inscription = document.querySelector("main form");
+    const inputNom = document.querySelector("#nom");
+    const inputPrenom = document.querySelector("#prenom");
+    const inputMdp = document.querySelector("#mdp");
+
+    const regexNom = /^[A-ZÀ-ÖØ-ß][a-zA-ZÀ-ÿ\s'-]{1,}$/;
+    const regexSpecialOuChiffre = /[0-9!@#$%^&*(),.?":{}|<>_\-+=/\\~`]/;
+
+    function getMsgs() {
+        const lang = document.documentElement.lang || "fr";
+        return messagesErreurs[lang] || messagesErreurs.fr;
+    }
+
+    function validerChamp(input, conditionValide, messageErreur) {
+        if (!input) return true;
+        if (!conditionValide) {
+            input.setCustomValidity(messageErreur);
+            return false;
+        }
+        input.setCustomValidity("");
+        return true;
+    }
+
+    function Nom() {
+        if (!inputNom) return true;
+        return validerChamp(inputNom, regexNom.test(inputNom.value.trim()), getMsgs().nom_majuscule);
+    }
+
+    function Prenom() {
+        if (!inputPrenom) return true;
+        return validerChamp(inputPrenom, regexNom.test(inputPrenom.value.trim()), getMsgs().prenom_majuscule);
+    }
+
+    function Mdp() {
+        if (!inputMdp) return true;
+        const msgs = getMsgs();
+        const valeur = inputMdp.value;
+
+        if (valeur.length < 8) {
+            return validerChamp(inputMdp, false, msgs.mdp_longueur);
+        }
+        if (!regexSpecialOuChiffre.test(valeur)) {
+            return validerChamp(inputMdp, false, msgs.mdp_special);
+        }
+        return validerChamp(inputMdp, true, "");
+    }
+
+    if (inputNom) inputNom.addEventListener("input", Nom); // Met à jour si l'erreur est réglée, donc écoute en temps réel
+    if (inputPrenom) inputPrenom.addEventListener("input", Prenom);
+    if (inputMdp) inputMdp.addEventListener("input", Mdp);
+
+    if (inscription) {
+        inscription.addEventListener("submit", (evenement) => {
+            const nomOk = Nom();
+            const prenomOk = Prenom();
+            const mdpOk = Mdp();
+
+            if (!nomOk) {
+                evenement.preventDefault(); // Bloque l'exécution d'une action
+                inputNom.reportValidity();
+            } else if (!prenomOk) {
+                evenement.preventDefault();
+                inputPrenom.reportValidity();
+            } else if (!mdpOk) {
+                evenement.preventDefault();
+                inputMdp.reportValidity();
+            }
+        });
+    }
+})();
