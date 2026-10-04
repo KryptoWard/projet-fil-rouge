@@ -123,3 +123,5 @@
 
     appliquerLangue(langueActuelle);
 })();
+
+// Ajouter message par exemple quand on clique sur l'un des 4 champs
