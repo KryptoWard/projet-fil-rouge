@@ -139,20 +139,21 @@
     appliquerLangue(langueActuelle);
 
     // 3. Validation formulaire d'inscription
+    // Récupération éléments du DOM
     const inscription = document.querySelector("main form");
     const inputNom = document.querySelector("#nom");
     const inputPrenom = document.querySelector("#prenom");
     const inputMdp = document.querySelector("#mdp");
 
-    const regexNom = /^[A-ZÀ-ÖØ-ß][a-zA-ZÀ-ÿ\s'-]{1,}$/;
-    const regexSpecialOuChiffre = /[0-9!@#$%^&*(),.?":{}|<>_\-+=/\\~`]/;
+    const regexNom = /^[A-ZÀ-ÖØ-ß][a-zA-ZÀ-ÿ\s'-]{1,}$/; // Caractères pour prénom et nom, même avec accent, espace ou tiret
+    const regexSpecialOuChiffre = /[0-9!@#$%^&*(),.?":{}|<>_\-+=/\\~`]/; // Caractères spéciaux pour mot de passe
 
-    function getMsgs() {
+    function getMsgs() { // Renvoie textes avec la bonne langue
         const lang = document.documentElement.lang || "fr";
         return messagesErreurs[lang] || messagesErreurs.fr;
     }
 
-    function validerChamp(input, conditionValide, messageErreur) {
+    function validerChamp(input, conditionValide, messageErreur) { // Vérifie si les champs sont valides ou pas
         if (!input) return true;
         if (!conditionValide) {
             input.setCustomValidity(messageErreur);
@@ -172,7 +173,7 @@
         return validerChamp(inputPrenom, regexNom.test(inputPrenom.value.trim()), getMsgs().prenom_majuscule);
     }
 
-    function Mdp() {
+    function Mdp() { // Vérifie que le mot de passe a au moins 8 caarctères et qu'il a un caractère spécial
         if (!inputMdp) return true;
         const msgs = getMsgs();
         const valeur = inputMdp.value;
@@ -185,12 +186,13 @@
         }
         return validerChamp(inputMdp, true, "");
     }
-
-    if (inputNom) inputNom.addEventListener("input", Nom); // Met à jour si l'erreur est réglée, donc écoute en temps réel
+    
+    // Met à jour si l'erreur est réglée, donc écoute en temps réel
+    if (inputNom) inputNom.addEventListener("input", Nom); 
     if (inputPrenom) inputPrenom.addEventListener("input", Prenom);
     if (inputMdp) inputMdp.addEventListener("input", Mdp);
 
-    if (inscription) {
+    if (inscription) { // Envoie messages d'erreur si besoin
         inscription.addEventListener("submit", (evenement) => {
             const nomOk = Nom();
             const prenomOk = Prenom();
