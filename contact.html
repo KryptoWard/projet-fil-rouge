@@ -7,17 +7,39 @@
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
-    <header>
-        <h1 data-i18n="my_contacts">Mes contacts</h1> <!-- Navigation principale -->
-            <nav>
-                <ul>
-                    <li><a href="index.html"><img src="src/assets/svg/conversations.svg"><span data-i18n="home">Accueil</span></a></li>
-                    <li><a href="conversations.html"><img src="src/assets/svg/conversations.svg"><span data-i18n="conversations">Conversations</span></a></li>
-                    <li><a href="settings.html"><img src="src/assets/svg/parametres.svg"><span data-i18n="settings">Paramètres</span></a></li>
-                <li><button type="button" class="bouton-langue" id="langue-switch" aria-label="Changer de langue">English</button></li>
-                </ul>
-            </nav>
+    <header class="barre-navigation">
+        <h1 class="marque">
+            <a href="index.html">
+                <img src="src/assets/svg/logo-messagerie.svg" alt="">
+                <span data-i18n="brand">Messagerie instantanée</span>
+            </a>
+        </h1>
+        <nav class="navigation-principale" aria-label="Navigation principale">
+            <ul>
+                <li>
+                    <a href="conversations.html">
+                        <img src="src/assets/svg/conversations.svg" alt="">
+                        <span data-i18n="conversations">Conversations</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="contact.html">
+                        <img src="src/assets/svg/contacts.svg" alt="">
+                        <span data-i18n="contacts">Contacts</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.html">
+                        <img src="src/assets/svg/parametres.svg" alt="">
+                        <span data-i18n="settings">Paramètres</span>
+                    </a>
+                </li>
+                <li><button type="button" class="bouton-langue" id="langue-switch" aria-label="Changer la langue d’affichage">English</button></li>
+                <li><button type="button" class="pause-feuilles" aria-pressed="false" data-i18n="pause_leaves">Mettre les feuilles en pause</button></li>
+            </ul>
+        </nav>
     </header>
+    <div class="feuilles-automne" aria-hidden="true"></div>
     <main>
         <section>
             <h2 data-i18n="search_contact">Chercher un contact</h2>
@@ -43,6 +65,7 @@
     <footer>
     </footer>
     <script src="src/js/app.js"></script>
+    <script src="src/js/automn.js"></script>
 </body>
 
 </html>

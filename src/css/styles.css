@@ -1,162 +1,50 @@
-/* Base visuelle partagée par les pages du projet */
+/* Shared autumn color palette */
 :root {
-    --couleur-principale: #b85028;
-    --couleur-texte: #2c2420;
-    --couleur-secondaire: #d97d27;
-    --couleur-fond: #fdfbf7;
-    --couleur-bordure: #e5ded4;
+    --couleur-principale: #a64f32;
+    --couleur-texte: #342e27;
+    --couleur-secondaire: #6b7051;
+    --couleur-fond: #e8dfd1;
+    --couleur-papier: #f7f2e8;
+    --couleur-bordure: #d2c5b2;
+    --couleur-douce: #756b5f;
 }
-
-/* Mise en page */
 
 * {
-    box-sizing: border-box; /* Prend en compte les bordures et les remplissages */
+    box-sizing: border-box;
 }
 
+/* Page layout */
 body {
-    min-height: 100vh; /* Hauteur minimale de la fenêtre du navigateur */
-    margin: 0; /* Enlève les marges par défaut du navigateur... */
+    min-height: 100vh;
+    margin: 0;
     background: var(--couleur-fond);
     color: var(--couleur-texte);
     font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.5; /* Espacement entre les lignes très important */
+    line-height: 1.5;
 }
 
-/* En-tête de la page */
-
-header {
+/* Main page header */
+.barre-navigation {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    padding: 18px clamp(20px, 6vw, 80px);
-    background: hwb(240 92% 6%);
+    padding: 16px clamp(20px, 5vw, 72px);
+    border-top: 4px solid var(--couleur-principale);
     border-bottom: 1px solid var(--couleur-bordure);
+    background: var(--couleur-papier);
 }
 
-header h1 {
+.barre-navigation h1 {
     margin: 0;
-    color: var(--couleur-principale);
-    font-size: 1.2rem;
+    font-size: 1.15rem;
 }
 
-nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 22px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-nav a {
-    color: var(--couleur-secondaire);
-    text-decoration: none;
-}
-
-nav a:hover,
-nav a:focus-visible {
-    color: var(--couleur-principale);
-    text-decoration: underline;
-    text-underline-offset: 4px; /* Décalage de soulignement de la navigation */
-}
-
-main {
-    width: min(100% - 32px, 460px);
-    margin: 52px auto;
-}
-
-main section {
-    padding: clamp(24px, 5vw, 36px); /* Marge de 24px à 36px en fonction de la taille de l'écran */
-    background: #fff;
-    border: 1px solid var(--couleur-bordure);
-    border-radius: 10px;
-}
-
-main h2 {
-    margin: 0 0 24px;
-    font-size: 1.45rem;
-    font-weight: 600;
-}
-
-form {
-    display: grid; /* Disposition en grille */
-    gap: 9px;
-}
-
-/* Label */
-
-form label {
-    margin-top: 7px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-/* Champ de saisie */
-
-form input {
-    width: 100%;
-    min-height: 42px;
-    padding: 9px 10px;
-    border: 1px solid #c8cccf;
-    border-radius: 2px;
-    background: #fff;
-    color: var(--couleur-texte);
-    font: inherit;
-}
-
-form input:focus-visible {
-    outline: 2px solid var(--couleur-principale);
-    outline-offset: 1px;
-}
-
-/* Bouton */
-
-form button {
-    min-height: 42px;
-    margin-top: 14px;
-    padding: 9px 14px;
-    border: 1px solid var(--couleur-principale);
-    border-radius: 5px;
-    background: var(--couleur-principale);
-    color: #fff;
-    font: inherit;
-    cursor: pointer;
-}
-
-form button:hover {
-    background: #263746;
-}
-
-form button:focus-visible {
-    outline: 2px solid var(--couleur-principale);
-    outline-offset: 3px;
-}
-
-/* RWD */
-
-@media (max-width: 560px) {
-    header {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    nav ul {
-        gap: 16px;
-    }
-
-    main {
-        margin-top: 32px;
-    }
-}
-
-/* Logo de l'application et icônes SVG de la navigation */
 .marque a {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: var(--couleur-principale);
+    color: var(--couleur-texte);
     text-decoration: none;
 }
 
@@ -166,34 +54,256 @@ form button:focus-visible {
     height: 38px;
 }
 
-nav a {
+/* Navigation links and icons */
+.navigation-principale ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.navigation-principale a {
     display: inline-flex;
     align-items: center;
     gap: 7px;
     padding: 6px 0;
+    color: var(--couleur-douce);
+    text-decoration: none;
 }
 
-nav a img {
+.navigation-principale a img {
     width: 19px;
     height: 19px;
 }
 
-/* Bouton de changement de langue */
-.bouton-langue {
-    padding: 6px 10px;
-    border: 1px solid var(--couleur-principale);
-    border-radius: 2px;
-    background: transparent;
+.navigation-principale a:hover,
+.navigation-principale a:focus-visible {
     color: var(--couleur-principale);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* Language and leaf controls */
+.bouton-langue,
+.pause-feuilles {
+    min-height: 38px;
+    padding: 7px 12px;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--couleur-texte);
     font: inherit;
+    font-size: 0.88rem;
     cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-.bouton-langue:hover {
-    background: var(--couleur-fond);
+.bouton-langue:hover,
+.pause-feuilles:hover {
+    border-color: var(--couleur-principale);
+    background: #efe4d3;
 }
 
-.bouton-langue:focus-visible {
+.bouton-langue:focus-visible,
+.pause-feuilles:focus-visible,
+form button:focus-visible {
     outline: 2px solid var(--couleur-principale);
-    outline-offset: 2px;
+    outline-offset: 3px;
+}
+
+/* Main content */
+main {
+    width: min(100% - 32px, 460px);
+    margin: 52px auto;
+}
+
+.page-conversations {
+    display: grid;
+    grid-template-columns: minmax(220px, 290px) minmax(0, 1fr);
+    gap: 24px;
+    width: min(100% - 40px, 1100px);
+}
+
+.page-conversations > nav {
+    padding: 20px;
+    border: 1px solid var(--couleur-bordure);
+    background: var(--couleur-papier);
+}
+
+.page-conversations > section {
+    min-width: 0;
+}
+
+/* Content panels */
+main section {
+    padding: clamp(24px, 5vw, 36px);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 10px;
+    background: var(--couleur-papier);
+    box-shadow: 0 12px 32px rgb(52 46 39 / 8%);
+}
+
+main h2 {
+    margin: 0 0 24px;
+    font-size: 1.45rem;
+    font-weight: 600;
+}
+
+/* Form layout */
+form {
+    display: grid;
+    gap: 9px;
+}
+
+/* Form labels */
+form label {
+    margin-top: 7px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Form fields */
+form input {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 10px;
+    border: 1px solid #c8bca9;
+    border-radius: 5px;
+    background: #fffdf9;
+    color: var(--couleur-texte);
+    font: inherit;
+}
+
+/* Keyboard focus for form fields */
+form input:focus-visible {
+    outline: 2px solid var(--couleur-principale);
+    outline-offset: 1px;
+}
+
+/* Form buttons */
+form button {
+    min-height: 44px;
+    margin-top: 14px;
+    padding: 9px 14px;
+    border: 1px solid var(--couleur-principale);
+    border-radius: 6px;
+    background: var(--couleur-principale);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 160ms ease, transform 160ms ease;
+}
+
+form button:hover {
+    background: #85402b;
+    transform: translateY(-1px);
+}
+
+/* Form links */
+form a {
+    color: var(--couleur-principale);
+}
+
+/* Falling leaves stay behind the controls and never capture clicks */
+.feuilles-automne {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.barre-navigation,
+main,
+footer {
+    position: relative;
+    z-index: 1;
+}
+
+.feuille {
+    position: absolute;
+    top: -60px;
+    left: var(--position);
+    width: var(--taille);
+    height: var(--taille);
+    color: var(--couleur);
+    opacity: var(--opacite);
+    animation: chute var(--duree) var(--retard) linear infinite;
+    will-change: transform;
+}
+
+.feuille-balancement {
+    display: block;
+    width: 100%;
+    height: 100%;
+    animation: balancement var(--oscillation) ease-in-out infinite alternate;
+}
+
+.feuille svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 2px rgb(52 46 39 / 18%));
+    animation: tourbillon var(--rotation) linear infinite;
+}
+
+/* Leaf fall, sway, and rotation animations */
+@keyframes chute {
+    from { transform: translate3d(0, -40px, 0); }
+    to { transform: translate3d(var(--derive), calc(100vh + 120px), 0); }
+}
+
+@keyframes balancement {
+    from { transform: translateX(-22px) rotate(-18deg); }
+    to { transform: translateX(22px) rotate(18deg); }
+}
+
+@keyframes tourbillon {
+    0% { transform: rotate(0deg) rotateY(0deg); }
+    50% { transform: rotate(180deg) rotateY(65deg); }
+    100% { transform: rotate(360deg) rotateY(0deg); }
+}
+
+.feuilles-en-pause .feuille,
+.feuilles-en-pause .feuille-balancement,
+.feuilles-en-pause .feuille svg {
+    animation-play-state: paused;
+}
+
+/* Responsive layout */
+/* Show fewer leaves on small screens */
+@media (max-width: 700px) {
+    .feuille:nth-child(n + 13) { display: none; }
+}
+
+/* Stack the header on narrow screens */
+@media (max-width: 560px) {
+    .barre-navigation {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .navigation-principale ul { gap: 8px 14px; }
+    main { margin-top: 32px; }
+    .page-conversations { grid-template-columns: 1fr; }
+}
+
+/* Respect the user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .feuille,
+    .feuille-balancement,
+    .feuille svg,
+    form button,
+    .bouton-langue,
+    .pause-feuilles {
+        animation: none;
+        transition: none;
+    }
+
+    .feuille { display: none; }
 }
