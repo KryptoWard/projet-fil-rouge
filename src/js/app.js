@@ -12,6 +12,18 @@
             settings: "Paramètres",
             pause_leaves: "Mettre les feuilles en pause",
             play_leaves: "Reprendre les feuilles",
+            // Weather card settings and conversation controls
+            weather_settings_title: "Ville pour la météo",
+            weather_settings_description: "Choisis la ville utilisée pour les cartes météo. Elle sera enregistrée dans ce navigateur.",
+            weather_city_label: "Ville",
+            weather_search: "Rechercher",
+            weather_city_not_set: "Aucune ville enregistrée.",
+            weather_attribution: "Données météo fournies par",
+            share_weather: "Partager une carte météo",
+            weather_tool_label: "Météo",
+            message_toolbar_label: "Options du message",
+            weather_command_hint: "Astuce : écris /meteo ou /meteo Montréal pour publier une carte.",
+            local_message_notice: "Les messages restent sur cet appareil jusqu’à la mise en place du backend.",
             create_account: "Créer un compte",
             last_name: "Nom",
             first_name: "Prénom",
@@ -28,7 +40,8 @@
             active_conversation: "Discussion active",
             me: "Moi",
             message: "Message :",
-            message_placeholder: "Ton message...",
+            // Show the weather command syntax directly in the composer
+            message_placeholder: "Écris un message ou /meteo [ville]...",
             send: "Envoyer",
             contacts_page_title: "Contacts",
             my_contacts: "Mes contacts",
@@ -47,6 +60,18 @@
             settings: "Settings",
             pause_leaves: "Pause falling leaves",
             play_leaves: "Resume falling leaves",
+            // Weather card settings and conversation controls
+            weather_settings_title: "Weather city",
+            weather_settings_description: "Choose the city used for weather cards. It will be saved in this browser.",
+            weather_city_label: "City",
+            weather_search: "Search",
+            weather_city_not_set: "No city saved.",
+            weather_attribution: "Weather data provided by",
+            share_weather: "Share a weather card",
+            weather_tool_label: "Weather",
+            message_toolbar_label: "Message tools",
+            weather_command_hint: "Tip: type /meteo or /meteo Montreal to post a card.",
+            local_message_notice: "Messages stay on this device until the backend is added.",
             create_account: "Create an account",
             last_name: "Last name",
             first_name: "First name",
@@ -63,7 +88,8 @@
             active_conversation: "Active conversation",
             me: "Me",
             message: "Message:",
-            message_placeholder: "Your message...",
+            // Show the weather command syntax directly in the composer
+            message_placeholder: "Write a message or /meteo [city]...",
             send: "Send",
             contacts_page_title: "Contacts",
             my_contacts: "My contacts",
@@ -92,6 +118,8 @@
     };
 
     const boutonLangue = document.querySelector("#langue-switch");
+    const boutonMeteo = document.querySelector("#share-weather");
+    const barreOutilsMessage = document.querySelector("#message-toolbar");
     let langueActuelle = "fr";
 
     try {
@@ -124,6 +152,17 @@
         if (boutonLangue) {
             boutonLangue.textContent = textes.language_button;
             boutonLangue.setAttribute("aria-label", textes.change_language);
+        }
+
+        // Keep the weather icon button accessible in the selected language
+        if (boutonMeteo) {
+            boutonMeteo.setAttribute("aria-label", textes.share_weather);
+            boutonMeteo.title = textes.share_weather;
+        }
+
+        // Keep the toolbar name available to assistive technology in both languages
+        if (barreOutilsMessage) {
+            barreOutilsMessage.setAttribute("aria-label", textes.message_toolbar_label);
         }
 
         langueActuelle = langue;

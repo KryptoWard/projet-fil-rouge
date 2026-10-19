@@ -177,8 +177,21 @@ form input {
     font: inherit;
 }
 
+form textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 10px;
+    border: 1px solid #c8bca9;
+    border-radius: 5px;
+    background: #fffdf9;
+    color: var(--couleur-texte);
+    font: inherit;
+    resize: vertical;
+}
+
 /* Keyboard focus for form fields */
-form input:focus-visible {
+form input:focus-visible,
+form textarea:focus-visible {
     outline: 2px solid var(--couleur-principale);
     outline-offset: 1px;
 }
@@ -206,6 +219,202 @@ form button:hover {
 /* Form links */
 form a {
     color: var(--couleur-principale);
+}
+
+/* Weather city settings */
+.weather-city-form h3 {
+    margin: 24px 0 0;
+}
+
+.weather-city-form > p {
+    margin: 0;
+    color: var(--couleur-douce);
+}
+
+.weather-city-search {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 8px;
+}
+
+.weather-city-search button {
+    margin-top: 0;
+}
+
+.weather-city-results {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.weather-city-results button {
+    width: 100%;
+    margin: 0;
+    background: #efe4d3;
+    color: var(--couleur-texte);
+    text-align: left;
+}
+
+.weather-city-results button:hover {
+    background: #e6d5be;
+}
+
+.weather-attribution,
+.local-message-notice,
+.weather-status {
+    color: var(--couleur-douce);
+    font-size: 0.85rem;
+}
+
+.weather-attribution a {
+    color: var(--couleur-principale);
+}
+
+/* Local conversation messages */
+.message-list {
+    display: grid;
+    gap: 12px;
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+}
+
+.message-list article {
+    padding: 12px 14px;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 6px;
+    background: #fffdf9;
+}
+
+.message-list article h3 {
+    margin: 0 0 4px;
+    color: var(--couleur-principale);
+    font-size: 0.85rem;
+}
+
+.message-list article p {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.message-list article.local-message {
+    width: min(85%, 560px);
+    margin-left: auto;
+    border-color: #c8cda9;
+    background: #f0f1e8;
+}
+
+/* Group content tools in a small bar under the message field */
+.message-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0 2px;
+    border-top: 1px solid var(--couleur-bordure);
+}
+
+/* Keep the weather option compact and easy to recognize */
+.message-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.message-actions button {
+    margin-top: 0;
+}
+
+.weather-share-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 6px 10px;
+    border-color: var(--couleur-bordure);
+    border-radius: 8px;
+    background: var(--couleur-papier);
+    color: var(--couleur-secondaire);
+    font-size: 0.85rem;
+}
+
+.weather-share-button:hover {
+    border-color: var(--couleur-secondaire);
+    background: #eef0e4;
+}
+
+.weather-share-button svg {
+    width: 21px;
+    height: 21px;
+    flex: 0 0 21px;
+}
+
+.weather-share-button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+.weather-command-hint {
+    margin: 0;
+    color: var(--couleur-douce);
+    font-size: 0.82rem;
+}
+
+/* Display the generated weather artwork as one shareable image */
+.message-list article.weather-card {
+    width: min(100%, 460px);
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid #c7b69f;
+    border-radius: 14px;
+    background: var(--couleur-papier);
+    box-shadow: 0 8px 20px rgb(52 46 39 / 10%);
+}
+
+.weather-card-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.weather-card-credit {
+    display: block;
+    padding: 0 14px 10px;
+    color: var(--couleur-principale);
+    font-size: 0.7rem;
+    text-align: right;
+}
+
+.message-form {
+    gap: 10px;
+}
+
+.message-form button[type="button"] {
+    border-color: var(--couleur-secondaire);
+    background: var(--couleur-secondaire);
+}
+
+.message-form button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+@media (max-width: 560px) {
+    .message-list article.weather-card { width: 100%; }
 }
 
 /* Falling leaves stay behind the controls and never capture clicks */

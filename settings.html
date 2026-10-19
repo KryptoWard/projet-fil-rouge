@@ -42,16 +42,31 @@
     <div class="feuilles-automne" aria-hidden="true"></div>
     <main>
         <section>
-            <h2>Paramètres</h2>
-                <form>
-                <button type="button"> Se déconnecter</button><br>
-                <button type="button"> Supprimer mon compte</button>
-                </form>
+            <h2 data-i18n="settings_page_title">Paramètres</h2>
+            <!-- Let the user choose a default city for weather cards -->
+            <form id="weather-city-form" class="weather-city-form">
+                <h3 data-i18n="weather_settings_title">Ville pour la météo</h3>
+                <p data-i18n="weather_settings_description">Choisis la ville utilisée pour les cartes météo. Elle sera enregistrée dans ce navigateur.</p>
+                <label for="weather-city" data-i18n="weather_city_label">Ville</label>
+                <div class="weather-city-search">
+                    <input type="search" id="weather-city" name="city" autocomplete="off" required>
+                    <button type="submit" data-i18n="weather_search">Rechercher</button>
+                </div>
+                <p id="weather-city-current" aria-live="polite" data-i18n="weather_city_not_set">Aucune ville enregistrée.</p>
+                <ul id="weather-city-results" class="weather-city-results" aria-label="Résultats des villes"></ul>
+            </form>
+            <!-- Credit the weather data provider and its open data licence -->
+            <p class="weather-attribution">
+                <span data-i18n="weather_attribution">Données météo fournies par</span>
+                <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>
+                <span>CC BY 4.0</span>
+            </p>
         </section>
     </main>
     <footer>
     </footer>
     <script src="src/js/app.js"></script>
     <script src="src/js/automn.js"></script>
+    <script src="src/js/weather.js"></script>
 </body>
 </html>
