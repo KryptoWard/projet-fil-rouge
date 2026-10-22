@@ -4,7 +4,7 @@ Le site utilise Supabase Auth, PostgreSQL et Realtime. Les canaux sont communs �
 
 ## Mise en place
 
-1. Ouvrir le projet Supabase correspondant à l'URL de `src/js/supabase-client.js`.
+1. Ouvrir le projet Supabase correspondant à l'URL de `src/js/app.js`.
 2. Appliquer `migrations/202610220001_chat.sql` dans le SQL Editor, ou avec les migrations de la CLI Supabase configurée pour ce projet.
 3. Vérifier que les tables `chat_channels` et `chat_messages` figurent dans la publication `supabase_realtime`. La migration les ajoute automatiquement.
 4. Servir le site en HTTP, puis se connecter avec deux comptes différents dans deux navigateurs ou profils distincts.
@@ -23,7 +23,7 @@ Le client charge les 50 derniers messages, puis propose les messages précédent
 
 ## Configuration du site
 
-`src/js/supabase-client.js` contient l'URL et la clé publique du projet déjà utilisées par le site. Il crée un seul client partagé par l'authentification et la messagerie. Aucune clé `service_role`, aucun mot de passe de base et aucun jeton d'administration ne doit être ajouté au site ou à GitHub Pages.
+`src/js/app.js` contient l'URL et la clé publique du projet déjà utilisées par le site. Il crée un seul client partagé par l'authentification et la messagerie. Aucune clé `service_role`, aucun mot de passe de base et aucun jeton d'administration ne doit être ajouté au site ou à GitHub Pages.
 
 Si la confirmation d'adresse e-mail est activée, il faut confirmer son compte avant de se connecter. Un accès direct à Conversations sans session redirige vers l'accueil. Une erreur d'enregistrement conserve le brouillon et ne crée pas de faux message local.
 

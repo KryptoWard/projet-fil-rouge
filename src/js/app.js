@@ -1,7 +1,13 @@
 (() => {
     "use strict";
 
-    const supabase = window.messagerieSupabase;
+    const SUPABASE_URL = "https://ysdhfkeeaibwvcyfmlnf.supabase.co";
+    const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGhma2VlYWlid3ZjeWZtbG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0ODE1ODgsImV4cCI6MjEwNzA1NzU4OH0.13fDNjWCjanXiy8A7vhiH389NnjgpJiM8wQemwDtVkI";
+
+    // Share one client between authentication and chat
+    const supabase = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) || null;
+    window.messagerieSupabase = supabase;
 
     // 1. General translations
     const traductions = {
