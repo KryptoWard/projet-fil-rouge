@@ -1,10 +1,7 @@
 (() => {
     "use strict";
 
-    const SUPABASE_URL = "https://ysdhfkeeaibwvcyfmlnf.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGhma2VlYWlid3ZjeWZtbG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0ODE1ODgsImV4cCI6MjEwNzA1NzU4OH0.13fDNjWCjanXiy8A7vhiH389NnjgpJiM8wQemwDtVkI";
-    // Client creation
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = window.messagerieSupabase;
 
     // 1. General translations
     const traductions = {
@@ -15,11 +12,16 @@
             conversations: "Conversations",
             contacts: "Contacts",
             settings: "Paramètres",
+            account_session: "Session",
+            logout: "Se déconnecter",
+            logging_out: "Déconnexion…",
+            logout_error: "La déconnexion a échoué. Vérifie ta connexion et réessaie.",
             pause_leaves: "Mettre les feuilles en pause",
             play_leaves: "Reprendre les feuilles",
             // Weather card settings and conversation controls
             weather_settings_title: "Ville pour la météo",
-            weather_settings_description: "Choisis la ville utilisée pour les cartes météo. Elle sera enregistrée dans ce navigateur.",
+            weather_settings_description:
+                "Choisis la ville utilisée pour les cartes météo. Elle sera enregistrée dans ce navigateur.",
             weather_city_label: "Ville",
             weather_search: "Rechercher",
             weather_city_not_set: "Aucune ville enregistrée.",
@@ -61,11 +63,16 @@
             conversations: "Conversations",
             contacts: "Contacts",
             settings: "Settings",
+            account_session: "Session",
+            logout: "Sign out",
+            logging_out: "Signing out…",
+            logout_error: "Sign out failed. Check your connection and try again.",
             pause_leaves: "Pause falling leaves",
             play_leaves: "Resume falling leaves",
             // Weather card settings and conversation controls
             weather_settings_title: "Weather city",
-            weather_settings_description: "Choose the city used for weather cards. It will be saved in this browser.",
+            weather_settings_description:
+                "Choose the city used for weather cards. It will be saved in this browser.",
             weather_city_label: "City",
             weather_search: "Search",
             weather_city_not_set: "No city saved.",
@@ -105,14 +112,19 @@
     // 2. Error validation messages
     const messagesErreurs = {
         fr: {
-            nom_majuscule: "Le nom doit commencer par une majuscule et comporter au moins 2 lettres.",
-            prenom_majuscule: "Le prénom doit commencer par une majuscule et comporter au moins 2 lettres.",
+            nom_majuscule:
+                "Le nom doit commencer par une majuscule et comporter au moins 2 lettres.",
+            prenom_majuscule:
+                "Le prénom doit commencer par une majuscule et comporter au moins 2 lettres.",
             mdp_longueur: "Le mot de passe doit comporter au moins 8 caractères.",
-            mdp_special: "Le mot de passe doit contenir au moins un chiffre ou un caractère spécial."
+            mdp_special:
+                "Le mot de passe doit contenir au moins un chiffre ou un caractère spécial."
         },
         en: {
-            nom_majuscule: "Last name must start with an uppercase letter and have at least 2 characters.",
-            prenom_majuscule: "First name must start with an uppercase letter and have at least 2 characters.",
+            nom_majuscule:
+                "Last name must start with an uppercase letter and have at least 2 characters.",
+            prenom_majuscule:
+                "First name must start with an uppercase letter and have at least 2 characters.",
             mdp_longueur: "Password must be at least 8 characters long.",
             mdp_special: "Password must include at least one number or special character."
         }
@@ -137,14 +149,14 @@
         const textes = traductions[langue] || traductions.fr;
         document.documentElement.lang = langue;
 
-        document.querySelectorAll("[data-i18n]").forEach((element) => {
+        document.querySelectorAll("[data-i18n]").forEach(element => {
             const cle = element.dataset.i18n;
             if (Object.prototype.hasOwnProperty.call(textes, cle)) {
                 element.textContent = textes[cle];
             }
         });
 
-        document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
             const cle = element.dataset.i18nPlaceholder;
             if (Object.prototype.hasOwnProperty.call(textes, cle)) {
                 element.placeholder = textes[cle];
@@ -157,7 +169,10 @@
         }
 
         if (boutonPauseFeuilles) {
-            const clePause = boutonPauseFeuilles.getAttribute("aria-pressed") === "true" ? "play_leaves" : "pause_leaves";
+            const clePause =
+                boutonPauseFeuilles.getAttribute("aria-pressed") === "true"
+                    ? "play_leaves"
+                    : "pause_leaves";
             boutonPauseFeuilles.setAttribute("aria-label", textes[clePause]);
             boutonPauseFeuilles.title = textes[clePause];
         }
@@ -188,6 +203,35 @@
     }
 
     appliquerLangue(langueActuelle);
+
+    // Sign out of this browser and redirect only after success
+    const boutonDeconnexion = document.querySelector("#logout-button");
+    if (boutonDeconnexion) {
+        boutonDeconnexion.addEventListener("click", async () => {
+            if (boutonDeconnexion.disabled) return;
+            const libelle = boutonDeconnexion.querySelector("[data-i18n]");
+            const erreurDeconnexion = document.querySelector("#logout-error");
+            boutonDeconnexion.disabled = true;
+            boutonDeconnexion.setAttribute("aria-busy", "true");
+            erreurDeconnexion.hidden = true;
+            libelle.dataset.i18n = "logging_out";
+            libelle.textContent = traductions[langueActuelle].logging_out;
+
+            try {
+                if (!supabase) throw new Error("Auth unavailable");
+                const { error } = await supabase.auth.signOut({ scope: "local" });
+                if (error) throw error;
+                window.location.replace("index.html");
+            } catch (erreur) {
+                erreurDeconnexion.textContent = traductions[langueActuelle].logout_error;
+                erreurDeconnexion.hidden = false;
+                libelle.dataset.i18n = "logout";
+                libelle.textContent = traductions[langueActuelle].logout;
+                boutonDeconnexion.disabled = false;
+                boutonDeconnexion.removeAttribute("aria-busy");
+            }
+        });
+    }
 
     // 3. Registration form validation
     // Retrieving DOM elements
@@ -221,12 +265,20 @@
 
     function validerNom() {
         if (!inputNom) return true;
-        return validerChamp(inputNom, regexNom.test(inputNom.value.trim()), getMsgs().nom_majuscule);
+        return validerChamp(
+            inputNom,
+            regexNom.test(inputNom.value.trim()),
+            getMsgs().nom_majuscule
+        );
     }
 
     function validerPrenom() {
         if (!inputPrenom) return true;
-        return validerChamp(inputPrenom, regexNom.test(inputPrenom.value.trim()), getMsgs().prenom_majuscule);
+        return validerChamp(
+            inputPrenom,
+            regexNom.test(inputPrenom.value.trim()),
+            getMsgs().prenom_majuscule
+        );
     }
 
     function validerMdp() {
@@ -248,6 +300,7 @@
     if (inputMdp) inputMdp.addEventListener("input", validerMdp);
 
     // Fonction d'inscription Supabase
+
     async function inscrireUtilisateur(email, motDePasse, nom, prenom) {
         try {
             const { data, error } = await supabase.auth.signUp({
@@ -266,8 +319,15 @@
                 return;
             }
 
-            alert("Compte créé avec succès !");
-            window.location.href = "conversations.html";
+            if (data.session) {
+                window.location.href = "conversations.html";
+            } else {
+                alert(
+                    document.documentElement.lang === "en"
+                        ? "Check your email to confirm your account before signing in."
+                        : "Vérifie tes e-mails pour confirmer ton compte avant de te connecter."
+                );
+            }
         } catch (err) {
             console.error("Erreur inattendue :", err);
         }
@@ -275,7 +335,7 @@
 
     // Gestion de la soumission de l'inscription
     if (formInscription) {
-        formInscription.addEventListener("submit", async (evenement) => {
+        formInscription.addEventListener("submit", async evenement => {
             evenement.preventDefault();
 
             const nomOk = validerNom();
@@ -300,6 +360,7 @@
     }
 
     // Fonction de connexion Supabase
+
     async function connecterUtilisateur(email, motDePasse) {
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
@@ -320,12 +381,9 @@
 
     // Gestion de la soumission de la connexion
     if (formConnexion) {
-        formConnexion.addEventListener("submit", async (evenement) => {
+        formConnexion.addEventListener("submit", async evenement => {
             evenement.preventDefault();
-            await connecterUtilisateur(
-                inputLoginEmail.value,
-                inputLoginMdp.value
-            );
+            await connecterUtilisateur(inputLoginEmail.value, inputLoginMdp.value);
         });
     }
 })();

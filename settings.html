@@ -1,72 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title data-i18n="settings_page_title">Paramètres</title>
-    <link rel="stylesheet" href="src/css/styles.css">
-</head>
-<body>
-    <header class="barre-navigation">
-        <h1 class="marque">
-            <a href="index.html">
-                <img src="src/assets/svg/logo-messagerie.svg" alt="">
-                <span data-i18n="brand">Messagerie instantanée</span>
-            </a>
-        </h1>
-        <nav class="navigation-principale" aria-label="Navigation principale">
-            <ul>
-                <li>
-                    <a href="conversations.html">
-                        <img src="src/assets/svg/conversations.svg" alt="">
-                        <span data-i18n="conversations">Conversations</span>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title data-i18n="settings_page_title">Paramètres</title>
+        <link rel="stylesheet" href="src/css/styles.css" />
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    </head>
+    <body>
+        <header class="barre-navigation">
+            <h1 class="marque">
+                <a href="index.html">
+                    <img src="src/assets/svg/logo-messagerie.svg" alt="" />
+                    <span data-i18n="brand">Messagerie instantanée</span>
+                </a>
+            </h1>
+            <nav class="navigation-principale" aria-label="Navigation principale">
+                <ul>
+                    <li>
+                        <a href="conversations.html">
+                            <img src="src/assets/svg/conversations.svg" alt="" />
+                            <span data-i18n="conversations">Conversations</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="contact.html">
+                            <img src="src/assets/svg/contacts.svg" alt="" />
+                            <span data-i18n="contacts">Contacts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html" aria-current="page">
+                            <img src="src/assets/svg/parametres.svg" alt="" />
+                            <span data-i18n="settings">Paramètres</span>
+                        </a>
+                    </li>
+                    <li>
+                        <button
+                            type="button"
+                            class="bouton-langue"
+                            id="langue-switch"
+                            aria-label="Changer la langue d’affichage"
+                        >
+                            English
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            type="button"
+                            class="pause-feuilles"
+                            aria-label="Mettre les feuilles en pause"
+                            title="Mettre les feuilles en pause"
+                            aria-pressed="false"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <g class="icone-pause">
+                                    <rect x="6" y="5" width="4" height="14" rx="1.5" />
+                                    <rect x="14" y="5" width="4" height="14" rx="1.5" />
+                                </g>
+                                <path
+                                    class="icone-reprise"
+                                    d="M8 5.8c0-.8.9-1.3 1.6-.9l9.1 6.2c.6.4.6 1.3 0 1.7l-9.1 6.2c-.7.5-1.6-.1-1.6-.9z"
+                                />
+                            </svg>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <div class="feuilles-automne" aria-hidden="true"></div>
+        <main>
+            <section>
+                <h2 data-i18n="settings_page_title">Paramètres</h2>
+                <!-- Let the user choose a default city for weather cards -->
+                <form id="weather-city-form" class="weather-city-form">
+                    <h3 data-i18n="weather_settings_title">Ville pour la météo</h3>
+                    <p data-i18n="weather_settings_description">
+                        Choisis la ville utilisée pour les cartes météo. Elle sera enregistrée dans
+                        ce navigateur.
+                    </p>
+                    <label for="weather-city" data-i18n="weather_city_label">Ville</label>
+                    <div class="weather-city-search">
+                        <input
+                            type="search"
+                            id="weather-city"
+                            name="city"
+                            autocomplete="off"
+                            required
+                        />
+                        <button type="submit" data-i18n="weather_search">Rechercher</button>
+                    </div>
+                    <p
+                        id="weather-city-current"
+                        aria-live="polite"
+                        data-i18n="weather_city_not_set"
+                    >
+                        Aucune ville enregistrée.
+                    </p>
+                    <ul
+                        id="weather-city-results"
+                        class="weather-city-results"
+                        aria-label="Résultats des villes"
+                    ></ul>
+                </form>
+                <!-- Credit the weather data provider and its open data licence -->
+                <p class="weather-attribution">
+                    <span data-i18n="weather_attribution">Données météo fournies par</span>
+                    <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">
+                        Open-Meteo
                     </a>
-                </li>
-                <li>
-                    <a href="contact.html">
-                        <img src="src/assets/svg/contacts.svg" alt="">
-                        <span data-i18n="contacts">Contacts</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="settings.html">
-                        <img src="src/assets/svg/parametres.svg" alt="">
-                        <span data-i18n="settings">Paramètres</span>
-                    </a>
-                </li>
-                <li><button type="button" class="bouton-langue" id="langue-switch" aria-label="Changer la langue d’affichage">English</button></li>
-                <li><button type="button" class="pause-feuilles" aria-label="Mettre les feuilles en pause" title="Mettre les feuilles en pause" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="icone-pause"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></g><path class="icone-reprise" d="M8 5.8c0-.8.9-1.3 1.6-.9l9.1 6.2c.6.4.6 1.3 0 1.7l-9.1 6.2c-.7.5-1.6-.1-1.6-.9z"/></svg></button></li>
-            </ul>
-        </nav>
-    </header>
-    <div class="feuilles-automne" aria-hidden="true"></div>
-    <main>
-        <section>
-            <h2 data-i18n="settings_page_title">Paramètres</h2>
-            <!-- Let the user choose a default city for weather cards -->
-            <form id="weather-city-form" class="weather-city-form">
-                <h3 data-i18n="weather_settings_title">Ville pour la météo</h3>
-                <p data-i18n="weather_settings_description">Choisis la ville utilisée pour les cartes météo. Elle sera enregistrée dans ce navigateur.</p>
-                <label for="weather-city" data-i18n="weather_city_label">Ville</label>
-                <div class="weather-city-search">
-                    <input type="search" id="weather-city" name="city" autocomplete="off" required>
-                    <button type="submit" data-i18n="weather_search">Rechercher</button>
-                </div>
-                <p id="weather-city-current" aria-live="polite" data-i18n="weather_city_not_set">Aucune ville enregistrée.</p>
-                <ul id="weather-city-results" class="weather-city-results" aria-label="Résultats des villes"></ul>
-            </form>
-            <!-- Credit the weather data provider and its open data licence -->
-            <p class="weather-attribution">
-                <span data-i18n="weather_attribution">Données météo fournies par</span>
-                <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>
-                <span>CC BY 4.0</span>
-            </p>
-        </section>
-    </main>
-    <footer>
-    </footer>
-    <script src="src/js/app.js"></script>
-    <script src="src/js/automn.js"></script>
-    <script src="src/js/weather.js"></script>
-</body>
+                    <span>CC BY 4.0</span>
+                </p>
+                <!-- End the current browser session through Supabase Auth -->
+                <section class="account-session" aria-labelledby="account-session-heading">
+                    <h3 id="account-session-heading" data-i18n="account_session">Session</h3>
+                    <button type="button" id="logout-button" class="logout-button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M10 4H4v16h6M9 12h11m-4-4 4 4-4 4" />
+                        </svg>
+                        <span data-i18n="logout">Se déconnecter</span>
+                    </button>
+                    <p
+                        id="logout-error"
+                        class="logout-error"
+                        role="alert"
+                        data-i18n="logout_error"
+                        hidden
+                    >
+                        La déconnexion a échoué. Vérifie ta connexion et réessaie.
+                    </p>
+                </section>
+            </section>
+        </main>
+
+        <script src="src/js/supabase-client.js"></script>
+        <script src="src/js/app.js"></script>
+        <script src="src/js/automn.js"></script>
+        <script src="src/js/weather.js"></script>
+    </body>
 </html>

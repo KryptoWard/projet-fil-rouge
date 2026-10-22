@@ -30,8 +30,10 @@
             cityMissing: "Choisis d’abord une ville dans les paramètres ou écris /meteo [ville].",
             loading: "Récupération de la météo…",
             weatherError: "La météo est momentanément indisponible. Réessaie plus tard.",
-            cardPosted: "Carte météo ajoutée à la conversation sur cet appareil.",
-            messagePosted: "Message ajouté à la conversation sur cet appareil.",
+            cardPosted: "Carte météo envoyée.",
+            messagePosted: "Message envoyé.",
+            messageError:
+                "Le message n’a pas pu être enregistré. Réessaie lorsque la connexion sera rétablie.",
             messageEmpty: "Écris un message avant de l’envoyer.",
             chooseCity: "Choisir cette ville",
             currentWeather: "MÉTÉO ACTUELLE",
@@ -66,8 +68,10 @@
             cityMissing: "Choose a city in Settings or type /meteo [city].",
             loading: "Getting the current weather…",
             weatherError: "The weather service is unavailable right now. Try again later.",
-            cardPosted: "Weather card added to this conversation on this device.",
-            messagePosted: "Message added to this conversation on this device.",
+            cardPosted: "Weather card sent.",
+            messagePosted: "Message sent.",
+            messageError:
+                "The message could not be saved. Try again when the connection is restored.",
             messageEmpty: "Write a message before sending it.",
             chooseCity: "Choose this city",
             currentWeather: "CURRENT WEATHER",
@@ -108,6 +112,7 @@
     }
 
     // Read the preferred city from this browser without failing when storage is blocked
+
     function readSavedCity() {
         try {
             return JSON.parse(window.localStorage.getItem(storageKey) || "null");
@@ -125,6 +130,7 @@
     }
 
     // Look up a city name and return matching places with coordinates
+
     async function searchCities(query) {
         const language = enAnglais() ? "en" : "fr";
         const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
@@ -139,7 +145,7 @@
     // Save the selected coordinates locally for the weather button
     if (elements.cityForm) {
         showSavedCity();
-        elements.cityForm.addEventListener("submit", async (event) => {
+        elements.cityForm.addEventListener("submit", async event => {
             event.preventDefault();
             const query = elements.cityInput.value.trim();
             if (!query) return;
@@ -155,7 +161,7 @@
                 }
 
                 elements.cityCurrent.textContent = "";
-                cities.forEach((city) => {
+                cities.forEach(city => {
                     const item = document.createElement("li");
                     const button = document.createElement("button");
                     button.type = "button";
@@ -188,6 +194,7 @@
     }
 
     // Match each WMO code to a short description and a weather icon style
+
     function describeWeather(code) {
         const words = strings();
         if (code === 0) return { label: words.clear, icon: "clear" };
@@ -206,9 +213,12 @@
     }
 
     // Use inline SVG shapes so the weather image stays self contained on GitHub Pages
+
     function weatherIconMarkup(style) {
-        const cloud = '<path class="weather-cloud" d="M24 65h47a15 15 0 0 0 0-30 23 23 0 0 0-44-4A17 17 0 0 0 24 65Z"/>';
-        const sun = '<circle class="weather-sun" cx="43" cy="35" r="15"/><path class="weather-sun-rays" d="M43 9v7m0 38v7M17 35h7m38 0h7M25 17l5 5m27 27 5 5m0-37-5 5M30 48l-5 5"/>';
+        const cloud =
+            '<path class="weather-cloud" d="M24 65h47a15 15 0 0 0 0-30 23 23 0 0 0-44-4A17 17 0 0 0 24 65Z"/>';
+        const sun =
+            '<circle class="weather-sun" cx="43" cy="35" r="15"/><path class="weather-sun-rays" d="M43 9v7m0 38v7M17 35h7m38 0h7M25 17l5 5m27 27 5 5m0-37-5 5M30 48l-5 5"/>';
         const symbols = {
             clear: sun,
             "partly-cloudy": `${sun}${cloud}`,
@@ -223,6 +233,7 @@
     }
 
     // Request current conditions for the chosen coordinates
+
     async function getCurrentWeather(city) {
         const url = new URL("https://api.open-meteo.com/v1/forecast");
         url.search = new URLSearchParams({
@@ -241,6 +252,7 @@
     }
 
     // Escape city names and labels before placing them inside SVG text elements
+
     function escapeXml(value) {
         return String(value)
             .replace(/&/g, "&amp;")
@@ -251,6 +263,7 @@
     }
 
     // Create a shareable SVG image with the city, conditions, and current values
+
     function createWeatherCard(city, weather) {
         const words = strings();
         const condition = describeWeather(weather.weather_code);
@@ -308,7 +321,7 @@
         image.height = 360;
 
         const article = document.createElement("article");
-        article.className = "weather-card local-message";
+        article.className = "weather-card";
         article.append(image);
 
         // Keep a clickable attribution alongside the credit drawn into the image
@@ -322,16 +335,43 @@
         return article;
     }
 
-    // Keep every message inside a valid list item in the conversation thread
-    function appendMessage(article) {
-        const item = document.createElement("li");
-        item.append(article);
-        elements.messageList.append(item);
-        item.scrollIntoView({ block: "nearest" });
+    // Persist structured weather snapshots and render them without external image URLs.
+    window.weatherCards = {
+        render: createWeatherCard,
+        valid(snapshot) {
+            if (
+                !snapshot ||
+                typeof snapshot.city?.name !== "string" ||
+                !snapshot.city.name.length ||
+                snapshot.city.name.length > 120
+            )
+                return false;
+            if (
+                ![snapshot.city.admin1, snapshot.city.country].every(
+                    value => value == null || (typeof value === "string" && value.length <= 120)
+                )
+            )
+                return false;
+            const weather = snapshot.weather;
+            return (
+                weather &&
+                ["temperature_2m", "apparent_temperature", "wind_speed_10m", "weather_code"].every(
+                    key => Number.isFinite(weather[key])
+                ) &&
+                (weather.time == null ||
+                    (typeof weather.time === "string" && weather.time.length <= 40))
+            );
+        }
+    };
+
+    function busy(button, value) {
+        button.dataset.busy = String(value);
+        button.disabled = value || !window.conversationView?.ready;
     }
 
-    // Add the card to the local thread using either the saved city or a command argument
-    async function postWeatherCard(cityQuery = "") {
+    // Save the current weather in the channel selected before the request began
+
+    async function postWeatherCard(cityQuery = "", channelId = window.conversationView?.activeId) {
         let city = readSavedCity();
         const query = cityQuery.trim();
 
@@ -339,7 +379,8 @@
             const matches = await searchCities(query);
             city = matches[0] || null;
             if (!city) {
-                setStatus(strings().cityNotFound);
+                if (window.conversationView?.activeId === channelId)
+                    setStatus(strings().cityNotFound);
                 return false;
             }
         }
@@ -350,32 +391,56 @@
         }
 
         const weather = await getCurrentWeather(city);
-        appendMessage(createWeatherCard(city, weather));
-        setStatus(strings().cardPosted);
+        const snapshot = {
+            city: { name: city.name, admin1: city.admin1, country: city.country },
+            weather: {
+                temperature_2m: weather.temperature_2m,
+                apparent_temperature: weather.apparent_temperature,
+                wind_speed_10m: weather.wind_speed_10m,
+                weather_code: weather.weather_code,
+                time: weather.time
+            }
+        };
+        if (!window.weatherCards.valid(snapshot)) throw new Error("Invalid weather snapshot");
+        await window.conversationView.send(
+            { kind: "weather", body: null, weather: snapshot },
+            channelId
+        );
+        if (!window.conversationView || window.conversationView.activeId === channelId)
+            setStatus(strings().cardPosted);
         return true;
     }
 
     // Let the compact button post the configured city's weather card immediately
     if (elements.weatherButton) {
         elements.weatherButton.addEventListener("click", async () => {
-            elements.weatherButton.disabled = true;
+            if (!window.conversationView?.ready || elements.weatherButton.dataset.busy === "true")
+                return;
+            const channelId = window.conversationView?.activeId;
+            busy(elements.weatherButton, true);
             setStatus(strings().loading);
 
             try {
-                await postWeatherCard();
+                await postWeatherCard("", channelId);
             } catch (error) {
-                setStatus(strings().weatherError);
+                if (window.conversationView?.activeId === channelId)
+                    setStatus(strings().messageError);
             } finally {
-                elements.weatherButton.disabled = false;
+                busy(elements.weatherButton, false);
             }
         });
     }
 
     // Handle /meteo and /meteo city before treating the input as a regular message
     if (elements.messageForm) {
-        elements.messageForm.addEventListener("submit", async (event) => {
+        elements.messageForm.addEventListener("submit", async event => {
             event.preventDefault();
-            const message = elements.messageInput.value.trim();
+            if (!window.conversationView?.ready) return;
+            const sendButton = elements.messageForm.querySelector('button[type="submit"]');
+            if (sendButton.dataset.busy === "true") return;
+            const channelId = window.conversationView?.activeId;
+            const originalInput = elements.messageInput.value;
+            const message = originalInput.trim();
             if (!message) {
                 setStatus(strings().messageEmpty);
                 return;
@@ -383,31 +448,41 @@
 
             const weatherCommand = message.match(/^\/meteo(?:\s+(.+))?$/i);
             if (weatherCommand) {
-                const sendButton = elements.messageForm.querySelector('button[type="submit"]');
-                sendButton.disabled = true;
+                busy(sendButton, true);
                 setStatus(strings().loading);
 
                 try {
-                    const posted = await postWeatherCard(weatherCommand[1] || "");
-                    if (posted) elements.messageInput.value = "";
+                    const posted = await postWeatherCard(weatherCommand[1] || "", channelId);
+                    if (posted) {
+                        if (window.conversationView)
+                            window.conversationView.clearDraft(channelId, originalInput);
+                        else if (elements.messageInput.value === originalInput)
+                            elements.messageInput.value = "";
+                    }
                 } catch (error) {
-                    setStatus(strings().weatherError);
+                    if (window.conversationView?.activeId === channelId)
+                        setStatus(strings().messageError);
                 } finally {
-                    sendButton.disabled = false;
+                    busy(sendButton, false);
                 }
                 return;
             }
 
-            const article = document.createElement("article");
-            article.className = "local-message text-message";
-            const heading = document.createElement("h3");
-            const paragraph = document.createElement("p");
-            heading.textContent = strings().me;
-            paragraph.textContent = message;
-            article.append(heading, paragraph);
-            appendMessage(article);
-            elements.messageInput.value = "";
-            setStatus(strings().messagePosted);
+            busy(sendButton, true);
+            try {
+                await window.conversationView.send(
+                    { kind: "text", body: message, weather: null },
+                    channelId
+                );
+                window.conversationView.clearDraft(channelId, originalInput);
+                if (window.conversationView.activeId === channelId)
+                    setStatus(strings().messagePosted);
+            } catch (error) {
+                if (window.conversationView.activeId === channelId)
+                    setStatus(strings().messageError);
+            } finally {
+                busy(sendButton, false);
+            }
         });
     }
 })();

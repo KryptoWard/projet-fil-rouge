@@ -28,8 +28,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    padding: 16px clamp(20px, 5vw, 72px);
+    gap: 18px;
+    flex-wrap: wrap;
+    flex: 0 0 auto;
+    padding: 14px 28px;
     border-top: 4px solid var(--couleur-principale);
     border-bottom: 1px solid var(--couleur-bordure);
     background: var(--couleur-papier);
@@ -86,19 +88,29 @@ body {
     text-underline-offset: 4px;
 }
 
+.navigation-principale a[aria-current="page"] {
+    color: var(--couleur-principale);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
 /* Language and leaf controls */
 .bouton-langue,
 .pause-feuilles {
     min-height: 38px;
     padding: 7px 12px;
     border: 1px solid var(--couleur-bordure);
-    border-radius: 5px;
+    border-radius: 0;
     background: transparent;
     color: var(--couleur-texte);
     font: inherit;
     font-size: 0.88rem;
     cursor: pointer;
-    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
 }
 
 .bouton-langue:hover,
@@ -114,7 +126,7 @@ body {
     min-height: 38px;
     place-items: center;
     padding: 8px;
-    border-radius: 10px;
+    border-radius: 0;
     color: var(--couleur-principale);
 }
 
@@ -234,7 +246,9 @@ form button {
     font: inherit;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 160ms ease, transform 160ms ease;
+    transition:
+        background-color 160ms ease,
+        transform 160ms ease;
 }
 
 form button:hover {
@@ -437,7 +451,9 @@ form a {
 }
 
 @media (max-width: 560px) {
-    .message-list article.weather-card { width: 100%; }
+    .message-list article.weather-card {
+        width: 100%;
+    }
 }
 
 /* Falling leaves stay behind the controls and never capture clicks */
@@ -485,19 +501,37 @@ footer {
 
 /* Leaf fall, sway, and rotation animations */
 @keyframes chute {
-    from { transform: translate3d(0, -40px, 0); }
-    to { transform: translate3d(var(--derive), calc(100vh + 120px), 0); }
+    from {
+        transform: translate3d(0, -40px, 0);
+    }
+
+    to {
+        transform: translate3d(var(--derive), calc(100vh + 120px), 0);
+    }
 }
 
 @keyframes balancement {
-    from { transform: translateX(-22px) rotate(-18deg); }
-    to { transform: translateX(22px) rotate(18deg); }
+    from {
+        transform: translateX(-22px) rotate(-18deg);
+    }
+
+    to {
+        transform: translateX(22px) rotate(18deg);
+    }
 }
 
 @keyframes tourbillon {
-    0% { transform: rotate(0deg) rotateY(0deg); }
-    50% { transform: rotate(180deg) rotateY(65deg); }
-    100% { transform: rotate(360deg) rotateY(0deg); }
+    0% {
+        transform: rotate(0deg) rotateY(0deg);
+    }
+
+    50% {
+        transform: rotate(180deg) rotateY(65deg);
+    }
+
+    100% {
+        transform: rotate(360deg) rotateY(0deg);
+    }
 }
 
 .feuilles-en-pause .feuille,
@@ -509,20 +543,20 @@ footer {
 /* Responsive layout */
 /* Show fewer leaves on small screens */
 @media (max-width: 700px) {
-    .feuille:nth-child(n + 13) { display: none; }
+    .feuille:nth-child(n + 13) {
+        display: none;
+    }
 }
 
-/* Stack the header on narrow screens */
+/* Tighten the content layout on narrow screens */
 @media (max-width: 560px) {
-    .barre-navigation {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
+    main {
+        margin-top: 32px;
     }
 
-    .navigation-principale ul { gap: 8px 14px; }
-    main { margin-top: 32px; }
-    .page-conversations { grid-template-columns: 1fr; }
+    .page-conversations {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Respect the user's reduced motion preference */
@@ -537,5 +571,106 @@ footer {
         transition: none;
     }
 
-    .feuille { display: none; }
+    .feuille {
+        display: none;
+    }
+}
+
+/* Use the same navigation at every viewport size on all pages */
+@media (max-width: 600px) {
+    .barre-navigation {
+        padding: 10px 14px;
+        gap: 8px;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .marque a {
+        font-size: 0.95rem;
+    }
+
+    .marque img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .navigation-principale ul {
+        gap: 7px 12px;
+    }
+
+    .navigation-principale a {
+        font-size: 0.75rem;
+        gap: 4px;
+    }
+
+    .navigation-principale a img {
+        width: 15px;
+        height: 15px;
+    }
+
+    .bouton-langue {
+        font-size: 0.72rem;
+        padding: 5px 7px;
+    }
+}
+
+/* Account controls keep the same straight autumn borders */
+.account-session {
+    margin-top: 28px;
+    padding: 22px 0 0;
+    border: 0;
+    border-top: 1px solid var(--couleur-bordure);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.account-session h3 {
+    margin: 0 0 14px;
+    font-size: 1rem;
+}
+
+.logout-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 42px;
+    padding: 9px 14px;
+    border: 1px solid var(--couleur-principale);
+    border-radius: 0;
+    background: transparent;
+    color: var(--couleur-principale);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.logout-button svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+}
+
+.logout-button:hover {
+    background: #efe0d0;
+}
+
+.logout-button:focus-visible {
+    outline: 2px solid var(--couleur-principale);
+    outline-offset: 3px;
+}
+
+.logout-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.logout-error {
+    margin: 12px 0 0;
+    color: #933e27;
+    font-size: 0.85rem;
 }

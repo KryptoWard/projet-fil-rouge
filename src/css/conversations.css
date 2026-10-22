@@ -1,0 +1,656 @@
+/* Keep conversation layout independent from account forms */
+.conversation-page {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.conversation-page .page-conversations {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 0;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: none;
+    background: var(--couleur-papier);
+}
+
+.channel-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 28px 18px 18px;
+    background: var(--couleur-fond) url("../assets/svg/rameau-automne.svg") no-repeat left bottom
+        78px / 220px auto;
+    border-right: 1px solid #b9a78e;
+    min-height: 0;
+    min-width: 0;
+}
+
+.sidebar-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 8px;
+}
+
+.sidebar-heading h2 {
+    margin: 3px 0 0;
+    font-size: 1.4rem;
+    letter-spacing: -0.03em;
+}
+
+.local-badge {
+    font-size: 0.7rem;
+    color: #62664b;
+    background: #dde0cb;
+    border: 1px solid #b1b895;
+    border-radius: 0;
+    padding: 3px 7px;
+}
+
+.channel-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid #d9cebd;
+    border-radius: 0;
+    background: var(--couleur-papier);
+}
+
+.channel-search svg {
+    width: 17px;
+    height: 17px;
+    flex: none;
+    fill: none;
+    stroke: #756b5f;
+    stroke-width: 1.7;
+}
+
+.channel-search input {
+    min-width: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 0.8rem;
+    color: var(--couleur-texte);
+    outline-offset: 6px;
+}
+
+.channel-sidebar nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.channel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 5px;
+}
+
+.channel-list button {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    border: 1px solid transparent;
+    border-radius: 0;
+    padding: 11px 12px;
+    color: #665e52;
+    background: transparent;
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.channel-list button::before {
+    content: "#";
+    color: #827564;
+    font-size: 1.2rem;
+}
+
+.channel-list button span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.channel-list button:hover {
+    background: #e9e0d2;
+}
+
+.channel-list button[aria-current="true"] {
+    background: #e4d0bb;
+    border-left: 3px solid var(--couleur-principale);
+    padding-left: 10px;
+    color: #783b26;
+    font-weight: 700;
+}
+
+.channel-list button[aria-current="true"]::before {
+    color: #a64f32;
+}
+
+.new-channel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: transparent;
+    border: 1px solid #ad987a;
+    border-radius: 0;
+    padding: 11px;
+    color: #625947;
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.new-channel:hover {
+    background: #e9e0d2;
+}
+
+.new-channel > span:first-child {
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.page-conversations > .chat-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--couleur-papier);
+    box-shadow: none;
+}
+
+.chat-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 30px;
+    border-bottom: 1px solid #c7b69c;
+    background: #eee2ce;
+    flex: none;
+}
+
+.channel-symbol {
+    font-size: 1.7rem;
+    color: var(--couleur-principale);
+}
+
+.channel-heading-text {
+    min-width: 0;
+}
+
+.chat-heading h2 {
+    font-size: 1.1rem;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.chat-heading p {
+    margin: 2px 0 0;
+    font-size: 0.8rem;
+    color: #756b5f;
+    overflow-wrap: anywhere;
+}
+
+.channel-toggle {
+    display: none;
+}
+
+.thread-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 28px 32px;
+}
+
+.thread-welcome {
+    padding: 24px 0 28px;
+    max-width: 520px;
+    border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.welcome-symbol {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border-radius: 0;
+    color: #8d7355;
+    font-size: 2rem;
+}
+
+.thread-welcome h3 {
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    margin: 18px 0 8px;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+}
+
+.thread-welcome p {
+    color: #756b5f;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin: 0;
+}
+
+.chat-panel .message-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+}
+
+.chat-panel .message-list article {
+    width: 100%;
+    max-width: 100%;
+    padding: 14px 18px;
+    border: 0;
+    border-left: 2px solid #bb8d5a;
+    border-bottom: 1px solid #d9c9af;
+    border-radius: 0;
+    box-shadow: none;
+    background: #f7f1e7;
+}
+
+.chat-panel .message-list article.local-message {
+    margin-left: 0;
+    background: #e9e8d7;
+    border-left-color: var(--couleur-secondaire);
+    border-bottom-color: #d1d1b9;
+    border-radius: 0;
+}
+
+.chat-panel .message-list article h3 {
+    color: #626b45;
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+}
+
+.chat-panel .message-list article p {
+    font-size: 0.93rem;
+    line-height: 1.65;
+}
+
+.message-time {
+    display: block;
+    text-align: right;
+    font-size: 0.65rem;
+    color: #756b5f;
+    margin-top: 7px;
+}
+
+.chat-panel .message-list article.weather-card {
+    width: min(460px, 95%);
+    max-width: 95%;
+    padding: 0;
+    overflow: hidden;
+}
+
+.chat-panel .weather-card .message-time {
+    padding: 0 14px 8px;
+}
+
+.chat-panel .weather-card h3 {
+    padding: 12px 14px 0;
+}
+
+.load-older {
+    margin: 0 0 16px;
+    padding: 7px 10px;
+    border: 1px solid var(--couleur-bordure);
+    background: var(--couleur-papier);
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.chat-error {
+    color: #933e27;
+    max-width: 60ch;
+}
+
+.channel-audience {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+}
+
+.chat-panel button:disabled,
+.new-channel:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.composer-wrap {
+    flex: none;
+    padding: 16px 26px 20px;
+    background: #ece0cb;
+    border-top: 1px solid #c7b69c;
+}
+
+.chat-panel .message-form {
+    display: block;
+    background: #fbf6eb;
+    border: 1px solid #bba486;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.chat-panel .message-form:focus-within {
+    border-color: var(--couleur-principale);
+    box-shadow: none;
+    outline: 1px solid var(--couleur-principale);
+}
+
+.chat-panel .message-form textarea {
+    display: block;
+    min-height: 65px;
+    max-height: 160px;
+    border: 0;
+    border-radius: 0;
+    padding: 16px;
+    resize: vertical;
+    background: transparent;
+    font-size: 0.9rem;
+}
+
+.chat-panel .message-form textarea:focus-visible {
+    outline: none;
+}
+
+.composer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px 12px;
+}
+
+.chat-panel .message-toolbar {
+    border: 0;
+    padding: 0;
+}
+
+.chat-panel .weather-share-button {
+    margin: 0;
+    border-color: #b9be9e;
+    background: #e7e9d8;
+    color: #535b3e;
+}
+
+.chat-panel .send-message {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 0;
+    font-size: 0.8rem;
+}
+
+.send-message svg,
+.channel-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linejoin: round;
+}
+
+.chat-panel .weather-status {
+    margin: 8px 4px 0;
+    font-size: 0.75rem;
+}
+
+.chat-panel .weather-status:empty {
+    display: none;
+}
+
+.channel-dialog {
+    width: min(440px, calc(100% - 32px));
+    border: 1px solid #bba486;
+    border-top: 4px solid var(--couleur-principale);
+    border-radius: 0;
+    padding: 28px;
+    color: var(--couleur-texte);
+    background: var(--couleur-papier);
+}
+
+.channel-dialog::backdrop {
+    background: #342e2766;
+}
+
+.channel-dialog h2 {
+    margin: 0 0 14px;
+    font-size: 1.3rem;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+#cancel-channel {
+    color: #625947;
+    border-color: #d2c5b2;
+    background: transparent;
+}
+
+#channel-error {
+    color: #a13f27;
+    font-size: 0.8rem;
+}
+
+.page-conversations button:focus-visible {
+    outline: 2px solid #a64f32;
+    outline-offset: 2px;
+}
+
+/* Collapse the channel list above the thread on smaller screens */
+@media (max-width: 800px) {
+    .conversation-page .page-conversations {
+        width: 100%;
+        margin: 0;
+        grid-template-columns: 210px minmax(0, 1fr);
+    }
+
+    .channel-sidebar {
+        padding: 20px 12px 14px;
+    }
+
+    .thread-scroll {
+        padding: 20px;
+    }
+
+    .chat-heading {
+        padding: 18px 20px;
+    }
+
+    .composer-wrap {
+        padding: 12px 16px 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .conversation-page .page-conversations {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        width: 100%;
+        border-width: 1px 0 0;
+        border-radius: 0;
+    }
+
+    .channel-sidebar {
+        display: none;
+        max-height: 45%;
+        flex: 0 0 auto;
+        border-right: 0;
+        border-bottom: 1px solid #d2c5b2;
+        gap: 12px;
+    }
+
+    .page-conversations.channels-open .channel-sidebar {
+        display: flex;
+    }
+
+    .channel-sidebar nav {
+        flex: 1 1 auto;
+    }
+
+    .page-conversations > .chat-panel {
+        flex: 1;
+    }
+
+    .channel-toggle {
+        display: grid;
+        place-items: center;
+        padding: 8px;
+        background: #f0eade;
+        color: #625947;
+        border: 1px solid #ddd3c3;
+        border-radius: 0;
+        cursor: pointer;
+    }
+
+    .chat-heading {
+        padding: 12px 16px;
+        gap: 10px;
+    }
+
+    .channel-symbol {
+        display: none;
+    }
+
+    .thread-welcome {
+        padding-top: 12px;
+    }
+
+    .composer-wrap {
+        padding: 8px 12px max(12px, env(safe-area-inset-bottom));
+    }
+
+    .thread-scroll {
+        padding: 16px;
+    }
+}
+
+/* Allow page scrolling when the keyboard leaves little vertical space */
+@media (max-height: 520px) {
+    .conversation-page {
+        height: auto;
+        min-height: 100dvh;
+        overflow: auto;
+    }
+
+    .conversation-page .page-conversations {
+        flex: none;
+        height: 520px;
+    }
+}
+
+/* Straight edges and paper surfaces carry the autumn theme */
+.page-conversations > .chat-panel {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.conversation-page .feuilles-automne {
+    position: absolute;
+    opacity: 0.2;
+    z-index: 0;
+}
+
+.chat-heading,
+.thread-scroll,
+.composer-wrap {
+    position: relative;
+    z-index: 1;
+}
+
+.channel-dialog input,
+.channel-dialog button,
+.chat-panel .weather-share-button {
+    border-radius: 0;
+}
+
+.welcome-symbol svg {
+    width: 40px;
+    height: 40px;
+}
+
+.chat-panel .text-message {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+}
+
+.chat-panel .text-message h3 {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.chat-panel .text-message p {
+    grid-column: 1 / -1;
+    grid-row: 2;
+}
+
+.chat-panel .text-message .message-time {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+}
+
+.channel-list button:hover {
+    border-left-color: #b68236;
+}
+
+.chat-panel .send-message:hover {
+    background: #85402b;
+    transform: none;
+}
+
+.chat-panel .weather-share-button:hover {
+    background: #d9ddc3;
+    transform: none;
+}
+
+@media (max-width: 600px) {
+    .channel-sidebar {
+        background-image: none;
+    }
+
+    .chat-panel .message-list article {
+        padding: 12px;
+    }
+
+    .chat-panel .message-list article.weather-card {
+        padding: 0;
+    }
+}
