@@ -1,7 +1,12 @@
 (() => {
     "use strict";
 
-    // 1. Traductions générales
+    const SUPABASE_URL = "https://ysdhfkeeaibwvcyfmlnf.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGhma2VlYWlid3ZjeWZtbG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0ODE1ODgsImV4cCI6MjEwNzA1NzU4OH0.13fDNjWCjanXiy8A7vhiH389NnjgpJiM8wQemwDtVkI";
+    // Client creation
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 1. General translations
     const traductions = {
         fr: {
             site_title: "Messagerie instantanée",
@@ -101,7 +106,7 @@
         }
     };
 
-    // 2. Messages d'erreurs de validation
+    // 2. Error validation messages
     const messagesErreurs = {
         fr: {
             nom_majuscule: "Le nom doit commencer par une majuscule et comporter au moins 2 lettres.",
@@ -128,7 +133,7 @@
             langueActuelle = langueEnregistree;
         }
     } catch (erreur) {
-        // Stockage désactivé
+        // Storage disabled
     }
 
     function appliquerLangue(langue) {
@@ -181,22 +186,27 @@
 
     appliquerLangue(langueActuelle);
 
-    // 3. Validation formulaire d'inscription
-    // Récupération éléments du DOM
-    const inscription = document.querySelector("main form");
+    // 3. Registration form validation
+    // Retrieving DOM elements
+    const formInscription = document.querySelector("#form-inscription");
     const inputNom = document.querySelector("#nom");
     const inputPrenom = document.querySelector("#prenom");
+    const inputEmail = document.querySelector("#email");
     const inputMdp = document.querySelector("#mdp");
 
-    const regexNom = /^[A-ZÀ-ÖØ-ß][a-zA-ZÀ-ÿ\s'-]{1,}$/; // Caractères pour prénom et nom, même avec accent, espace ou tiret
-    const regexSpecialOuChiffre = /[0-9!@#$%^&*(),.?":{}|<>_\-+=/\\~`]/; // Caractères spéciaux pour mot de passe
+    const formConnexion = document.querySelector("#form-connexion");
+    const inputLoginEmail = document.querySelector("#login-email");
+    const inputLoginMdp = document.querySelector("#login-mdp");
 
-    function getMsgs() { // Renvoie textes avec la bonne langue
+    const regexNom = /^[A-ZÀ-ÖØ-ß][a-zA-ZÀ-ÿ\s'-]{1,}$/;
+    const regexSpecialOuChiffre = /[0-9!@#$%^&*(),.?":{}|<>_\-+=/\\~`]/;
+
+    function getMsgs() {
         const lang = document.documentElement.lang || "fr";
         return messagesErreurs[lang] || messagesErreurs.fr;
     }
 
-    function validerChamp(input, conditionValide, messageErreur) { // Vérifie si les champs sont valides ou pas
+    function validerChamp(input, conditionValide, messageErreur) {
         if (!input) return true;
         if (!conditionValide) {
             input.setCustomValidity(messageErreur);
@@ -206,17 +216,17 @@
         return true;
     }
 
-    function Nom() {
+    function validerNom() {
         if (!inputNom) return true;
         return validerChamp(inputNom, regexNom.test(inputNom.value.trim()), getMsgs().nom_majuscule);
     }
 
-    function Prenom() {
+    function validerPrenom() {
         if (!inputPrenom) return true;
         return validerChamp(inputPrenom, regexNom.test(inputPrenom.value.trim()), getMsgs().prenom_majuscule);
     }
 
-    function Mdp() { // Vérifie que le mot de passe a au moins 8 caarctères et qu'il a un caractère spécial
+    function validerMdp() {
         if (!inputMdp) return true;
         const msgs = getMsgs();
         const valeur = inputMdp.value;
@@ -229,28 +239,90 @@
         }
         return validerChamp(inputMdp, true, "");
     }
-    
-    // Met à jour si l'erreur est réglée, donc écoute en temps réel
-    if (inputNom) inputNom.addEventListener("input", Nom); 
-    if (inputPrenom) inputPrenom.addEventListener("input", Prenom);
-    if (inputMdp) inputMdp.addEventListener("input", Mdp);
 
-    if (inscription) { // Envoie messages d'erreur si besoin
-        inscription.addEventListener("submit", (evenement) => {
-            const nomOk = Nom();
-            const prenomOk = Prenom();
-            const mdpOk = Mdp();
+    if (inputNom) inputNom.addEventListener("input", validerNom);
+    if (inputPrenom) inputPrenom.addEventListener("input", validerPrenom);
+    if (inputMdp) inputMdp.addEventListener("input", validerMdp);
+
+    // Fonction d'inscription Supabase
+    async function inscrireUtilisateur(email, motDePasse, nom, prenom) {
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: motDePasse,
+                options: {
+                    data: {
+                        first_name: prenom,
+                        last_name: nom
+                    }
+                }
+            });
+
+            if (error) {
+                alert("Erreur d'inscription : " + error.message);
+                return;
+            }
+
+            alert("Compte créé avec succès !");
+            window.location.href = "conversations.html";
+        } catch (err) {
+            console.error("Erreur inattendue :", err);
+        }
+    }
+
+    // Gestion de la soumission de l'inscription
+    if (formInscription) {
+        formInscription.addEventListener("submit", async (evenement) => {
+            evenement.preventDefault();
+
+            const nomOk = validerNom();
+            const prenomOk = validerPrenom();
+            const mdpOk = validerMdp();
 
             if (!nomOk) {
-                evenement.preventDefault(); // Bloque l'exécution d'une action
                 inputNom.reportValidity();
             } else if (!prenomOk) {
-                evenement.preventDefault();
                 inputPrenom.reportValidity();
             } else if (!mdpOk) {
-                evenement.preventDefault();
                 inputMdp.reportValidity();
+            } else {
+                await inscrireUtilisateur(
+                    inputEmail.value,
+                    inputMdp.value,
+                    inputNom.value,
+                    inputPrenom.value
+                );
             }
+        });
+    }
+
+    // Fonction de connexion Supabase
+    async function connecterUtilisateur(email, motDePasse) {
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: motDePasse
+            });
+
+            if (error) {
+                alert("Identifiants incorrects : " + error.message);
+                return;
+            }
+
+            window.location.href = "conversations.html";
+        } catch (err) {
+            console.error("Erreur de connexion :", err);
+        }
+    }
+
+    // Gestion de la soumission de la connexion
+    if (formConnexion) {
+        formConnexion.addEventListener("submit", async (evenement) => {
+            evenement.preventDefault();
+            await connecterUtilisateur(
+                inputLoginEmail.value,
+                inputLoginMdp.value
+            );
         });
     }
 })();
