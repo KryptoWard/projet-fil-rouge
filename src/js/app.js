@@ -27,8 +27,6 @@
             share_weather: "Partager une carte météo",
             weather_tool_label: "Météo",
             message_toolbar_label: "Options du message",
-            weather_command_hint: "Astuce : écris /meteo ou /meteo Montréal pour publier une carte.",
-            local_message_notice: "Les messages restent sur cet appareil jusqu’à la mise en place du backend.",
             create_account: "Créer un compte",
             last_name: "Nom",
             first_name: "Prénom",
@@ -75,8 +73,6 @@
             share_weather: "Share a weather card",
             weather_tool_label: "Weather",
             message_toolbar_label: "Message tools",
-            weather_command_hint: "Tip: type /meteo or /meteo Montreal to post a card.",
-            local_message_notice: "Messages stay on this device until the backend is added.",
             create_account: "Create an account",
             last_name: "Last name",
             first_name: "First name",
@@ -123,6 +119,7 @@
     };
 
     const boutonLangue = document.querySelector("#langue-switch");
+    const boutonPauseFeuilles = document.querySelector(".pause-feuilles");
     const boutonMeteo = document.querySelector("#share-weather");
     const barreOutilsMessage = document.querySelector("#message-toolbar");
     let langueActuelle = "fr";
@@ -157,6 +154,12 @@
         if (boutonLangue) {
             boutonLangue.textContent = textes.language_button;
             boutonLangue.setAttribute("aria-label", textes.change_language);
+        }
+
+        if (boutonPauseFeuilles) {
+            const clePause = boutonPauseFeuilles.getAttribute("aria-pressed") === "true" ? "play_leaves" : "pause_leaves";
+            boutonPauseFeuilles.setAttribute("aria-label", textes[clePause]);
+            boutonPauseFeuilles.title = textes[clePause];
         }
 
         // Keep the weather icon button accessible in the selected language

@@ -38,7 +38,7 @@
                     </a>
                 </li>
                 <li><button type="button" class="bouton-langue" id="langue-switch" aria-label="Changer la langue d’affichage">English</button></li>
-                <li><button type="button" class="pause-feuilles" aria-pressed="false" data-i18n="pause_leaves">Mettre les feuilles en pause</button></li>
+                <li><button type="button" class="pause-feuilles" aria-label="Mettre les feuilles en pause" title="Mettre les feuilles en pause" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="icone-pause"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></g><path class="icone-reprise" d="M8 5.8c0-.8.9-1.3 1.6-.9l9.1 6.2c.6.4.6 1.3 0 1.7l-9.1 6.2c-.7.5-1.6-.1-1.6-.9z"/></svg></button></li>
             </ul>
         </nav>
     </header>
@@ -105,14 +105,12 @@
                         <span data-i18n="weather_tool_label">Météo</span>
                     </button>
                 </div>
-                <p class="weather-command-hint" data-i18n="weather_command_hint">Astuce : écris /meteo ou /meteo Montréal pour publier une carte.</p>
                 <!-- Keep message submission separate from the content tools -->
                 <div class="message-actions">
                     <button type="submit" data-i18n="send">Envoyer</button>
                 </div>
             </form>
             <p id="weather-status" class="weather-status" aria-live="polite"></p>
-            <p class="local-message-notice" data-i18n="local_message_notice">Les messages restent sur cet appareil jusqu’à la mise en place du backend.</p>
         </section>
     </main>
     <footer>

@@ -43,10 +43,11 @@ if (boutonPause) {
     boutonPause.addEventListener("click", () => {
         const enPause = document.body.classList.toggle("feuilles-en-pause");
         boutonPause.setAttribute("aria-pressed", String(enPause));
-        boutonPause.dataset.i18n = enPause ? "play_leaves" : "pause_leaves";
         const anglais = document.documentElement.lang === "en";
-        boutonPause.textContent = enPause
+        const libelle = enPause
             ? (anglais ? "Resume falling leaves" : "Reprendre les feuilles")
             : (anglais ? "Pause falling leaves" : "Mettre les feuilles en pause");
+        boutonPause.setAttribute("aria-label", libelle);
+        boutonPause.title = libelle;
     });
 }
