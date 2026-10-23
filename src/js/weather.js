@@ -255,7 +255,7 @@
             "font-family": "Arial, Helvetica, sans-serif"
         });
         image.append(svgElement("image", {
-            href: "src/assets/svg/carte-meteo.svg", width: 760, height: 360
+            href: "src/assets/svg/fond-carte-meteo.svg", width: 760, height: 360
         }));
 
         // Keep the original drawing and safely insert the live values as text
