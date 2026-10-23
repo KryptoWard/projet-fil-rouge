@@ -189,6 +189,11 @@ main h2 {
     font-weight: 600;
 }
 
+/* Hide the inactive step on the password recovery page */
+.form-recovery[hidden] {
+    display: none;
+}
+
 /* Form layout */
 form {
     display: grid;

@@ -63,7 +63,22 @@
             my_contacts: "Mes contacts",
             settings_page_title: "Paramètres",
             forgotten_page_title: "Mot de passe oublié",
-            send_recovery_code: "Envoyer un code à mon adresse mail",
+            send_recovery_code: "Envoyer le lien de réinitialisation",
+            recovery_instructions:
+                "Saisis l’adresse e-mail associée à ton compte. Si un compte existe, un lien de réinitialisation sera envoyé.",
+            send_recovery_link: "Envoyer le lien de réinitialisation",
+            recovery_sent:
+                "Si un compte correspond à cette adresse, un lien vient d’être envoyé. Vérifie aussi tes courriers indésirables.",
+            recovery_invalid: "Ce lien de réinitialisation est invalide ou a expiré. Demande un nouveau lien.",
+            new_password_title: "Définir un nouveau mot de passe",
+            new_password: "Nouveau mot de passe",
+            confirm_new_password: "Confirmer le nouveau mot de passe",
+            save_new_password: "Enregistrer le nouveau mot de passe",
+            recovery_send_error: "Impossible d’envoyer le lien de réinitialisation : ",
+            recovery_update_error: "Impossible de modifier le mot de passe : ",
+            recovery_password_mismatch: "Les deux mots de passe ne correspondent pas.",
+            recovery_password_updated: "Mot de passe modifié. Tu peux maintenant te connecter.",
+            recovery_back_to_login: "Retour à la connexion",
             change_language: "Changer de langue",
             language_button: "English"
         },
@@ -119,7 +134,22 @@
             my_contacts: "My contacts",
             settings_page_title: "Settings",
             forgotten_page_title: "Forgot password",
-            send_recovery_code: "Send a code to my email address",
+            send_recovery_code: "Send a password reset link",
+            recovery_instructions:
+                "Enter the email address associated with your account. If an account exists, we will send a reset link.",
+            send_recovery_link: "Send password reset link",
+            recovery_sent:
+                "If an account matches this address, a reset link has been sent. Check your spam folder too.",
+            recovery_invalid: "This password reset link is invalid or has expired. Request a new link.",
+            new_password_title: "Set a new password",
+            new_password: "New password",
+            confirm_new_password: "Confirm new password",
+            save_new_password: "Save new password",
+            recovery_send_error: "Unable to send the password reset link: ",
+            recovery_update_error: "Unable to change the password: ",
+            recovery_password_mismatch: "The passwords do not match.",
+            recovery_password_updated: "Your password has been changed. You can now sign in.",
+            recovery_back_to_login: "Back to sign in",
             change_language: "Change the display language",
             language_button: "Français"
         }
@@ -134,7 +164,8 @@
                 "Le prénom doit commencer par une majuscule et comporter au moins 2 lettres.",
             mdp_longueur: "Le mot de passe doit comporter au moins 8 caractères.",
             mdp_special:
-                "Le mot de passe doit contenir au moins un chiffre ou un caractère spécial."
+                "Le mot de passe doit contenir au moins un chiffre ou un caractère spécial.",
+            mdp_correspondance: "Les deux mots de passe ne correspondent pas."
         },
         en: {
             nom_majuscule:
@@ -142,7 +173,8 @@
             prenom_majuscule:
                 "First name must start with an uppercase letter and have at least 2 characters.",
             mdp_longueur: "Password must be at least 8 characters long.",
-            mdp_special: "Password must include at least one number or special character."
+            mdp_special: "Password must include at least one number or special character.",
+            mdp_correspondance: "The passwords do not match."
         }
     };
 
@@ -426,6 +458,154 @@
         formConnexion.addEventListener("submit", async evenement => {
             evenement.preventDefault();
             await connecterUtilisateur(inputLoginEmail.value, inputLoginMdp.value);
+        });
+    }
+
+
+    // Request a password reset and accept the recovery link on this page
+    const formDemandeRecuperation = document.querySelector("#form-demande-recuperation");
+    const formNouveauMotDePasse = document.querySelector("#form-nouveau-mot-de-passe");
+
+    if (formDemandeRecuperation && formNouveauMotDePasse) {
+        const emailRecuperation = document.querySelector("#recovery-email");
+        const nouveauMotDePasse = document.querySelector("#new-password");
+        const confirmationMotDePasse = document.querySelector("#confirm-new-password");
+        const titreRecuperation = document.querySelector("#recovery-heading");
+        const instructionsRecuperation = document.querySelector("#recovery-instructions");
+
+        function afficherFormulaireNouveauMotDePasse() {
+            formDemandeRecuperation.hidden = true;
+            formNouveauMotDePasse.hidden = false;
+            instructionsRecuperation.hidden = true;
+            titreRecuperation.dataset.i18n = "new_password_title";
+            titreRecuperation.textContent = traductions[langueActuelle].new_password_title;
+        }
+
+        function nettoyerUrlRecuperation() {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const queryParams = new URLSearchParams(window.location.search);
+        const lienRecuperation =
+            hashParams.get("type") === "recovery" ||
+            queryParams.get("type") === "recovery" ||
+            hashParams.has("error_code") ||
+            queryParams.has("error_code");
+
+        if (supabase) {
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === "PASSWORD_RECOVERY" && session) {
+                    afficherFormulaireNouveauMotDePasse();
+                    nettoyerUrlRecuperation();
+                }
+            });
+        }
+
+        async function initialiserRecuperation() {
+            if (!lienRecuperation) return;
+            if (!supabase) {
+                afficherMessage(formDemandeRecuperation, "network_error", true);
+                return;
+            }
+
+            const { data, error } = await supabase.auth.getSession();
+            if (!error && data.session) {
+                afficherFormulaireNouveauMotDePasse();
+                nettoyerUrlRecuperation();
+                return;
+            }
+
+            afficherMessage(formDemandeRecuperation, "recovery_invalid", true);
+        }
+
+        void initialiserRecuperation();
+
+        formDemandeRecuperation.addEventListener("submit", async evenement => {
+            evenement.preventDefault();
+            const message = formDemandeRecuperation.querySelector(".message-formulaire");
+            const bouton = formDemandeRecuperation.querySelector('button[type="submit"]');
+            message.hidden = true;
+            bouton.disabled = true;
+            bouton.setAttribute("aria-busy", "true");
+
+            try {
+                if (!supabase) throw new Error("Auth unavailable");
+                const redirectTo = new URL("pwdforgotten.html", window.location.href).href;
+                const { error } = await supabase.auth.resetPasswordForEmail(
+                    emailRecuperation.value.trim(),
+                    { redirectTo }
+                );
+
+                if (error) {
+                    afficherMessage(formDemandeRecuperation, "recovery_send_error", true, error.message);
+                } else {
+                    afficherMessage(formDemandeRecuperation, "recovery_sent");
+                }
+            } catch (erreur) {
+                afficherMessage(formDemandeRecuperation, "network_error", true);
+            } finally {
+                bouton.disabled = false;
+                bouton.removeAttribute("aria-busy");
+            }
+        });
+
+        function validerNouveauMotDePasse() {
+            const messages = getMsgs();
+            if (nouveauMotDePasse.value.length < 8) {
+                validerChamp(nouveauMotDePasse, false, messages.mdp_longueur);
+                return false;
+            }
+            if (!regexSpecialOuChiffre.test(nouveauMotDePasse.value)) {
+                validerChamp(nouveauMotDePasse, false, messages.mdp_special);
+                return false;
+            }
+
+            validerChamp(nouveauMotDePasse, true, "");
+            if (confirmationMotDePasse.value !== nouveauMotDePasse.value) {
+                validerChamp(confirmationMotDePasse, false, messages.mdp_correspondance);
+                return false;
+            }
+
+            validerChamp(confirmationMotDePasse, true, "");
+            return true;
+        }
+
+        nouveauMotDePasse.addEventListener("input", validerNouveauMotDePasse);
+        confirmationMotDePasse.addEventListener("input", validerNouveauMotDePasse);
+
+        formNouveauMotDePasse.addEventListener("submit", async evenement => {
+            evenement.preventDefault();
+            if (!validerNouveauMotDePasse()) {
+                const champInvalide = [nouveauMotDePasse, confirmationMotDePasse].find(
+                    champ => !champ.validity.valid
+                );
+                champInvalide?.reportValidity();
+                return;
+            }
+
+            const message = formNouveauMotDePasse.querySelector(".message-formulaire");
+            const bouton = formNouveauMotDePasse.querySelector('button[type="submit"]');
+            message.hidden = true;
+            bouton.disabled = true;
+            bouton.setAttribute("aria-busy", "true");
+
+            try {
+                const { error } = await supabase.auth.updateUser({
+                    password: nouveauMotDePasse.value
+                });
+                if (error) {
+                    afficherMessage(formNouveauMotDePasse, "recovery_update_error", true, error.message);
+                } else {
+                    formNouveauMotDePasse.reset();
+                    afficherMessage(formNouveauMotDePasse, "recovery_password_updated");
+                }
+            } catch (erreur) {
+                afficherMessage(formNouveauMotDePasse, "network_error", true);
+            } finally {
+                bouton.disabled = false;
+                bouton.removeAttribute("aria-busy");
+            }
         });
     }
 })();

@@ -62,7 +62,73 @@
         </header>
         <div class="feuilles-automne" aria-hidden="true"></div>
         <main>
-            <h1 data-i18n="send_recovery_code">Envoyer un code à mon adresse mail</h1>
+            <section class="password-recovery">
+                <h2 id="recovery-heading" data-i18n="forgotten_page_title">Mot de passe oublié</h2>
+                <p id="recovery-instructions" data-i18n="recovery_instructions">
+                    Saisis l’adresse e-mail associée à ton compte. Si un compte existe, un lien de réinitialisation sera envoyé.
+                </p>
+                <form id="form-demande-recuperation" class="form-recovery" action="">
+                    <label for="recovery-email" data-i18n="email">Adresse e-mail</label>
+                    <input
+                        type="email"
+                        id="recovery-email"
+                        name="email"
+                        autocomplete="email"
+                        required
+                    />
+                    <button type="submit" data-i18n="send_recovery_link">
+                        Envoyer le lien de réinitialisation
+                    </button>
+                    <p class="message-formulaire" role="status" aria-atomic="true" hidden></p>
+                </form>
+                <form id="form-nouveau-mot-de-passe" class="form-recovery" action="" hidden>
+                    <label for="new-password" data-i18n="new_password">Nouveau mot de passe</label>
+                    <div class="champ-mot-de-passe">
+                        <input
+                            type="password"
+                            id="new-password"
+                            name="new-password"
+                            autocomplete="new-password"
+                            required
+                        />
+                        <button
+                            type="button"
+                            class="voir-mot-de-passe"
+                            aria-controls="new-password"
+                            aria-label="Afficher le mot de passe"
+                            aria-pressed="false"
+                        >
+                            <img src="src/assets/svg/oeil-ferme.svg" alt="" width="22" height="22" />
+                        </button>
+                    </div>
+                    <label for="confirm-new-password" data-i18n="confirm_new_password">
+                        Confirmer le nouveau mot de passe
+                    </label>
+                    <div class="champ-mot-de-passe">
+                        <input
+                            type="password"
+                            id="confirm-new-password"
+                            name="confirm-new-password"
+                            autocomplete="new-password"
+                            required
+                        />
+                        <button
+                            type="button"
+                            class="voir-mot-de-passe"
+                            aria-controls="confirm-new-password"
+                            aria-label="Afficher le mot de passe"
+                            aria-pressed="false"
+                        >
+                            <img src="src/assets/svg/oeil-ferme.svg" alt="" width="22" height="22" />
+                        </button>
+                    </div>
+                    <button type="submit" data-i18n="save_new_password">
+                        Enregistrer le nouveau mot de passe
+                    </button>
+                    <p class="message-formulaire" role="status" aria-atomic="true" hidden></p>
+                </form>
+                <a href="index.html" data-i18n="recovery_back_to_login">Retour à la connexion</a>
+            </section>
         </main>
         <script src="src/js/app.js"></script>
         <script src="src/js/automn.js"></script>
