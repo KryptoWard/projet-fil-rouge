@@ -255,6 +255,23 @@ form button:hover {
     transform: translateY(-1px);
 }
 
+/* Password visibility controls */
+.champ-mot-de-passe {
+    display: flex;
+    gap: 6px;
+}
+
+.champ-mot-de-passe input {
+    min-width: 0;
+}
+
+.champ-mot-de-passe button {
+    display: grid;
+    place-items: center;
+    margin: 0;
+    padding: 9px;
+}
+
 /* Form links */
 form a {
     color: var(--couleur-principale);

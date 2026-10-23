@@ -40,6 +40,7 @@
             first_name: "Prénom",
             email: "Adresse e-mail",
             password: "Mot de passe",
+            show_password: "Afficher le mot de passe",
             signup: "S'inscrire",
             forgot_password: "Mot de passe oublié",
             conversations_page_title: "Conversations",
@@ -91,6 +92,7 @@
             first_name: "First name",
             email: "Email address",
             password: "Password",
+            show_password: "Show password",
             signup: "Sign up",
             forgot_password: "Forgot password?",
             conversations_page_title: "Conversations",
@@ -142,6 +144,20 @@
     const barreOutilsMessage = document.querySelector("#message-toolbar");
     let langueActuelle = "fr";
 
+    document.querySelectorAll(".voir-mot-de-passe").forEach(bouton => {
+        bouton.addEventListener("click", () => {
+            const champ = document.getElementById(bouton.getAttribute("aria-controls"));
+            champ.type = champ.type === "password" ? "text" : "password";
+            bouton.setAttribute("aria-pressed", String(champ.type === "text"));
+            const oeil = bouton.querySelector("img");
+            oeil.src = `src/assets/svg/${champ.type === "text" ? "oeil" : "oeil-ferme"}.svg`;
+            if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                oeil.getAnimations().forEach(animation => animation.cancel());
+                oeil.animate([{ transform: "scaleY(0.2)" }, { transform: "scaleY(1)" }], { duration: 180 });
+            }
+        });
+    });
+
     try {
         const langueEnregistree = window.localStorage.getItem("langue-interface");
         if (Object.prototype.hasOwnProperty.call(traductions, langueEnregistree)) {
@@ -154,6 +170,9 @@
     function appliquerLangue(langue) {
         const textes = traductions[langue] || traductions.fr;
         document.documentElement.lang = langue;
+        document.querySelectorAll(".voir-mot-de-passe").forEach(bouton => {
+            bouton.setAttribute("aria-label", textes.show_password);
+        });
 
         document.querySelectorAll("[data-i18n]").forEach(element => {
             const cle = element.dataset.i18n;
