@@ -43,7 +43,15 @@
             setup: "La messagerie doit encore être activée sur le serveur.",
             older: "Messages précédents",
             retry: "Réessayer",
-            shared: "Visible par tous les utilisateurs connectés du site."
+            shared: "Visible par tous les utilisateurs connectés du site.",
+            edit: "Modifier",
+            remove: "Supprimer",
+            save: "Enregistrer",
+            edited: "modifié",
+            deleteChannel: "Supprimer le canal",
+            confirmMessage: "Supprimer définitivement ce message ?",
+            confirmChannel: "Supprimer ce canal et tous ses messages pour tout le monde ?",
+            actionFailed: "Action impossible. Vérifie ta connexion et les droits du compte."
         },
         en: {
             channels: "Channels",
@@ -73,7 +81,15 @@
             setup: "Messaging still needs to be enabled on the server.",
             older: "Earlier messages",
             retry: "Try again",
-            shared: "Visible to all signed-in users on this site."
+            shared: "Visible to all signed-in users on this site.",
+            edit: "Edit",
+            remove: "Delete",
+            save: "Save",
+            edited: "edited",
+            deleteChannel: "Delete channel",
+            confirmMessage: "Permanently delete this message?",
+            confirmChannel: "Delete this channel and all its messages for everyone?",
+            actionFailed: "Action failed. Check your connection and account permissions."
         }
     };
 
@@ -112,6 +128,7 @@
             input,
             byId("share-weather"),
             byId("share-gif"),
+            byId("share-cat"),
             document.querySelector(".send-message"),
             byId("new-channel")
         ].forEach(element => {
@@ -163,6 +180,10 @@
     function renderHeading() {
         const channel = channels.find(entry => entry.id === view?.id);
         byId("thread-welcome").hidden = !ready || !channel || view.rows.size > 0;
+        const removeChannel = byId("delete-channel");
+        removeChannel.hidden =
+            !ready || !channel || channel.is_default || channel.created_by !== user?.id;
+        removeChannel.textContent = words().deleteChannel;
         if (!channel) return;
         byId("channel-title").textContent = channelName(channel);
         const description = byId("channel-description");
@@ -181,6 +202,8 @@
             let article;
             if (message.kind === "weather" && window.weatherCards?.valid(message.weather)) {
                 article = window.weatherCards.render(message.weather.city, message.weather.weather);
+            } else if (message.kind === "cat" && window.chatCats?.valid(message.image)) {
+                article = window.chatCats.render(message.image);
             } else if (message.kind === "gif" && window.chatGifs?.valid(message.gif)) {
                 article = window.chatGifs.render(message.gif);
             } else {
@@ -204,7 +227,39 @@
                 document.documentElement.lang,
                 { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
             );
+            if (message.edited_at) time.textContent += ` · ${words().edited}`;
             article.append(time);
+            // Show owner actions while Supabase checks the permissions again
+            if (message.sender_id === user.id) {
+                const actions = document.createElement("div");
+                actions.className = "message-controls";
+                if (message.kind === "text") {
+                    const edit = document.createElement("button");
+                    edit.type = "button";
+                    edit.textContent = words().edit;
+                    edit.addEventListener("click", () => openEditor(message));
+                    actions.append(edit);
+                }
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.textContent = words().remove;
+                remove.addEventListener("click", async () => {
+                    if (!window.confirm(words().confirmMessage)) return;
+                    remove.disabled = true;
+                    const context = view;
+                    try {
+                        await api.deleteMessage(message.id);
+                        context.rows.delete(message.id);
+                        if (view === context) renderMessages();
+                    } catch {
+                        byId("weather-status").textContent = words().actionFailed;
+                    } finally {
+                        remove.disabled = false;
+                    }
+                });
+                actions.append(remove);
+                article.append(actions);
+            }
             item.append(article);
             fragment.append(item);
         });
@@ -226,6 +281,10 @@
         channels = data;
         renderChannels();
         renderHeading();
+        if (view && !channels.some(channel => channel.id === view.id)) {
+            if (channels.length) await selectChannel(channels[0].id);
+            else writable(false);
+        }
     }
     // Read messages missed during a disconnect, using a stable timestamp and ID cursor.
 
@@ -251,6 +310,17 @@
                     latest = rows.at(-1) || latest;
                     context.cursor = latest;
                 } while (rows.length === 100);
+            }
+            const ids = [...context.rows.keys()];
+            for (let offset = 0; offset < ids.length; offset += 100) {
+                const batch = ids.slice(offset, offset + 100);
+                const rows = await api.loadedMessages(batch);
+                if (view !== context) return;
+                const present = new Set(rows.map(row => row.id));
+                batch.forEach(id => {
+                    if (!present.has(id)) context.rows.delete(id);
+                });
+                merge(context, rows);
             }
             if (view === context) {
                 clearError();
@@ -288,7 +358,7 @@
                     const row = await api.message(messageId);
                     if (view === context) merge(context, [row]);
                 } catch (error) {
-                    if (view === context) report(error);
+                    if (view === context && error.code !== "PGRST116") report(error);
                 }
             },
             () => {
@@ -301,6 +371,10 @@
                     if (live) void sync();
                     setConnection(live ? "synced" : "polling");
                 }
+            },
+            messageId => {
+                context.rows.delete(messageId);
+                if (view === context) renderMessages();
             }
         );
         try {
@@ -338,6 +412,55 @@
             return row;
         }
     };
+
+    let editing = null;
+    const editDialog = byId("edit-message-dialog");
+    const editForm = byId("edit-message-form");
+    const editInput = byId("edit-message-text");
+
+    function openEditor(message) {
+        editing = { id: message.id, context: view };
+        editInput.value = message.body;
+        byId("edit-message-error").hidden = true;
+        editDialog.showModal();
+        editInput.focus();
+    }
+
+    byId("cancel-edit").addEventListener("click", () => editDialog.close());
+    editForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        const body = editInput.value.trim();
+        const button = editForm.querySelector('[type="submit"]');
+        if (!body || !editing || button.disabled) return;
+        const target = editing;
+        button.disabled = true;
+        try {
+            const row = await api.editMessage(target.id, body);
+            merge(target.context, [row]);
+            editDialog.close();
+        } catch {
+            byId("edit-message-error").textContent = words().actionFailed;
+            byId("edit-message-error").hidden = false;
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+    byId("delete-channel").addEventListener("click", async () => {
+        const channel = channels.find(entry => entry.id === view?.id);
+        if (!channel || channel.is_default || channel.created_by !== user.id) return;
+        if (!window.confirm(words().confirmChannel)) return;
+        const button = byId("delete-channel");
+        button.disabled = true;
+        try {
+            await api.deleteChannel(channel.id);
+            await refreshChannels();
+        } catch {
+            byId("weather-status").textContent = words().actionFailed;
+        } finally {
+            button.disabled = false;
+        }
+    });
 
     older.addEventListener("click", async () => {
         const context = view;

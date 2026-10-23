@@ -16,6 +16,7 @@
     const messages = channelId =>
         client().from("chat_messages").select(messageFields).eq("channel_id", channelId);
 
+    // Use the date and ID together to load history without duplicates
     function cursorFilter(cursor, direction) {
         if (!/^[0-9a-f-]{36}$/i.test(cursor.id) || !Number.isFinite(Date.parse(cursor.created_at)))
             throw new Error("Invalid cursor");
@@ -38,7 +39,7 @@
             return result(
                 client()
                     .from("chat_channels")
-                    .select("id,name,description,is_default,created_at")
+                    .select("id,name,description,is_default,created_at,created_by")
                     .order("is_default", { ascending: false })
                     .order("created_at")
                     .order("id")
@@ -50,7 +51,7 @@
                 client()
                     .from("chat_channels")
                     .insert({ id: crypto.randomUUID(), name, description, created_by: userId })
-                    .select("id,name,description,is_default,created_at")
+                    .select("id,name,description,is_default,created_at,created_by")
                     .single()
             );
         },
@@ -82,6 +83,33 @@
             );
         },
 
+        loadedMessages(ids) {
+            return result(client().from("chat_messages").select(messageFields).in("id", ids));
+        },
+
+        editMessage(id, body) {
+            return result(
+                client()
+                    .from("chat_messages")
+                    .update({ body })
+                    .eq("id", id)
+                    .select(messageFields)
+                    .single()
+            );
+        },
+
+        deleteMessage(id) {
+            return result(
+                client().from("chat_messages").delete().eq("id", id).select("id").single()
+            );
+        },
+
+        deleteChannel(id) {
+            return result(
+                client().from("chat_channels").delete().eq("id", id).select("id").single()
+            );
+        },
+
         send(channelId, userId, content) {
             const message = {
                 id: crypto.randomUUID(),
@@ -92,13 +120,14 @@
                 weather: content.weather
             };
             if (content.kind === "gif") message.gif = content.gif;
+            if (content.kind === "cat") message.image = content.image;
 
             return result(
                 client().from("chat_messages").insert(message).select(messageFields).single()
             );
         },
 
-        subscribe(channelId, onMessage, onChannel, onStatus) {
+        subscribe(channelId, onMessage, onChannel, onStatus, onDelete = () => {}) {
             return client()
                 .channel(`chat:${channelId}:${crypto.randomUUID()}`)
                 .on(
@@ -113,7 +142,22 @@
                 )
                 .on(
                     "postgres_changes",
-                    { event: "INSERT", schema: "public", table: "chat_channels" },
+                    {
+                        event: "UPDATE",
+                        schema: "public",
+                        table: "chat_messages",
+                        filter: `channel_id=eq.${channelId}`
+                    },
+                    payload => onMessage(payload.new.id)
+                )
+                .on(
+                    "postgres_changes",
+                    { event: "DELETE", schema: "public", table: "chat_messages" },
+                    payload => onDelete(payload.old.id)
+                )
+                .on(
+                    "postgres_changes",
+                    { event: "*", schema: "public", table: "chat_channels" },
                     onChannel
                 )
                 .subscribe(onStatus);

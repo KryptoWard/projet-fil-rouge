@@ -66,13 +66,10 @@
     background: var(--couleur-papier);
 }
 
-.channel-search svg {
+.channel-search img {
     width: 17px;
     height: 17px;
     flex: none;
-    fill: none;
-    stroke: #756b5f;
-    stroke-width: 1.7;
 }
 
 .channel-search input {
@@ -411,14 +408,10 @@
     font-size: 0.8rem;
 }
 
-.send-message svg,
-.channel-toggle svg {
+.send-message img,
+.channel-toggle img {
     width: 18px;
     height: 18px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linejoin: round;
 }
 
 .chat-panel .weather-status {
@@ -600,7 +593,7 @@
     border-radius: 0;
 }
 
-.welcome-symbol svg {
+.welcome-symbol img {
     width: 40px;
     height: 40px;
 }
@@ -755,5 +748,62 @@
 @media (max-width: 400px) {
     .gif-results {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+.message-controls {
+    display: flex;
+    gap: 12px;
+    grid-column: 1 / -1;
+    margin-top: 8px;
+}
+
+.message-controls button,
+.channel-delete {
+    padding: 4px 6px;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 0;
+    background: transparent;
+    color: var(--couleur-principale);
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.channel-delete {
+    margin-left: auto;
+}
+.channel-delete[hidden] {
+    display: none;
+}
+.message-controls button:hover,
+.channel-delete:hover {
+    background: #e4d0bb;
+}
+.composer-bottom .message-toolbar {
+    flex-wrap: wrap;
+}
+.chat-panel .message-list article.cat-message {
+    width: min(420px, 100%);
+}
+.cat-message figure {
+    margin: 0;
+}
+.cat-message img {
+    display: block;
+    max-width: 100%;
+    max-height: 350px;
+    height: auto;
+}
+.cat-message a {
+    color: var(--couleur-principale);
+    font-size: 0.8rem;
+}
+#edit-message-text {
+    min-height: 120px;
+}
+
+@media (max-width: 600px) {
+    .chat-heading {
+        flex-wrap: wrap;
     }
 }

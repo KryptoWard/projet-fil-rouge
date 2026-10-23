@@ -212,24 +212,22 @@
         return { label: words.unknown, icon: "cloudy" };
     }
 
-    // Use inline SVG shapes so the weather image stays self contained on GitHub Pages
+    let weatherTemplate = null;
 
-    function weatherIconMarkup(style) {
-        const cloud =
-            '<path class="weather-cloud" d="M24 65h47a15 15 0 0 0 0-30 23 23 0 0 0-44-4A17 17 0 0 0 24 65Z"/>';
-        const sun =
-            '<circle class="weather-sun" cx="43" cy="35" r="15"/><path class="weather-sun-rays" d="M43 9v7m0 38v7M17 35h7m38 0h7M25 17l5 5m27 27 5 5m0-37-5 5M30 48l-5 5"/>';
-        const symbols = {
-            clear: sun,
-            "partly-cloudy": `${sun}${cloud}`,
-            cloudy: cloud,
-            fog: `${cloud}<path class="weather-fog-lines" d="M20 73h53M27 82h43"/>`,
-            rain: `${cloud}<path class="weather-rain-drops" d="m34 72-4 9m20-9-4 9m20-9-4 9"/>`,
-            snow: `${cloud}<path class="weather-snowflakes" d="M34 74v10m-4-5h8m-7-3 6 6m0-6-6 6m19-8v10m-4-5h8m-7-3 6 6m0-6-6 6"/>`,
-            storm: `${cloud}<path class="weather-lightning" d="m49 67-10 15h9l-3 12 15-19h-10l5-8Z"/>`
-        };
-
-        return symbols[style] || symbols.cloudy;
+    // Load the drawing once and keep the card as a standalone SVG image
+    function loadWeatherTemplate() {
+        if (!weatherTemplate) {
+            weatherTemplate = fetch("src/assets/svg/carte-meteo.svg")
+                .then(response => {
+                    if (!response.ok) throw new Error("Weather template unavailable");
+                    return response.text();
+                })
+                .catch(error => {
+                    weatherTemplate = null;
+                    throw error;
+                });
+        }
+        return weatherTemplate;
     }
 
     // Request current conditions for the chosen coordinates
@@ -251,7 +249,7 @@
         return data.current;
     }
 
-    // Escape city names and labels before placing them inside SVG text elements
+    // Escape dynamic text before inserting it into the SVG template
 
     function escapeXml(value) {
         return String(value)
@@ -268,52 +266,38 @@
         const words = strings();
         const condition = describeWeather(weather.weather_code);
         const cityLabel = cityName(city);
-        const escapedCity = escapeXml(city.name);
-        const escapedRegion = escapeXml([city.admin1, city.country].filter(Boolean).join(", "));
-        const escapedCondition = escapeXml(condition.label);
         const temperature = Math.round(weather.temperature_2m);
         const feelsLike = Math.round(weather.apparent_temperature);
         const wind = Math.round(weather.wind_speed_10m);
-        const time = weather.time ? weather.time.split("T")[1] : "";
-        const cityFontSize = city.name.length > 25 ? 28 : city.name.length > 18 ? 32 : 36;
-        const conditionFontSize = condition.label.length > 18 ? 18 : 22;
-        const svgImage = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360">
-                <defs>
-                    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0" stop-color="#fffaf0"/>
-                        <stop offset="1" stop-color="#eee3d2"/>
-                    </linearGradient>
-                    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
-                        <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#342e27" flood-opacity=".16"/>
-                    </filter>
-                    <style>
-                        text { font-family: Arial, Helvetica, sans-serif; }
-                        .weather-sun { fill: #e3a849; }
-                        .weather-sun-rays { fill: none; stroke: #c27b32; stroke-linecap: round; stroke-width: 4; }
-                        .weather-cloud { fill: #fffaf0; stroke: #9b795b; stroke-linejoin: round; stroke-width: 3; }
-                        .weather-fog-lines, .weather-rain-drops, .weather-snowflakes { fill: none; stroke: #75808a; stroke-linecap: round; stroke-width: 4; }
-                        .weather-lightning { fill: #d28a35; stroke: #a64f32; stroke-linejoin: round; stroke-width: 2; }
-                    </style>
-                </defs>
-                <rect x="8" y="8" width="744" height="344" rx="24" fill="url(#paper)" stroke="#cdbca5" stroke-width="2" filter="url(#shadow)"/>
-                <path d="M32 9h8v342h-8a24 24 0 0 1-24-24V33A24 24 0 0 1 32 9Z" fill="#a64f32"/>
-                <text x="60" y="55" fill="#8a6748" font-size="14" font-weight="700" letter-spacing="2">${escapeXml(words.currentWeather)}</text>
-                <text x="58" y="104" fill="#342e27" font-size="${cityFontSize}" font-weight="700">${escapedCity}</text>
-                <text x="61" y="132" fill="#756b5f" font-size="15">${escapedRegion}</text>
-                <text x="58" y="238" fill="#342e27" font-size="88" font-weight="600">${temperature}°C</text>
-                <text x="330" y="188" fill="#574333" font-size="${conditionFontSize}" font-weight="700">${escapedCondition}</text>
-                <text x="332" y="222" fill="#756b5f" font-size="16">${escapeXml(words.feelsLike)}  ${feelsLike}°C</text>
-                <text x="332" y="250" fill="#756b5f" font-size="16">${escapeXml(words.wind)}  ${wind} km/h</text>
-                <circle cx="610" cy="175" r="91" fill="#e8dfd1"/>
-                <svg x="562" y="127" width="96" height="96" viewBox="0 0 96 96">${weatherIconMarkup(condition.icon)}</svg>
-                <path d="M58 282h644" stroke="#d2c5b2" stroke-width="1.5"/>
-                <text x="60" y="319" fill="#756b5f" font-size="13">${escapeXml(words.updatedAt)} ${escapeXml(time)}</text>
-                <text x="700" y="319" fill="#8a6748" font-size="13" text-anchor="end">Open-Meteo · CC BY 4.0</text>
-            </svg>`;
+        const values = {
+            heading: words.currentWeather,
+            city: city.name,
+            region: [city.admin1, city.country].filter(Boolean).join(", "),
+            citySize: city.name.length > 25 ? 28 : city.name.length > 18 ? 32 : 36,
+            temperature,
+            condition: condition.label,
+            conditionSize: condition.label.length > 18 ? 18 : 22,
+            feelsLabel: words.feelsLike,
+            feelsLike,
+            windLabel: words.wind,
+            wind,
+            updatedLabel: words.updatedAt,
+            time: weather.time ? weather.time.split("T")[1] : "",
+            icon: condition.icon
+        };
         const image = document.createElement("img");
         image.className = "weather-card-image";
-        image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgImage)}`;
+        loadWeatherTemplate()
+            .then(template => {
+                const svg = template.replace(/\{\{(\w+)\}\}/g, (_, key) =>
+                    escapeXml(values[key] ?? "")
+                );
+                image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+            })
+            .catch(() => {
+                // Keep the weather description readable if the drawing fails to load
+                image.alt = image.alt || condition.label;
+            });
         image.alt = enAnglais()
             ? `Weather in ${cityLabel}: ${condition.label}, ${temperature} degrees Celsius, feels like ${feelsLike}, wind ${wind} kilometers per hour`
             : `Météo à ${cityLabel} : ${condition.label}, ${temperature} degrés Celsius, ressenti ${feelsLike}, vent ${wind} kilomètres par heure`;
@@ -456,6 +440,28 @@
             const message = originalInput.trim();
             if (!message) {
                 setStatus(strings().messageEmpty);
+                return;
+            }
+
+            const gifCommand = message.match(/^\/gif(?:\s+(.+))?$/i);
+            if (gifCommand) {
+                if (window.chatGifs?.open(gifCommand[1] || "", channelId)) {
+                    window.conversationView.clearDraft(channelId, originalInput);
+                }
+                return;
+            }
+
+            if (/^\/cat$/i.test(message)) {
+                busy(sendButton, true);
+                try {
+                    const posted = await window.chatCats.send(channelId);
+                    if (posted) window.conversationView.clearDraft(channelId, originalInput);
+                } catch {
+                    if (window.conversationView.activeId === channelId)
+                        setStatus(strings().messageError);
+                } finally {
+                    busy(sendButton, false);
+                }
                 return;
             }
 

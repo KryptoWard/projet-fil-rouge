@@ -239,12 +239,20 @@
         }
     }
 
-    button.addEventListener("click", () => {
-        if (sending || !window.conversationView?.ready) return;
-        destination = window.conversationView.activeId;
+    function open(searchText = "", channelId = window.conversationView?.activeId) {
+        if (sending || !window.conversationView?.ready) return false;
+        destination = channelId;
         dialog.showModal();
         feedback(KLIPY_API_KEY.trim() ? "hint" : "missingKey");
+        query.value = searchText;
         query.focus();
+        if (searchText.trim()) void search();
+        return true;
+    }
+    window.chatGifs.open = open;
+
+    button.addEventListener("click", () => {
+        open();
     });
     closeButton.addEventListener("click", () => dialog.close());
     dialog.addEventListener("close", () => {

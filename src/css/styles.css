@@ -130,10 +130,9 @@ body {
     color: var(--couleur-principale);
 }
 
-.pause-feuilles svg {
+.pause-feuilles img {
     width: 20px;
     height: 20px;
-    fill: currentColor;
 }
 
 .pause-feuilles .icone-reprise,
@@ -386,7 +385,7 @@ form a {
     background: #eef0e4;
 }
 
-.weather-share-button svg {
+.weather-share-button img {
     width: 21px;
     height: 21px;
     flex: 0 0 21px;
@@ -645,14 +644,9 @@ footer {
     cursor: pointer;
 }
 
-.logout-button svg {
+.logout-button img {
     width: 19px;
     height: 19px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linecap: square;
-    stroke-linejoin: miter;
 }
 
 .logout-button:hover {
