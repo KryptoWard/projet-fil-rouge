@@ -212,24 +212,6 @@
         return { label: words.unknown, icon: "cloudy" };
     }
 
-    let weatherTemplate = null;
-
-    // Load the drawing once and keep the card as a standalone SVG image
-    function loadWeatherTemplate() {
-        if (!weatherTemplate) {
-            weatherTemplate = fetch("src/assets/svg/carte-meteo.svg")
-                .then(response => {
-                    if (!response.ok) throw new Error("Weather template unavailable");
-                    return response.text();
-                })
-                .catch(error => {
-                    weatherTemplate = null;
-                    throw error;
-                });
-        }
-        return weatherTemplate;
-    }
-
     // Request current conditions for the chosen coordinates
 
     async function getCurrentWeather(city) {
@@ -249,18 +231,13 @@
         return data.current;
     }
 
-    // Escape dynamic text before inserting it into the SVG template
-
-    function escapeXml(value) {
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/\"/g, "&quot;")
-            .replace(/'/g, "&apos;");
+    // Native SVG images also load when the HTML is opened directly
+    function svgElement(tag, attributes, text) {
+        const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
+        if (text !== undefined) element.textContent = text;
+        return element;
     }
-
-    // Create a shareable SVG image with the city, conditions, and current values
 
     function createWeatherCard(city, weather) {
         const words = strings();
@@ -269,40 +246,39 @@
         const temperature = Math.round(weather.temperature_2m);
         const feelsLike = Math.round(weather.apparent_temperature);
         const wind = Math.round(weather.wind_speed_10m);
-        const values = {
-            heading: words.currentWeather,
-            city: city.name,
-            region: [city.admin1, city.country].filter(Boolean).join(", "),
-            citySize: city.name.length > 25 ? 28 : city.name.length > 18 ? 32 : 36,
-            temperature,
-            condition: condition.label,
-            conditionSize: condition.label.length > 18 ? 18 : 22,
-            feelsLabel: words.feelsLike,
-            feelsLike,
-            windLabel: words.wind,
-            wind,
-            updatedLabel: words.updatedAt,
-            time: weather.time ? weather.time.split("T")[1] : "",
-            icon: condition.icon
-        };
-        const image = document.createElement("img");
-        image.className = "weather-card-image";
-        loadWeatherTemplate()
-            .then(template => {
-                const svg = template.replace(/\{\{(\w+)\}\}/g, (_, key) =>
-                    escapeXml(values[key] ?? "")
-                );
-                image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-            })
-            .catch(() => {
-                // Keep the weather description readable if the drawing fails to load
-                image.alt = image.alt || condition.label;
-            });
-        image.alt = enAnglais()
+        const description = enAnglais()
             ? `Weather in ${cityLabel}: ${condition.label}, ${temperature} degrees Celsius, feels like ${feelsLike}, wind ${wind} kilometers per hour`
             : `Météo à ${cityLabel} : ${condition.label}, ${temperature} degrés Celsius, ressenti ${feelsLike}, vent ${wind} kilomètres par heure`;
-        image.width = 760;
-        image.height = 360;
+        const image = svgElement("svg", {
+            viewBox: "0 0 760 360", width: 760, height: 360,
+            class: "weather-card-image", role: "img", "aria-label": description,
+            "font-family": "Arial, Helvetica, sans-serif"
+        });
+        image.append(svgElement("image", {
+            href: "src/assets/svg/carte-meteo.svg", width: 760, height: 360
+        }));
+
+        // Keep the original drawing and safely insert the live values as text
+        const labels = [
+            [60, 55, 14, "#8a6748", 700, words.currentWeather],
+            [58, 104, city.name.length > 25 ? 28 : city.name.length > 18 ? 32 : 36, "#342e27", 700, city.name],
+            [61, 132, 15, "#756b5f", 400, [city.admin1, city.country].filter(Boolean).join(", ")],
+            [58, 238, 88, "#342e27", 600, `${temperature}°C`],
+            [330, 188, condition.label.length > 18 ? 18 : 22, "#574333", 700, condition.label],
+            [332, 222, 16, "#756b5f", 400, `${words.feelsLike}  ${feelsLike}°C`],
+            [332, 250, 16, "#756b5f", 400, `${words.wind}  ${wind} km/h`],
+            [60, 319, 13, "#756b5f", 400, `${words.updatedAt} ${weather.time?.split("T")[1] || ""}`]
+        ];
+        labels.forEach(([x, y, size, fill, weight, text], index) => {
+            image.append(svgElement("text", {
+                x, y, fill, "font-size": size, "font-weight": weight,
+                "letter-spacing": index === 0 ? 2 : 0
+            }, text));
+        });
+        image.append(svgElement("image", {
+            href: `src/assets/svg/meteo-${condition.icon}.svg`,
+            x: 562, y: 127, width: 96, height: 96
+        }));
 
         const article = document.createElement("article");
         article.className = "weather-card";

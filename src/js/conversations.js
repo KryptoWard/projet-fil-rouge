@@ -192,6 +192,22 @@
         byId("welcome-title").textContent = `${words().start} # ${channelName(channel)}`;
     }
 
+    // Keep message actions compact and accessible without visible text
+    function messageAction(label, icon) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `message-action message-action-${icon}`;
+        button.title = label;
+        button.setAttribute("aria-label", label);
+        const image = document.createElement("img");
+        image.src = `src/assets/svg/${icon}.svg`;
+        image.alt = "";
+        image.width = 18;
+        image.height = 18;
+        button.append(image);
+        return button;
+    }
+
     function renderMessages(stickToBottom = false) {
         if (!view) return;
         const position = scroll.scrollTop;
@@ -219,7 +235,11 @@
                 message.sender_id === user.id
                     ? words().me
                     : message.author?.display_name || words().member;
-            article.prepend(author);
+            // Keep the date and owner tools beside the author
+            const header = document.createElement("header");
+            header.className = "message-header";
+            header.append(author);
+            article.prepend(header);
             const time = document.createElement("time");
             time.className = "message-time";
             time.dateTime = message.created_at;
@@ -228,21 +248,17 @@
                 { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
             );
             if (message.edited_at) time.textContent += ` · ${words().edited}`;
-            article.append(time);
+            header.append(time);
             // Show owner actions while Supabase checks the permissions again
             if (message.sender_id === user.id) {
                 const actions = document.createElement("div");
                 actions.className = "message-controls";
                 if (message.kind === "text") {
-                    const edit = document.createElement("button");
-                    edit.type = "button";
-                    edit.textContent = words().edit;
+                    const edit = messageAction(words().edit, "modifier");
                     edit.addEventListener("click", () => openEditor(message));
                     actions.append(edit);
                 }
-                const remove = document.createElement("button");
-                remove.type = "button";
-                remove.textContent = words().remove;
+                const remove = messageAction(words().remove, "supprimer");
                 remove.addEventListener("click", async () => {
                     if (!window.confirm(words().confirmMessage)) return;
                     remove.disabled = true;
@@ -258,7 +274,7 @@
                     }
                 });
                 actions.append(remove);
-                article.append(actions);
+                header.append(actions);
             }
             item.append(article);
             fragment.append(item);

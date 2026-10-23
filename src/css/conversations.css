@@ -262,7 +262,7 @@
 .chat-panel .message-list article {
     width: 100%;
     max-width: 100%;
-    padding: 14px 18px;
+    padding: 10px 14px;
     border: 0;
     border-left: 2px solid #bb8d5a;
     border-bottom: 1px solid #d9c9af;
@@ -282,7 +282,7 @@
 .chat-panel .message-list article h3 {
     color: #626b45;
     font-size: 0.75rem;
-    margin-bottom: 6px;
+    margin: 0;
 }
 
 .chat-panel .message-list article p {
@@ -290,27 +290,35 @@
     line-height: 1.65;
 }
 
+.message-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-bottom: 6px;
+}
+
+.message-header h3 {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .message-time {
-    display: block;
-    text-align: right;
     font-size: 0.65rem;
     color: #756b5f;
-    margin-top: 7px;
+    white-space: nowrap;
 }
 
 .chat-panel .message-list article.weather-card {
-    width: min(460px, 95%);
-    max-width: 95%;
+    width: min(460px, 100%);
+    max-width: 100%;
     padding: 0;
     overflow: hidden;
 }
 
-.chat-panel .weather-card .message-time {
-    padding: 0 14px 8px;
-}
-
-.chat-panel .weather-card h3 {
-    padding: 12px 14px 0;
+.chat-panel .weather-card .message-header {
+    padding: 8px 12px 0;
 }
 
 .load-older {
@@ -598,28 +606,6 @@
     height: 40px;
 }
 
-.chat-panel .text-message {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 16px;
-}
-
-.chat-panel .text-message h3 {
-    grid-column: 1;
-    grid-row: 1;
-}
-
-.chat-panel .text-message p {
-    grid-column: 1 / -1;
-    grid-row: 2;
-}
-
-.chat-panel .text-message .message-time {
-    grid-column: 2;
-    grid-row: 1;
-    margin: 0;
-}
-
 .channel-list button:hover {
     border-left-color: #b68236;
 }
@@ -729,16 +715,21 @@
     margin: 0;
 }
 
-.chat-panel .message-list article.gif-message {
-    width: min(420px, 100%);
+.chat-panel .message-list article.gif-message,
+.chat-panel .message-list article.cat-message {
+    width: fit-content;
+    max-width: min(420px, 100%);
 }
 
-.gif-message figure {
+.gif-message figure,
+.cat-message figure {
     margin: 0;
 }
 
-.gif-message img {
+.gif-message figure > img,
+.cat-message figure > img {
     display: block;
+    width: auto;
     max-width: 100%;
     max-height: 350px;
     height: auto;
@@ -752,12 +743,51 @@
 }
 .message-controls {
     display: flex;
-    gap: 12px;
-    grid-column: 1 / -1;
-    margin-top: 8px;
+    gap: 4px;
+    margin-left: auto;
 }
 
-.message-controls button,
+/* Square tools follow the olive and rust message palette */
+.message-controls .message-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+    border: 1px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.message-controls .message-action img {
+    width: 18px;
+    height: 18px;
+}
+
+.message-controls .message-action:hover {
+    border-color: #b9bea1;
+    background: #d9ddc3;
+    transform: none;
+}
+
+.message-controls .message-action-supprimer:hover {
+    border-color: #cda98b;
+    background: #ead7c6;
+}
+
+.message-controls .message-action:focus-visible {
+    outline: 2px solid var(--couleur-secondaire);
+    outline-offset: 2px;
+}
+
+.message-controls .message-action:disabled {
+    opacity: 0.45;
+    cursor: wait;
+}
+
 .channel-delete {
     padding: 4px 6px;
     border: 1px solid var(--couleur-bordure);
@@ -775,24 +805,11 @@
 .channel-delete[hidden] {
     display: none;
 }
-.message-controls button:hover,
 .channel-delete:hover {
     background: #e4d0bb;
 }
 .composer-bottom .message-toolbar {
     flex-wrap: wrap;
-}
-.chat-panel .message-list article.cat-message {
-    width: min(420px, 100%);
-}
-.cat-message figure {
-    margin: 0;
-}
-.cat-message img {
-    display: block;
-    max-width: 100%;
-    max-height: 350px;
-    height: auto;
 }
 .cat-message a {
     color: var(--couleur-principale);

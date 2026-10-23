@@ -2,7 +2,7 @@
     "use strict";
 
     // Use the KLIPY key created for this website in the Partner Panel
-    const KLIPY_API_KEY = "";
+    const KLIPY_API_KEY = "crIQlMuLVcBNdXKQQpRPjbMwecmQ9R65gxdSqJJlEpxjp9gEzKw3tjv01w2CmJgv";
     const button = document.getElementById("share-gif");
     if (!button) return;
 
