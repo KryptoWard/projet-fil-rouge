@@ -433,6 +433,19 @@
 
     // Handle /meteo and /meteo city before treating the input as a regular message
     if (elements.messageForm) {
+        // Enter sends the message, while Shift + Enter keeps a new line
+        elements.messageInput.addEventListener("keydown", event => {
+            if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
+
+            event.preventDefault();
+            if (event.repeat) return;
+
+            const sendButton = elements.messageForm.querySelector('button[type="submit"]');
+            if (!window.conversationView?.ready || sendButton.disabled) return;
+
+            elements.messageForm.requestSubmit(sendButton);
+        });
+
         elements.messageForm.addEventListener("submit", async event => {
             event.preventDefault();
             if (!window.conversationView?.ready) return;
