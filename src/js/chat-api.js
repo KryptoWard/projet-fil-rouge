@@ -1,8 +1,7 @@
 (() => {
     "use strict";
 
-    const messageFields =
-        "id,channel_id,sender_id,kind,body,weather,created_at,author:chat_profiles(display_name)";
+    const messageFields = "*,author:chat_profiles(display_name)";
     const client = () => {
         if (!window.messagerieSupabase) throw new Error("CHAT_UNAVAILABLE");
         return window.messagerieSupabase;
@@ -84,19 +83,18 @@
         },
 
         send(channelId, userId, content) {
+            const message = {
+                id: crypto.randomUUID(),
+                channel_id: channelId,
+                sender_id: userId,
+                kind: content.kind,
+                body: content.body,
+                weather: content.weather
+            };
+            if (content.kind === "gif") message.gif = content.gif;
+
             return result(
-                client()
-                    .from("chat_messages")
-                    .insert({
-                        id: crypto.randomUUID(),
-                        channel_id: channelId,
-                        sender_id: userId,
-                        kind: content.kind,
-                        body: content.body,
-                        weather: content.weather
-                    })
-                    .select(messageFields)
-                    .single()
+                client().from("chat_messages").insert(message).select(messageFields).single()
             );
         },
 

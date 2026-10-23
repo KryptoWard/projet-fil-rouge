@@ -208,6 +208,16 @@
                                     </svg>
                                     <span data-i18n="weather_tool_label">Météo</span>
                                 </button>
+                                <button
+                                    type="button"
+                                    id="share-gif"
+                                    class="weather-share-button"
+                                    aria-haspopup="dialog"
+                                    aria-controls="gif-dialog"
+                                    disabled
+                                >
+                                    <span aria-hidden="true">GIF</span>
+                                </button>
                             </div>
                             <button type="submit" class="send-message">
                                 <span data-i18n="send">Envoyer</span>
@@ -240,10 +250,44 @@
                 </div>
             </form>
         </dialog>
+        <dialog
+            id="gif-dialog"
+            class="channel-dialog gif-dialog"
+            aria-labelledby="gif-dialog-title"
+        >
+            <header class="gif-heading">
+                <h2 id="gif-dialog-title">Rechercher un GIF</h2>
+                <button type="button" id="close-gifs" class="gif-close" aria-label="Fermer">
+                    ×
+                </button>
+            </header>
+            <form id="gif-search-form" role="search">
+                <label for="gif-query">Rechercher sur KLIPY</label>
+                <div class="gif-search-fields">
+                    <input
+                        type="search"
+                        id="gif-query"
+                        maxlength="120"
+                        required
+                        autocomplete="off"
+                    />
+                    <button type="submit" id="search-gifs">Rechercher</button>
+                </div>
+            </form>
+            <p id="gif-status" role="status"></p>
+            <ul id="gif-results" class="gif-results" aria-label="Résultats des GIF"></ul>
+            <footer class="gif-footer">
+                <a href="https://klipy.com/" target="_blank" rel="noopener noreferrer">
+                    GIFs by KLIPY
+                </a>
+                <button type="button" id="more-gifs" class="load-older" hidden>Voir plus</button>
+            </footer>
+        </dialog>
         <script src="src/js/app.js"></script>
         <script src="src/js/automn.js"></script>
         <script src="src/js/chat-api.js"></script>
         <script src="src/js/weather.js"></script>
+        <script src="src/js/gifs.js"></script>
         <script src="src/js/conversations.js"></script>
     </body>
 </html>

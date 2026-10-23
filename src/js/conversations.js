@@ -111,6 +111,7 @@
         [
             input,
             byId("share-weather"),
+            byId("share-gif"),
             document.querySelector(".send-message"),
             byId("new-channel")
         ].forEach(element => {
@@ -180,6 +181,8 @@
             let article;
             if (message.kind === "weather" && window.weatherCards?.valid(message.weather)) {
                 article = window.weatherCards.render(message.weather.city, message.weather.weather);
+            } else if (message.kind === "gif" && window.chatGifs?.valid(message.gif)) {
+                article = window.chatGifs.render(message.gif);
             } else {
                 article = document.createElement("article");
                 article.className = "text-message";
