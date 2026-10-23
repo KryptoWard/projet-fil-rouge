@@ -272,6 +272,21 @@ form button:hover {
     padding: 9px;
 }
 
+.message-formulaire {
+    margin: 6px 0;
+    padding: 12px;
+    border-left: 3px solid #47734b;
+    border-radius: 5px;
+    background: #edf5eb;
+    color: #29492c;
+}
+
+.message-formulaire.erreur {
+    border-color: #a03628;
+    background: #fff0ec;
+    color: #852b20;
+}
+
 /* Form links */
 form a {
     color: var(--couleur-principale);

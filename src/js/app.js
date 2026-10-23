@@ -41,6 +41,10 @@
             email: "Adresse e-mail",
             password: "Mot de passe",
             show_password: "Afficher le mot de passe",
+            confirm_email: "Vérifie tes e-mails pour confirmer ton compte avant de te connecter.",
+            signup_error: "Inscription impossible : ",
+            login_error: "Connexion impossible : ",
+            network_error: "Une erreur est survenue. Réessaie dans un instant.",
             signup: "S'inscrire",
             forgot_password: "Mot de passe oublié",
             conversations_page_title: "Conversations",
@@ -93,6 +97,10 @@
             email: "Email address",
             password: "Password",
             show_password: "Show password",
+            confirm_email: "Check your email to confirm your account before signing in.",
+            signup_error: "Unable to sign up: ",
+            login_error: "Unable to sign in: ",
+            network_error: "Something went wrong. Please try again shortly.",
             signup: "Sign up",
             forgot_password: "Forgot password?",
             conversations_page_title: "Conversations",
@@ -177,7 +185,7 @@
         document.querySelectorAll("[data-i18n]").forEach(element => {
             const cle = element.dataset.i18n;
             if (Object.prototype.hasOwnProperty.call(textes, cle)) {
-                element.textContent = textes[cle];
+                element.textContent = textes[cle] + (element.dataset.detail || "");
             }
         });
 
@@ -270,6 +278,15 @@
     const inputLoginEmail = document.querySelector("#login-email");
     const inputLoginMdp = document.querySelector("#login-mdp");
 
+    function afficherMessage(formulaire, cle, erreur = false, detail = "") {
+        const message = formulaire.querySelector(".message-formulaire");
+        message.dataset.i18n = cle;
+        message.dataset.detail = detail;
+        message.textContent = traductions[langueActuelle][cle] + detail;
+        message.classList.toggle("erreur", erreur);
+        message.hidden = false;
+    }
+
     const regexNom = /^[A-ZÀ-ÖØ-ß][a-zA-ZÀ-ÿ\s'-]{1,}$/;
     const regexSpecialOuChiffre = /[0-9!@#$%^&*(),.?":{}|<>_\-+=/\\~`]/;
 
@@ -327,6 +344,7 @@
     // Fonction d'inscription Supabase
 
     async function inscrireUtilisateur(email, motDePasse, nom, prenom) {
+        formInscription.querySelector(".message-formulaire").hidden = true;
         try {
             const { data, error } = await supabase.auth.signUp({
                 email: email,
@@ -340,21 +358,18 @@
             });
 
             if (error) {
-                alert("Erreur d'inscription : " + error.message);
+                afficherMessage(formInscription, "signup_error", true, error.message);
                 return;
             }
 
             if (data.session) {
                 window.location.href = "conversations.html";
             } else {
-                alert(
-                    document.documentElement.lang === "en"
-                        ? "Check your email to confirm your account before signing in."
-                        : "Vérifie tes e-mails pour confirmer ton compte avant de te connecter."
-                );
+                afficherMessage(formInscription, "confirm_email");
             }
         } catch (err) {
             console.error("Erreur inattendue :", err);
+            afficherMessage(formInscription, "network_error", true);
         }
     }
 
@@ -387,6 +402,7 @@
     // Fonction de connexion Supabase
 
     async function connecterUtilisateur(email, motDePasse) {
+        formConnexion.querySelector(".message-formulaire").hidden = true;
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
@@ -394,13 +410,14 @@
             });
 
             if (error) {
-                alert("Identifiants incorrects : " + error.message);
+                afficherMessage(formConnexion, "login_error", true, error.message);
                 return;
             }
 
             window.location.href = "conversations.html";
         } catch (err) {
             console.error("Erreur de connexion :", err);
+            afficherMessage(formConnexion, "network_error", true);
         }
     }
 
