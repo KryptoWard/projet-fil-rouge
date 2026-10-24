@@ -202,11 +202,15 @@
         <dialog id="channel-dialog" class="channel-dialog" aria-labelledby="channel-dialog-title">
             <form id="channel-create-form">
                 <h2 id="channel-dialog-title" data-chat-text="newChannel">Créer un canal</h2>
-                <p class="channel-audience" data-chat-text="shared">
-                    Visible par tous les utilisateurs connectés du site.
-                </p>
+                
+                <label for="channel-privacy">Visibilité :</label>
+                <select id="channel-privacy" name="privacy">
+                    <option value="public">Tout le monde</option>
+                    <!-- Accepted contacts are dynamically inserted here  -->
+                </select>
                 <label for="channel-name" data-chat-text="name">Nom du canal</label>
                 <input id="channel-name" name="name" required maxlength="40" autocomplete="off" />
+                
                 <label for="channel-topic" data-chat-text="topic">Description (facultatif)</label>
                 <input id="channel-topic" name="topic" maxlength="120" autocomplete="off" />
                 <p id="channel-error" role="alert" hidden></p>
@@ -276,5 +280,6 @@
         <script src="src/js/gifs.js?v=20261022-1"></script>
         <script src="src/js/cats.js"></script>
         <script src="src/js/conversations.js"></script>
+        <script src="src/js/contact.js"></script>
     </body>
 </html>

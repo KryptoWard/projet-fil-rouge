@@ -39,19 +39,27 @@
             return result(
                 client()
                     .from("chat_channels")
-                    .select("id,name,description,is_default,created_at,created_by")
+                    .select("id,name,description,is_default,created_at,created_by,recipient_id")
                     .order("is_default", { ascending: false })
                     .order("created_at")
                     .order("id")
             );
         },
 
-        createChannel(name, description, userId) {
+        createChannel(name, description, userId, recipientId = null) {
+            const payload = {
+                id: crypto.randomUUID(),
+                name,
+                description,
+                created_by: userId
+            };
+            if (recipientId) payload.recipient_id = recipientId;
+
             return result(
                 client()
                     .from("chat_channels")
-                    .insert({ id: crypto.randomUUID(), name, description, created_by: userId })
-                    .select("id,name,description,is_default,created_at,created_by")
+                    .insert(payload)
+                    .select("id,name,description,is_default,created_at,created_by,recipient_id")
                     .single()
             );
         },

@@ -167,6 +167,8 @@
                 button.type = "button";
                 button.dataset.channelId = channel.id;
                 button.setAttribute("aria-current", String(channel.id === view?.id));
+                
+                const prefix = channel.recipient_id ? "🔒 " : "";
                 label.textContent = channelName(channel);
                 button.title = channelName(channel);
                 button.append(label);
@@ -504,9 +506,39 @@
         if (open) search.focus();
     });
 
-    byId("new-channel").addEventListener("click", () => {
+    byId("new-channel").addEventListener("click", async () => {
         createForm.reset();
         byId("channel-error").hidden = true;
+
+        const selectPrivacy = byId("channel-privacy");
+        if (selectPrivacy) {
+            const optionPublic = document.createElement("option"); // Secure creation of the default public option
+            optionPublic.value = "public";
+            optionPublic.textContent = "Tout le monde (Public)";
+            selectPrivacy.replaceChildren(optionPublic); // Clear the select element and add the public option
+            const { data: contacts } = await window.messagerieSupabase // Retrieving accepted contacts from Supabase
+                .from("user_contacts")
+                .select(`
+                    id, requester_id, addressee_id,
+                    requester:chat_profiles!requester_id(display_name),
+                    addressee:chat_profiles!addressee_id(display_name)
+                `)
+                .eq("status", "accepted");
+
+            if (contacts) {
+                contacts.forEach(c => {
+                    const estDemandeur = c.requester_id === user.id;
+                    const contactId = estDemandeur ? c.addressee_id : c.requester_id;
+                    const contactNom = (estDemandeur ? c.addressee : c.requester)?.display_name || "Contact";
+
+                    const option = document.createElement("option");
+                    option.value = contactId;
+                    option.textContent = `Privé avec ${contactNom}`;
+                    selectPrivacy.append(option);
+                });
+            }
+        }
+
         dialog.showModal();
         byId("channel-name").focus();
     });
@@ -529,11 +561,14 @@
         const button = createForm.querySelector('[type="submit"]');
         if (button.disabled) return;
         button.disabled = true;
+        const privacy = byId("channel-privacy")?.value;
+        const recipientId = privacy !== "public" ? privacy : null;
         try {
             const channel = await api.createChannel(
                 name,
                 byId("channel-topic").value.trim(),
-                user.id
+                user.id,
+                recipientId
             );
             await refreshChannels();
             search.value = "";
@@ -585,6 +620,34 @@
                     window.location.replace("index.html");
                 });
             await refreshChannels();
+            // Checks if the chat button has just been clicked on contact.html
+            const targetContactId = window.sessionStorage.getItem("direct_chat_target");
+            const targetContactName = window.sessionStorage.getItem("direct_chat_name");
+
+            if (targetContactId) {
+                window.sessionStorage.removeItem("direct_chat_target");
+                window.sessionStorage.removeItem("direct_chat_name");
+
+                // check if a private channel already exists with this contact
+                let existingChannel = channels.find(c => 
+                    (c.created_by === user.id && c.recipient_id === targetContactId) ||
+                    (c.created_by === targetContactId && c.recipient_id === user.id)
+                );
+
+                if (!existingChannel) {
+                    //automatically creates a private channel with the contact’s name
+                    existingChannel = await api.createChannel(
+                        targetContactName || "Discussion privée",
+                        "Discussion privée",
+                        user.id,
+                        targetContactId
+                    );
+                    await refreshChannels();
+                }
+
+                await selectChannel(existingChannel.id);
+                return;
+            }
             if (!channels.length) throw { code: "PGRST205" };
             await selectChannel(
                 channels.some(channel => channel.id === view?.id) ? view.id : channels[0].id

@@ -40,12 +40,18 @@
             return;
         }
 
+        function creerElementVide(texte) {
+            const li = document.createElement("li");
+            li.textContent = texte;
+            return li;
+        }
+        
         // 2. Invitations received (pending)
         const recues = contacts.filter(c => c.status === "pending" && c.addressee_id === user.id);
         listeRecues.replaceChildren();
 
         if (recues.length === 0) {
-            listeRecues.innerHTML = "<li>Aucune invitation reçue.</li>";
+            listeRecues.append(creerElementVide("Aucune invitation reçue."));
         } else {
             recues.forEach(item => {
                 const li = document.createElement("li");
@@ -73,7 +79,7 @@
         listeEnvoyees.replaceChildren();
 
         if (envoyees.length === 0) {
-            listeEnvoyees.innerHTML = "<li>Aucune invitation envoyée.</li>";
+            listeEnvoyees.append(creerElementVide("Aucune invitation envoyée."));
         } else {
             envoyees.forEach(item => {
                 const li = document.createElement("li");
@@ -88,7 +94,7 @@
         listeContacts.replaceChildren();
 
         if (amis.length === 0) {
-            listeContacts.innerHTML = "<li>Aucun contact pour le moment.</li>";
+            listeContacts.append(creerElementVide("Aucun contact pour le moment."));
         } else {
             amis.forEach(item => {
                 const estDemandeur = item.requester_id === user.id;
