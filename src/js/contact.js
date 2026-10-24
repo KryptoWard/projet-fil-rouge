@@ -16,6 +16,7 @@
         feedback.textContent = message;
         feedback.style.color = erreur ? "#933e27" : "#556b2f";
         feedback.hidden = false;
+        feedback.removeAttribute("hidden");
     }
 
     async function chargerContacts() {
@@ -25,7 +26,7 @@
             return;
         }
 
-        // 1. Retrieving relationships with associated profiles
+        // 1.Retrieving relationships with associated profiles
         const { data: contacts, error } = await supabase
             .from("user_contacts")
             .select(`
@@ -39,7 +40,7 @@
             return;
         }
 
-        // 2. Invitations received
+        // 2. Invitations received (pending)
         const recues = contacts.filter(c => c.status === "pending" && c.addressee_id === user.id);
         listeRecues.replaceChildren();
 
@@ -67,7 +68,7 @@
             });
         }
 
-        // 3. Invitations sent
+        // 3. Invitations sent (pending)
         const envoyees = contacts.filter(c => c.status === "pending" && c.requester_id === user.id);
         listeEnvoyees.replaceChildren();
 
@@ -113,7 +114,7 @@
         }
     }
 
-    // 5. Managing the sending of invitations by display_name
+    // 5.Managing the sending of invitations by full name
     if (formAjout) {
         formAjout.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -124,7 +125,7 @@
 
             const { data: { user } } = await supabase.auth.getUser();
 
-            // Search for a profile by display name
+            //Search for a profile by its display_name
             const { data: cibles, error: errCible } = await supabase
                 .from("chat_profiles")
                 .select("id, display_name")
@@ -153,13 +154,9 @@
                 .insert({ requester_id: user.id, addressee_id: cible.id });
 
             if (errInsert) {
-                // Displays the full Supabase error in the console
                 console.error("Détail de l'erreur Supabase :", errInsert);
-
                 if (errInsert.code === "23505") {
                     notifier("Une invitation existe déjà avec ce membre.", true);
-                } else if (errInsert.code === "42P01") {
-                    notifier("La table user_contacts n'existe pas encore sur Supabase. Exécutez le fichier SQL.", true);
                 } else {
                     notifier(`Erreur lors de l'envoi : ${errInsert.message}`, true);
                 }
@@ -170,3 +167,6 @@
             }
         });
     }
+
+    void chargerContacts();
+})();
