@@ -414,12 +414,15 @@
 
     async function inscrireUtilisateur(email, motDePasse, nom, prenom) {
         formInscription.querySelector(".message-formulaire").hidden = true;
-        const captchaToken = verifierCaptcha(formInscription);
-        if (!captchaToken) return;
         const bouton = formInscription.querySelector('button[type="submit"]');
         if (bouton.disabled) return;
         bouton.disabled = true;
+        let tentative = false;
         try {
+            if (!(await window.confirmAuthPrank(email))) return;
+            const captchaToken = verifierCaptcha(formInscription);
+            if (!captchaToken) return;
+            tentative = true;
             const { data, error } = await supabase.auth.signUp({
                 email: email,
                 password: motDePasse,
@@ -446,7 +449,7 @@
             console.error("Erreur inattendue :", err);
             afficherMessage(formInscription, "network_error", true);
         } finally {
-            window.authCaptcha?.reset(formInscription);
+            if (tentative) window.authCaptcha?.reset(formInscription);
             bouton.disabled = false;
         }
     }
@@ -481,12 +484,15 @@
 
     async function connecterUtilisateur(email, motDePasse) {
         formConnexion.querySelector(".message-formulaire").hidden = true;
-        const captchaToken = verifierCaptcha(formConnexion);
-        if (!captchaToken) return;
         const bouton = formConnexion.querySelector('button[type="submit"]');
         if (bouton.disabled) return;
         bouton.disabled = true;
+        let tentative = false;
         try {
+            if (!(await window.confirmAuthPrank(email))) return;
+            const captchaToken = verifierCaptcha(formConnexion);
+            if (!captchaToken) return;
+            tentative = true;
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: motDePasse,
@@ -503,7 +509,7 @@
             console.error("Erreur de connexion :", err);
             afficherMessage(formConnexion, "network_error", true);
         } finally {
-            window.authCaptcha?.reset(formConnexion);
+            if (tentative) window.authCaptcha?.reset(formConnexion);
             bouton.disabled = false;
         }
     }

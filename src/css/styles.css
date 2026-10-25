@@ -775,7 +775,8 @@ footer {
 }
 
 /* Playful sign-out confirmations */
-.logout-game {
+.logout-game,
+.auth-prank {
     width: min(440px, calc(100% - 32px));
     padding: 28px;
     border: 1px solid var(--couleur-bordure);
@@ -785,12 +786,14 @@ footer {
     overflow: visible;
 }
 
-.logout-game::backdrop {
+.logout-game::backdrop,
+.auth-prank::backdrop {
     background: rgb(52 46 39 / 25%);
     backdrop-filter: blur(4px);
 }
 
-.logout-game h2 { margin-top: 0; }
+.logout-game h2,
+.auth-prank h2 { margin-top: 0; }
 #logout-game-progress,
 #logout-game-hint { color: var(--couleur-douce); font-size: 0.85rem; }
 .logout-game-actions { display: flex; gap: 12px; margin-top: 24px; }
@@ -815,3 +818,9 @@ footer {
     font-size: 0.8rem;
     text-decoration: underline;
 }
+
+.auth-prank { max-height: calc(100dvh - 32px); overflow: auto; }
+#auth-prank-email { overflow-wrap: anywhere; }
+#auth-prank-note { color: var(--couleur-douce); font-size: 0.85rem; }
+.auth-prank-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.auth-prank-actions button { flex: 1; }
