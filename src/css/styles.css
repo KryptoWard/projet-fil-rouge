@@ -493,9 +493,13 @@ form a {
 }
 
 /* Information pages and shared footer */
+body:has(#iubenda-cs-banner.iubenda-cs-visible) > :is(header, main, footer, .feuilles-automne) {
+    filter: blur(4px);
+}
+
 .pied-de-page {
     flex: 0 0 auto;
-    padding: 12px 24px;
+    padding: 16px 24px;
     border-top: 1px solid var(--couleur-bordure);
     background: var(--couleur-papier);
     font-size: 0.8rem;
@@ -512,6 +516,17 @@ form a {
 .page-informations a {
     color: var(--couleur-principale);
     text-underline-offset: 3px;
+}
+
+.pied-de-page a {
+    color: var(--couleur-douce);
+    text-decoration: none;
+}
+
+.pied-de-page a:hover,
+.pied-de-page a:focus-visible {
+    color: var(--couleur-principale);
+    text-decoration: underline;
 }
 
 .page-informations {
