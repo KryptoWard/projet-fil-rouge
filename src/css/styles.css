@@ -821,6 +821,5 @@ footer {
 
 .auth-prank { max-height: calc(100dvh - 32px); overflow: auto; }
 #auth-prank-email { overflow-wrap: anywhere; }
-#auth-prank-note { color: var(--couleur-douce); font-size: 0.85rem; }
 .auth-prank-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .auth-prank-actions button { flex: 1; }

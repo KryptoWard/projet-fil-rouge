@@ -7,18 +7,16 @@
     const error = document.getElementById("auth-prank-error");
     const text = {
         fr: {
-            title: "Vérification A2F (presque)", before: "Nous avons envoyé le code",
-            after: "à la boîte mail suivante :", label: "Recopie le code (il est juste au-dessus)",
-            note: "Vérification pour rire : aucun e-mail envoyé. La vraie confirmation du compte reste séparée.",
+            title: "Vérification A2F", before: "Nous avons envoyé le code",
+            after: "à la boîte mail suivante :", label: "Code de vérification",
             confirm: "Valider le code", cancel: "Annuler",
-            error: "Ce n’est pas le bon code. Indice : il est écrit juste au-dessus."
+            error: "Code incorrect. Réessaie."
         },
         en: {
-            title: "Two-factor verification (almost)", before: "We have sent the code",
-            after: "to this email address:", label: "Copy the code (it is right above)",
-            note: "Just a joke: no email was sent. Real account confirmation is separate.",
+            title: "Two-factor verification", before: "We have sent the code",
+            after: "to this email address:", label: "Verification code",
             confirm: "Verify code", cancel: "Cancel",
-            error: "That is not the right code. Hint: it is written right above."
+            error: "Incorrect code. Try again."
         }
     };
     let finish = null;
