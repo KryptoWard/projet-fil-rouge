@@ -773,3 +773,45 @@ footer {
     color: #933e27;
     font-size: 0.85rem;
 }
+
+/* Playful sign-out confirmations */
+.logout-game {
+    width: min(440px, calc(100% - 32px));
+    padding: 28px;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 10px;
+    background: var(--couleur-papier);
+    color: var(--couleur-texte);
+    overflow: visible;
+}
+
+.logout-game::backdrop {
+    background: rgb(52 46 39 / 25%);
+    backdrop-filter: blur(4px);
+}
+
+.logout-game h2 { margin-top: 0; }
+#logout-game-progress,
+#logout-game-hint { color: var(--couleur-douce); font-size: 0.85rem; }
+.logout-game-actions { display: flex; gap: 12px; margin-top: 24px; }
+.logout-game button {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--couleur-principale);
+    border-radius: 5px;
+    background: var(--couleur-papier);
+    color: var(--couleur-principale);
+    font: inherit;
+    cursor: pointer;
+}
+#logout-game-yes { background: var(--couleur-principale); color: #fff; z-index: 1; }
+.logout-game button:focus-visible { outline: 2px solid var(--couleur-principale); outline-offset: 3px; }
+.logout-game .logout-game-skip {
+    display: block;
+    margin-top: 18px;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    font-size: 0.8rem;
+    text-decoration: underline;
+}

@@ -308,6 +308,7 @@
     if (boutonDeconnexion) {
         boutonDeconnexion.addEventListener("click", async () => {
             if (boutonDeconnexion.disabled) return;
+            if (window.confirmLogout && !(await window.confirmLogout())) return;
             const libelle = boutonDeconnexion.querySelector("[data-i18n]");
             const erreurDeconnexion = document.querySelector("#logout-error");
             boutonDeconnexion.disabled = true;

@@ -124,6 +124,17 @@
                 </section>
             </section>
         </main>
+        <dialog id="logout-game" class="logout-game" aria-labelledby="logout-game-title" aria-describedby="logout-game-message">
+            <h2 id="logout-game-title">La grande déconnexion</h2>
+            <p id="logout-game-progress"></p>
+            <p id="logout-game-message" aria-live="polite"></p>
+            <p id="logout-game-hint"></p>
+            <div class="logout-game-actions">
+                <button type="button" id="logout-game-no">Non, je reste</button>
+                <button type="button" id="logout-game-yes">Oui</button>
+            </div>
+            <button type="button" id="logout-game-skip" class="logout-game-skip">Se déconnecter directement</button>
+        </dialog>
         <footer class="pied-de-page">
             <nav aria-label="Informations du site">
                 <a href="a-propos.html" data-i18n="about">À propos</a>
@@ -134,6 +145,7 @@
                 <a href="mentions-legales.html#cookies" class="iubenda-cs-preferences-link" data-i18n="cookie_choices">Gérer les cookies</a>
             </nav>
         </footer>
+        <script src="src/js/logout-game.js"></script>
         <script src="src/js/app.js"></script>
         <script src="src/js/automn.js"></script>
         <script src="src/js/weather.js?v=20261022-2"></script>
