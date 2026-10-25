@@ -492,6 +492,59 @@ form a {
     }
 }
 
+/* Information pages and shared footer */
+.pied-de-page {
+    flex: 0 0 auto;
+    padding: 12px 24px;
+    border-top: 1px solid var(--couleur-bordure);
+    background: var(--couleur-papier);
+    font-size: 0.8rem;
+}
+
+.pied-de-page nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.pied-de-page a,
+.page-informations a {
+    color: var(--couleur-principale);
+    text-underline-offset: 3px;
+}
+
+.page-informations {
+    width: min(100% - 32px, 860px);
+}
+
+.page-informations article {
+    overflow-wrap: anywhere;
+}
+
+.page-informations h3 {
+    margin-top: 32px;
+    scroll-margin-top: 24px;
+}
+
+.contact-confidentialite {
+    margin: 8px 0 0;
+    font-size: 0.85rem;
+}
+
+.champ-piege {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+#form-contact button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
 /* Falling leaves stay behind the controls and never capture clicks */
 .feuilles-automne {
     position: fixed;

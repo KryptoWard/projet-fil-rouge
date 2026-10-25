@@ -8,6 +8,8 @@ node_modules/
 supabase/.temp/
 supabase/.branches/
 state/
+tests/
+server/
 
 # Editor and system files
 .DS_Store

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <script type="text/javascript" src="https://embeds.iubenda.com/widgets/b2f2467f-7b2c-4f18-9189-a12d9ab6c546.js"></script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Nous contacter · Messagerie instantanée</title>
+        <link rel="stylesheet" href="src/css/styles.css" />
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    </head>
+    <body>
+        <header class="barre-navigation">
+            <h1 class="marque">
+                <a href="index.html">
+                    <img src="src/assets/svg/logo-messagerie.svg" alt="" />
+                    <span data-i18n="brand">Messagerie instantanée</span>
+                </a>
+            </h1>
+            <nav class="navigation-principale" aria-label="Navigation principale">
+                <ul>
+                    <li>
+                        <a href="conversations.html">
+                            <img src="src/assets/svg/conversations.svg" alt="" />
+                            <span data-i18n="conversations">Conversations</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="contact.html">
+                            <img src="src/assets/svg/contacts.svg" alt="" />
+                            <span data-i18n="contacts">Contacts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html">
+                            <img src="src/assets/svg/parametres.svg" alt="" />
+                            <span data-i18n="settings">Paramètres</span>
+                        </a>
+                    </li>
+                    <li>
+                        <button
+                            type="button"
+                            class="bouton-langue"
+                            id="langue-switch"
+                            aria-label="Changer la langue d’affichage"
+                        >
+                            English
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            type="button"
+                            class="pause-feuilles"
+                            aria-label="Mettre les feuilles en pause"
+                            title="Mettre les feuilles en pause"
+                            aria-pressed="false"
+                        >
+                            <img class="icone-pause" src="src/assets/svg/pause.svg" alt="" />
+                            <img class="icone-reprise" src="src/assets/svg/reprendre.svg" alt="" />
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <div class="feuilles-automne" aria-hidden="true"></div>
+        <main class="page-informations">
+            <section>
+                <h2 data-i18n="contact_us">Nous contacter</h2>
+                <p data-i18n="contact_intro">Une question, un problème ou une suggestion ? Écris-nous avec ce formulaire.</p>
+                <form id="form-contact" action="#form-contact">
+                    <label for="contact-name" data-i18n="contact_name">Nom (facultatif)</label>
+                    <input id="contact-name" autocomplete="name" maxlength="100" />
+                    <label for="contact-email" data-i18n="email">Adresse e-mail</label>
+                    <input type="email" id="contact-email" autocomplete="email" maxlength="254" required />
+                    <label for="contact-subject" data-i18n="contact_subject">Objet</label>
+                    <input id="contact-subject" maxlength="150" required />
+                    <label for="contact-message" data-i18n="contact_message">Ton message</label>
+                    <textarea id="contact-message" rows="7" minlength="10" maxlength="5000" required></textarea>
+                    <div class="champ-piege" aria-hidden="true" inert>
+                        <label for="contact-website">Website</label>
+                        <input id="contact-website" tabindex="-1" autocomplete="off" />
+                    </div>
+                    <p class="contact-confidentialite"><span data-i18n="contact_data">Ton adresse e-mail et ton message servent à traiter ta demande.</span> <a href="mentions-legales.html#confidentialite" data-i18n="privacy">Confidentialité</a></p>
+                    <button type="submit" data-i18n="contact_send" disabled>Envoyer le message</button>
+                    <p class="message-formulaire" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+                </form>
+                <noscript><p>Active JavaScript pour utiliser le formulaire.</p></noscript>
+                <p><span data-i18n="contact_direct">Tu peux aussi écrire directement à</span> <a href="mailto:contact@a49.fr">contact@a49.fr</a>.</p>
+            </section>
+        </main>
+        <footer class="pied-de-page">
+            <nav aria-label="Informations du site">
+                <a href="a-propos.html" data-i18n="about">À propos</a>
+                <a href="nous-contacter.html" data-i18n="contact_us">Nous contacter</a>
+                <a href="mentions-legales.html#conditions" data-i18n="terms">Conditions d’utilisation</a>
+                <a href="mentions-legales.html#confidentialite" data-i18n="privacy">Confidentialité</a>
+                <a href="mentions-legales.html" data-i18n="legal">Mentions légales</a>
+                <a href="mentions-legales.html#cookies" class="iubenda-cs-preferences-link" data-i18n="cookie_choices">Gérer les cookies</a>
+            </nav>
+        </footer>
+        <script src="src/js/app.js"></script>
+        <script src="src/js/automn.js"></script>
+        <script src="src/js/contact-support.js"></script>
+    </body>
+</html>

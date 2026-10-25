@@ -10,3 +10,5 @@ Des commandes utilitaires sont également envisagées : consultation de la mét�
 L’interface sera développée en HTML, CSS et JavaScript et hébergée sur GitHub Pages.
 
 Nous attendrons donc la validation du professeur pour pouvoir valider entièrement nos objectifs.
+
+Les informations du site sont accessibles depuis le bas de chaque page : à propos, contact, conditions d’utilisation, confidentialité et mentions légales. Le formulaire de contact utilise un service d’envoi hébergé séparément sur notre serveur.
