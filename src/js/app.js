@@ -419,7 +419,7 @@
         bouton.disabled = true;
         let tentative = false;
         try {
-            if (!(await window.confirmAuthPrank(email))) return;
+            if (typeof window.confirmAuthPrank === "function" && !(await window.confirmAuthPrank(email))) return;
             const captchaToken = verifierCaptcha(formInscription);
             if (!captchaToken) return;
             tentative = true;
@@ -489,7 +489,7 @@
         bouton.disabled = true;
         let tentative = false;
         try {
-            if (!(await window.confirmAuthPrank(email))) return;
+            if (typeof window.confirmAuthPrank === "function" && !(await window.confirmAuthPrank(email))) return;
             const captchaToken = verifierCaptcha(formConnexion);
             if (!captchaToken) return;
             tentative = true;
