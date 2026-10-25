@@ -62,6 +62,7 @@
             signup_error: "Inscription impossible : ",
             login_error: "Connexion impossible : ",
             network_error: "Une erreur est survenue. Réessaie dans un instant.",
+            captcha_required: "Termine la vérification de sécurité. Si elle ne s’affiche pas, recharge la page et vérifie que Cloudflare n’est pas bloqué.",
             signup: "S'inscrire",
             forgot_password: "Mot de passe oublié",
             conversations_page_title: "Conversations",
@@ -150,6 +151,7 @@
             signup_error: "Unable to sign up: ",
             login_error: "Unable to sign in: ",
             network_error: "Something went wrong. Please try again shortly.",
+            captcha_required: "Complete the security check. If it does not appear, reload the page and check that Cloudflare is not blocked.",
             signup: "Sign up",
             forgot_password: "Forgot password?",
             conversations_page_title: "Conversations",
@@ -412,11 +414,17 @@
 
     async function inscrireUtilisateur(email, motDePasse, nom, prenom) {
         formInscription.querySelector(".message-formulaire").hidden = true;
+        const captchaToken = verifierCaptcha(formInscription);
+        if (!captchaToken) return;
+        const bouton = formInscription.querySelector('button[type="submit"]');
+        if (bouton.disabled) return;
+        bouton.disabled = true;
         try {
             const { data, error } = await supabase.auth.signUp({
                 email: email,
                 password: motDePasse,
                 options: {
+                    captchaToken,
                     data: {
                         first_name: prenom,
                         last_name: nom
@@ -437,6 +445,9 @@
         } catch (err) {
             console.error("Erreur inattendue :", err);
             afficherMessage(formInscription, "network_error", true);
+        } finally {
+            window.authCaptcha?.reset(formInscription);
+            bouton.disabled = false;
         }
     }
 
@@ -470,10 +481,16 @@
 
     async function connecterUtilisateur(email, motDePasse) {
         formConnexion.querySelector(".message-formulaire").hidden = true;
+        const captchaToken = verifierCaptcha(formConnexion);
+        if (!captchaToken) return;
+        const bouton = formConnexion.querySelector('button[type="submit"]');
+        if (bouton.disabled) return;
+        bouton.disabled = true;
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
-                password: motDePasse
+                password: motDePasse,
+                options: { captchaToken }
             });
 
             if (error) {
@@ -485,7 +502,16 @@
         } catch (err) {
             console.error("Erreur de connexion :", err);
             afficherMessage(formConnexion, "network_error", true);
+        } finally {
+            window.authCaptcha?.reset(formConnexion);
+            bouton.disabled = false;
         }
+    }
+
+    function verifierCaptcha(formulaire) {
+        const token = window.authCaptcha?.token(formulaire);
+        if (!token) afficherMessage(formulaire, "captcha_required", true);
+        return token;
     }
 
     // Gestion de la soumission de la connexion
@@ -561,6 +587,8 @@
             const message = formDemandeRecuperation.querySelector(".message-formulaire");
             const bouton = formDemandeRecuperation.querySelector('button[type="submit"]');
             message.hidden = true;
+            const captchaToken = verifierCaptcha(formDemandeRecuperation);
+            if (!captchaToken || bouton.disabled) return;
             bouton.disabled = true;
             bouton.setAttribute("aria-busy", "true");
 
@@ -569,7 +597,7 @@
                 const redirectTo = new URL("pwdforgotten.html", window.location.href).href;
                 const { error } = await supabase.auth.resetPasswordForEmail(
                     emailRecuperation.value.trim(),
-                    { redirectTo }
+                    { redirectTo, captchaToken }
                 );
 
                 if (error) {
@@ -580,6 +608,7 @@
             } catch (erreur) {
                 afficherMessage(formDemandeRecuperation, "network_error", true);
             } finally {
+                window.authCaptcha?.reset(formDemandeRecuperation);
                 bouton.disabled = false;
                 bouton.removeAttribute("aria-busy");
             }

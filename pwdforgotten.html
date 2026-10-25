@@ -78,6 +78,7 @@
                         autocomplete="email"
                         required
                     />
+                    <div class="captcha"></div>
                     <button type="submit" data-i18n="send_recovery_link">
                         Envoyer le lien de réinitialisation
                     </button>
@@ -142,6 +143,8 @@
                 <a href="mentions-legales.html#cookies" class="iubenda-cs-preferences-link" data-i18n="cookie_choices">Gérer les cookies</a>
             </nav>
         </footer>
+        <script src="src/js/captcha.js"></script>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=initialiserCaptcha" async defer></script>
         <script src="src/js/app.js"></script>
         <script src="src/js/automn.js"></script>
     </body>
