@@ -65,6 +65,7 @@
         status.textContent = words()[key];
     }
 
+    // Only allow secure KLIPY links in saved GIF messages
     function allowedUrl(value) {
         try {
             const url = new URL(value);
@@ -97,6 +98,7 @@
         );
     }
 
+    // Build the GIF message with a fallback if the image cannot load
     function render(gif) {
         const article = document.createElement("article");
         article.className = "gif-message";
@@ -186,6 +188,7 @@
         results.append(item);
     }
 
+    // Search through Supabase so the KLIPY key stays on the server
     async function search(append = false) {
         if (sending) return;
         request?.abort();
@@ -265,6 +268,7 @@
         if (!sending) void search(true);
     });
 
+    // Update the search controls when the interface language changes
     function translate() {
         button.setAttribute("aria-label", words().title);
         document.getElementById("gif-dialog-title").textContent = words().title;

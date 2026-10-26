@@ -67,6 +67,7 @@
             <section>
                 <h2 data-i18n="contact_us">Nous contacter</h2>
                 <p data-i18n="contact_intro">Une question, un problème ou une suggestion ? Écris-nous avec ce formulaire.</p>
+                <!-- Send the contact request through the separate mail service -->
                 <form id="form-contact" action="#form-contact">
                     <label for="contact-name" data-i18n="contact_name">Nom (facultatif)</label>
                     <input id="contact-name" autocomplete="name" maxlength="100" />
@@ -76,6 +77,7 @@
                     <input id="contact-subject" maxlength="150" required />
                     <label for="contact-message" data-i18n="contact_message">Ton message</label>
                     <textarea id="contact-message" rows="7" minlength="10" maxlength="5000" required></textarea>
+                    <!-- Leave this hidden field empty to help detect automated submissions -->
                     <div class="champ-piege" aria-hidden="true" inert>
                         <label for="contact-website">Website</label>
                         <input id="contact-website" tabindex="-1" autocomplete="off" />
@@ -88,6 +90,7 @@
                 <p><span data-i18n="contact_direct">Tu peux aussi écrire directement à</span> <a href="mailto:contact@a49.fr">contact@a49.fr</a>.</p>
             </section>
         </main>
+        <!-- Keep the same information links on every page -->
         <footer class="pied-de-page">
             <nav aria-label="Informations du site">
                 <a href="a-propos.html" data-i18n="about">À propos</a>

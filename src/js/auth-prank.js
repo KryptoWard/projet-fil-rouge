@@ -20,12 +20,14 @@
         }
     };
     let finish = null;
+    // Resolve the waiting authentication step when the dialog closes
     function end(confirmed) {
         const resolve = finish;
         finish = null;
         dialog.close();
         resolve?.(confirmed);
     }
+    // Display a new five digit code before continuing to authentication
     window.confirmAuthPrank = email => {
         if (dialog.open) return Promise.resolve(false);
         return new Promise(resolve => {
@@ -42,6 +44,7 @@
             input.focus();
         });
     };
+    // Check the displayed code locally without sending an email
     form.addEventListener("submit", event => {
         event.preventDefault();
         if (input.value !== number.textContent) {

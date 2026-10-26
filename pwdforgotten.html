@@ -69,6 +69,7 @@
                 <p id="recovery-instructions" data-i18n="recovery_instructions">
                     Saisis l’adresse e-mail associée à ton compte. Si un compte existe, un lien de réinitialisation sera envoyé.
                 </p>
+                <!-- Request a recovery link before showing the password form -->
                 <form id="form-demande-recuperation" class="form-recovery" action="">
                     <label for="recovery-email" data-i18n="email">Adresse e-mail</label>
                     <input
@@ -84,6 +85,7 @@
                     </button>
                     <p class="message-formulaire" role="status" aria-atomic="true" hidden></p>
                 </form>
+                <!-- Show this step after Supabase restores the recovery session -->
                 <form id="form-nouveau-mot-de-passe" class="form-recovery" action="" hidden>
                     <label for="new-password" data-i18n="new_password">Nouveau mot de passe</label>
                     <div class="champ-mot-de-passe">

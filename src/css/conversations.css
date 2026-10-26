@@ -213,6 +213,7 @@
     display: none;
 }
 
+/* Scroll the message history without moving the composer */
 .thread-scroll {
     flex: 1;
     min-height: 0;
@@ -348,6 +349,7 @@
     opacity: 0.6;
 }
 
+/* Keep the message field and sharing tools together */
 .composer-wrap {
     flex: none;
     padding: 16px 26px 20px;
@@ -633,6 +635,7 @@
         padding: 0;
     }
 }
+/* Fit the GIF search and results inside a scrollable dialog */
 .channel-dialog.gif-dialog {
     width: min(580px, calc(100% - 24px));
     max-height: calc(100dvh - 24px);

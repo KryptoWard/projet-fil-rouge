@@ -293,7 +293,7 @@
         try {
             window.localStorage.setItem("langue-interface", langue);
         } catch (erreur) {
-            // Pas de stockage
+            // Storage is unavailable in this browser
         }
     }
 
@@ -410,7 +410,7 @@
     if (inputPrenom) inputPrenom.addEventListener("input", validerPrenom);
     if (inputMdp) inputMdp.addEventListener("input", validerMdp);
 
-    // Fonction d'inscription Supabase
+    // Create the account with Supabase Auth
 
     async function inscrireUtilisateur(email, motDePasse, nom, prenom) {
         formInscription.querySelector(".message-formulaire").hidden = true;
@@ -454,7 +454,7 @@
         }
     }
 
-    // Gestion de la soumission de l'inscription
+    // Validate the registration form before sending it
     if (formInscription) {
         formInscription.addEventListener("submit", async evenement => {
             evenement.preventDefault();
@@ -480,7 +480,7 @@
         });
     }
 
-    // Fonction de connexion Supabase
+    // Sign in with Supabase Auth
 
     async function connecterUtilisateur(email, motDePasse) {
         formConnexion.querySelector(".message-formulaire").hidden = true;
@@ -520,7 +520,7 @@
         return token;
     }
 
-    // Gestion de la soumission de la connexion
+    // Submit the login form
     if (formConnexion) {
         formConnexion.addEventListener("submit", async evenement => {
             evenement.preventDefault();

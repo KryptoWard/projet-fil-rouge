@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aperçu du thème d’automne — Messagerie</title>
     <style>
-        /* Palette automnale : papier clair, brun, rouille et olive */
+        /* Autumn colors with light paper, brown, rust and olive */
         :root {
             --encre: #342e27;
             --brun: #574333;
@@ -30,7 +30,7 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        /* Barre simple, avec un accent rouille */
+        /* Simple navigation with a rust accent */
         .barre-haute {
             display: flex;
             align-items: center;
@@ -111,7 +111,7 @@
             font-size: 0.9rem;
         }
 
-        /* Fenêtre de messagerie */
+        /* Main chat window */
         .messagerie {
             display: grid;
             grid-template-columns: 290px minmax(0, 1fr);
@@ -176,7 +176,7 @@
             background: #efe5d5;
         }
 
-        /* Initiales carrées pour garder le style anguleux */
+        /* Square initials to match the page style */
         .initiales {
             display: grid;
             width: 38px;
@@ -365,7 +365,7 @@
             }
         }
 
-        /* Trois mouvements séparés : chute, balancement et rotation. */
+        /* Separate falling, swaying and rotating movements */
         .feuilles-automne {
             position: fixed;
             inset: 0;
@@ -443,7 +443,7 @@
             .feuille:nth-child(n + 13) { display: none; }
         }
 
-        /* Respecte le réglage du navigateur pour réduire les animations. */
+        /* Follow the browser preference for reduced motion */
         @media (prefers-reduced-motion: reduce) {
             .feuilles-automne, .pause-feuilles { display: none; }
             .feuille, .feuille-balancement, .feuille svg { animation: none; }
@@ -451,7 +451,7 @@
     </style>
 </head>
 <body>
-    <!-- Décor uniquement : les feuilles ne bloquent pas les clics. -->
+    <!-- Decorative leaves leave the page controls clickable -->
     <svg width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden">
         <defs>
             <symbol id="feuille-erable" viewBox="0 0 64 64">
@@ -542,10 +542,11 @@
         <p class="note">Aperçu séparé : le thème du site actuel n’a pas été modifié.</p>
     </main>
     <script>
-        // Des feuilles variées, déjà réparties dans la chute dès l'ouverture.
+        // Vary the leaves and spread them through the animation from the start
         const decorFeuilles = document.querySelector(".feuilles-automne");
         const couleursFeuilles = ["#b24e2c", "#c98a30", "#8e5939", "#a96726", "#858052"];
         const fragmentsFeuilles = document.createDocumentFragment();
+        const svgNamespace = "http://www.w3.org/2000/svg";
 
         for (let index = 0; index < 24; index += 1) {
             const feuille = document.createElement("span");
@@ -561,13 +562,22 @@
             feuille.style.setProperty("--rotation", (6 + index % 7) + "s");
 
             const forme = index % 3 === 0 ? "feuille-longue" : "feuille-erable";
-            feuille.innerHTML = '<span class="feuille-balancement"><svg viewBox="0 0 64 64"><use href="#' + forme + '"></use></svg></span>';
+            // Build the leaf from DOM nodes using the local SVG shapes
+            const balancement = document.createElement("span");
+            balancement.className = "feuille-balancement";
+            const svg = document.createElementNS(svgNamespace, "svg");
+            svg.setAttribute("viewBox", "0 0 64 64");
+            const reference = document.createElementNS(svgNamespace, "use");
+            reference.setAttribute("href", "#" + forme);
+            svg.append(reference);
+            balancement.append(svg);
+            feuille.append(balancement);
             fragmentsFeuilles.appendChild(feuille);
         }
 
         decorFeuilles.appendChild(fragmentsFeuilles);
 
-        // Le bouton permet de figer puis de reprendre le décor.
+        // Pause or resume the falling leaves
         const boutonPause = document.querySelector(".pause-feuilles");
         boutonPause.addEventListener("click", () => {
             const enPause = document.body.classList.toggle("feuilles-en-pause");

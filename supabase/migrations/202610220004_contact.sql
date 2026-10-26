@@ -1,6 +1,6 @@
 begin;
 
--- Table de gestion des contacts et invitations
+-- Store contact invitations and accepted contacts
 create table if not exists public.user_contacts (
     id uuid primary key default gen_random_uuid(),
     requester_id uuid not null references public.chat_profiles(id) on delete cascade,
@@ -14,12 +14,12 @@ create table if not exists public.user_contacts (
 create index if not exists user_contacts_requester on public.user_contacts (requester_id);
 create index if not exists user_contacts_addressee on public.user_contacts (addressee_id);
 
--- Activation de la sécurité Row Level Security
+-- Enable row level security and grant the required table access
 alter table public.user_contacts enable row level security;
 revoke all on public.user_contacts from public, anon, authenticated;
 grant select, insert, update, delete on public.user_contacts to authenticated;
 
--- Politiques RLS
+-- Limit contact access to the two users involved
 drop policy if exists contacts_read on public.user_contacts;
 create policy contacts_read on public.user_contacts for select to authenticated
 using (requester_id = (select auth.uid()) or addressee_id = (select auth.uid()));
@@ -36,7 +36,7 @@ drop policy if exists contacts_delete on public.user_contacts;
 create policy contacts_delete on public.user_contacts for delete to authenticated
 using (requester_id = (select auth.uid()) or addressee_id = (select auth.uid()));
 
--- Ajout au flux temps réel Supabase
+-- Add contacts to the existing Realtime publication
 do $$
 begin
     if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then

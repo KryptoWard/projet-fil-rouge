@@ -25,6 +25,7 @@
     let escapes = 0;
     const words = () => text[document.documentElement.lang === "en" ? "en" : "fr"];
     function resetPosition() { yes.removeAttribute("style"); }
+    // Show the next question and reset the moving button
     function render() {
         const t = words();
         document.getElementById("logout-game-title").textContent = t.title;
@@ -44,6 +45,7 @@
         dialog.close();
         resolve?.(confirmed);
     }
+    // Let the account page wait for the final choice
     window.confirmLogout = () => {
         if (finish) return Promise.resolve(false);
         return new Promise(resolve => {
@@ -59,6 +61,7 @@
         render();
         yes.focus();
     });
+    // Move the button a few times unless reduced motion is requested
     yes.addEventListener("pointerenter", event => {
         if (event.pointerType !== "mouse" || escapes >= 4 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         const rect = yes.getBoundingClientRect();
@@ -76,6 +79,7 @@
         if (++escapes === 4) hint.textContent = words().caught;
     });
     no.addEventListener("click", () => end(false));
+    // Keep a direct way to sign out without finishing the game
     skip.addEventListener("click", () => end(true));
     dialog.addEventListener("cancel", event => { event.preventDefault(); end(false); });
     dialog.addEventListener("close", () => { if (finish) end(false); });

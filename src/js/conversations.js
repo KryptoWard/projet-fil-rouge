@@ -351,6 +351,7 @@
         }
     }
 
+    // Keep the current draft before loading another conversation
     async function selectChannel(id) {
         if (view) drafts.set(view.id, input.value);
         writable(false);
@@ -600,6 +601,7 @@
         renderMessages();
     }
 
+    // Check the session before loading channels and starting live updates
     async function initialize() {
         if (initializing) return;
         initializing = true;
@@ -620,7 +622,7 @@
                     window.location.replace("index.html");
                 });
             await refreshChannels();
-            // Checks if the chat button has just been clicked on contact.html
+            // Open the contact selected on the contacts page
             const targetContactId = window.sessionStorage.getItem("direct_chat_target");
             const targetContactName = window.sessionStorage.getItem("direct_chat_name");
 
@@ -628,14 +630,14 @@
                 window.sessionStorage.removeItem("direct_chat_target");
                 window.sessionStorage.removeItem("direct_chat_name");
 
-                // check if a private channel already exists with this contact
+                // Look for an existing discussion with this contact
                 let existingChannel = channels.find(c => 
                     (c.created_by === user.id && c.recipient_id === targetContactId) ||
                     (c.created_by === targetContactId && c.recipient_id === user.id)
                 );
 
                 if (!existingChannel) {
-                    //automatically creates a private channel with the contact’s name
+                    // Create a discussion with the contact name if none exists
                     existingChannel = await api.createChannel(
                         targetContactName || "Discussion privée",
                         "Discussion privée",

@@ -7,6 +7,7 @@
         return window.messagerieSupabase;
     };
 
+    // Return query data or pass the Supabase error to the caller
     async function result(query) {
         const response = await query;
         if (response.error) throw response.error;
@@ -118,6 +119,7 @@
             );
         },
 
+        // Store the message fields needed for its content type
         send(channelId, userId, content) {
             const message = {
                 id: crypto.randomUUID(),
@@ -135,6 +137,7 @@
             );
         },
 
+        // Listen for message changes and refresh the channel list
         subscribe(channelId, onMessage, onChannel, onStatus, onDelete = () => {}) {
             return client()
                 .channel(`chat:${channelId}:${crypto.randomUUID()}`)

@@ -5,6 +5,7 @@
     if (!button) return;
     const english = () => document.documentElement.lang === "en";
 
+    // Only accept images from the expected CATAAS address
     function valid(image) {
         return (
             typeof image?.url === "string" &&
@@ -12,6 +13,7 @@
         );
     }
 
+    // Build the photo message and keep the provider link visible
     function render(image) {
         const article = document.createElement("article");
         article.className = "cat-message";

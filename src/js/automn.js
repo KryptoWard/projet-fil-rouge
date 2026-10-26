@@ -3,6 +3,7 @@ const decorFeuilles = document.querySelector(".feuilles-automne");
 if (decorFeuilles) {
     const couleursFeuilles = ["#b24e2c", "#c98a30", "#8e5939", "#a96726", "#858052"];
     const fragmentsFeuilles = document.createDocumentFragment();
+    const svgNamespace = "http://www.w3.org/2000/svg";
 
     for (let index = 0; index < 24; index += 1) {
         const feuille = document.createElement("span");
@@ -21,10 +22,16 @@ if (decorFeuilles) {
         feuille.style.setProperty("--rotation", 6 + (index % 7) + "s");
 
         const forme = index % 3 === 0 ? "feuille-longue" : "feuille-erable";
-        feuille.innerHTML =
-            '<span class="feuille-balancement"><svg viewBox="0 0 64 64"><use href="src/assets/svg/feuilles.svg#' +
-            forme +
-            '"></use></svg></span>';
+        // Build the leaf with DOM nodes and keep SVG elements in their namespace
+        const balancement = document.createElement("span");
+        balancement.className = "feuille-balancement";
+        const svg = document.createElementNS(svgNamespace, "svg");
+        svg.setAttribute("viewBox", "0 0 64 64");
+        const reference = document.createElementNS(svgNamespace, "use");
+        reference.setAttribute("href", "src/assets/svg/feuilles.svg#" + forme);
+        svg.append(reference);
+        balancement.append(svg);
+        feuille.append(balancement);
         fragmentsFeuilles.appendChild(feuille);
     }
 

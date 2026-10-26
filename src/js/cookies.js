@@ -1,7 +1,9 @@
 (() => {
     "use strict";
+    // Remember whether this browser has already seen the cookie notice
     const key = "cookie-notice-shown";
     let attempts = 0;
+    // Wait for iubenda to load before opening its banner
     const timer = window.setInterval(() => {
         let shown = false;
         try { shown = localStorage.getItem(key) === "1"; } catch {}

@@ -20,6 +20,7 @@
             failed: "We could not confirm delivery. Try again later or email contact@a49.fr."
         }
     };
+    // Keep the delivery status in the current interface language
     const show = key => {
         status.textContent = text[document.documentElement.lang === "en" ? "en" : "fr"][key];
         status.hidden = false;
@@ -30,6 +31,7 @@
         if (status.dataset.contactStatus) show(status.dataset.contactStatus);
     }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
     button.disabled = false;
+    // Send the form to the separate mail service and check its reply
     form.addEventListener("submit", async event => {
         event.preventDefault();
         if (button.disabled || !form.reportValidity()) return;
