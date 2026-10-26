@@ -41,7 +41,7 @@ Nous développons cette messagerie en binôme dans le cadre d’un projet scolai
 - Affichage des invitations envoyées, des invitations reçues et des contacts acceptés.
 - Acceptation des invitations et bouton pour lancer une discussion avec un contact. La partie configuration précise ce qui reste à ajouter pour ces discussions.
 
-Pour écrire, **Entrée*- envoie le message et **Maj + Entrée*- ajoute un retour à la ligne.
+Pour écrire, **Entrée** envoie le message et **Maj + Entrée** ajoute un retour à la ligne.
 
 ### GIF, météo et photos de chats
 
