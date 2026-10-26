@@ -59,7 +59,7 @@ Les recherches de GIF passent par la fonction Supabase `klipy-search`. La clé K
 - Thème automnal avec des feuilles animées et un bouton pour mettre l’animation en pause.
 - Réduction de certains effets si cette préférence est activée sur l’appareil.
 - Fausse vérification « A2F » avant l’inscription ou la connexion. Le code est affiché dans la fenêtre. C’est une surprise ajoutée au projet, pas une vraie authentification à deux facteurs.
-- Jeu de déconnexion avec plusieurs confirmations et un bouton « Oui » qui se déplace. Un autre bouton permet de se déconnecter directement.
+- Jeu de déconnexion avec plusieurs confirmations et un bouton « Oui » qui se déplace. Le bouton « Se déconnecter directement » ouvre un défi sur une carte du monde. Il faut retrouver le pays demandé pour terminer la déconnexion.
 - Pages À propos, Nous contacter et Mentions légales, avec les conditions d’utilisation et les informations sur la confidentialité.
 - Gestion des préférences de cookies avec iubenda.
 - Formulaire pour nous contacter avec un nom, une adresse mail, un sujet et un message.
@@ -85,6 +85,9 @@ projet-fil-rouge/
 │       └── accueil.jpg
 ├── src/
 │   ├── assets/
+│   │   ├── maps/
+│   │   │   ├── world-countries.json    Carte du défi de déconnexion
+│   │   │   └── ATTRIBUTION.md          Source des données de la carte
 │   │   └── svg/                       Icônes et illustrations
 │   ├── css/
 │   │   ├── styles.css                 Style commun aux pages

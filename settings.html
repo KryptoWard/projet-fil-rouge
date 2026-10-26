@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title data-i18n="settings_page_title">Paramètres</title>
-        <link rel="stylesheet" href="src/css/styles.css" />
+        <link rel="stylesheet" href="src/css/styles.css?v=20261026-3" />
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     </head>
     <body>
@@ -134,6 +134,27 @@
                 <button type="button" id="logout-game-yes">Oui</button>
             </div>
             <button type="button" id="logout-game-skip" class="logout-game-skip">Se déconnecter directement</button>
+            <!-- Find the requested country before confirming the sign-out -->
+            <section id="logout-map" hidden aria-labelledby="logout-map-question">
+                <h3 id="logout-map-question" tabindex="-1" aria-live="polite"></h3>
+                <p id="logout-map-help"></p>
+                <div class="logout-map-tools">
+                    <span id="logout-map-keyboard"></span>
+                    <div>
+                        <button type="button" id="logout-map-zoom-out" aria-label="Réduire la carte">−</button>
+                        <button type="button" id="logout-map-zoom-in" aria-label="Agrandir la carte">+</button>
+                    </div>
+                </div>
+                <div id="logout-map-viewport" class="logout-map-viewport" hidden>
+                    <svg id="logout-map-countries" viewBox="0 0 1000 500" role="group" aria-label="Carte du monde"></svg>
+                </div>
+                <p id="logout-map-status" role="status" aria-live="polite"></p>
+                <div class="logout-map-actions">
+                    <button type="button" id="logout-map-retry" hidden>Réessayer</button>
+                    <button type="button" id="logout-map-cancel">Non, je reste</button>
+                    <small><a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener noreferrer">Natural Earth</a></small>
+                </div>
+            </section>
         </dialog>
         <footer class="pied-de-page">
             <nav aria-label="Informations du site">
@@ -145,7 +166,7 @@
                 <a href="mentions-legales.html#cookies" class="iubenda-cs-preferences-link" data-i18n="cookie_choices">Gérer les cookies</a>
             </nav>
         </footer>
-        <script src="src/js/logout-game.js"></script>
+        <script src="src/js/logout-game.js?v=20261026-3"></script>
         <script src="src/js/app.js"></script>
         <script src="src/js/automn.js"></script>
         <script src="src/js/weather.js?v=20261022-2"></script>

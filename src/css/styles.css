@@ -819,6 +819,42 @@ footer {
     text-decoration: underline;
 }
 
+/* Country challenge shown by the direct sign-out button */
+.logout-game [hidden] { display: none; }
+.logout-game.map-challenge {
+    width: min(960px, calc(100% - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+}
+#logout-map-question { margin: 8px 0; font-size: 1.3rem; }
+#logout-map-question:focus { outline: none; }
+#logout-map-help { margin: 8px 0 14px; }
+.logout-map-tools,
+.logout-map-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.logout-map-tools { justify-content: space-between; margin-bottom: 10px; }
+.logout-map-tools span { max-width: 55ch; color: var(--couleur-douce); font-size: 0.8rem; }
+.logout-map-tools button { padding: 6px; min-width: 44px; font-size: 1.2rem; }
+.logout-map-viewport {
+    aspect-ratio: 2;
+    overflow: auto;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 6px;
+    background: #e4edf0;
+}
+#logout-map-countries { display: block; width: 100%; max-width: none; height: auto; }
+#logout-map-countries path {
+    fill: #d8c7a8;
+    stroke: #76664f;
+    stroke-width: 0.7;
+    vector-effect: non-scaling-stroke;
+    cursor: pointer;
+}
+#logout-map-countries path.wrong { fill: #c18e78; }
+#logout-map-countries path:hover,
+#logout-map-countries path:focus { fill: #b76943; stroke: #342e27; stroke-width: 1.5; outline: none; }
+#logout-map-status { min-height: 1.5em; margin: 12px 0; }
+.logout-map-actions small { margin-left: auto; color: var(--couleur-douce); }
+
 .auth-prank { max-height: calc(100dvh - 32px); overflow: auto; }
 #auth-prank-email { overflow-wrap: anywhere; }
 .auth-prank-actions { display: flex; flex-wrap: wrap; gap: 12px; }
