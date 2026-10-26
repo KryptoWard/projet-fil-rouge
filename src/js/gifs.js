@@ -1,8 +1,6 @@
 (() => {
     "use strict";
 
-    // Use the KLIPY key created for this website in the Partner Panel
-    const KLIPY_API_KEY = "crIQlMuLVcBNdXKQQpRPjbMwecmQ9R65gxdSqJJlEpxjp9gEzKw3tjv01w2CmJgv";
     const button = document.getElementById("share-gif");
     if (!button) return;
 
@@ -191,7 +189,7 @@
     async function search(append = false) {
         if (sending) return;
         request?.abort();
-        if (!KLIPY_API_KEY.trim()) {
+        if (!window.messagerieSupabase) {
             feedback("missingKey");
             return;
         }
@@ -207,21 +205,19 @@
         more.disabled = true;
         searchButton.disabled = true;
         feedback("loading");
-        const url = new URL("https://api.klipy.com/v2/search");
-        url.search = new URLSearchParams({
-            key: KLIPY_API_KEY,
-            q: lastQuery,
-            client_key: "projet_fil_rouge",
-            locale: document.documentElement.lang,
-            contentfilter: "high",
-            media_filter: "gif,tinygif",
-            limit: "12",
-            pos: append ? next : ""
-        });
         try {
-            const response = await fetch(url, { signal: controller.signal });
-            if (!response.ok) throw new Error("GIF search failed");
-            const data = await response.json();
+            const { data, error } = await window.messagerieSupabase.functions.invoke(
+                "klipy-search",
+                {
+                    body: {
+                        q: lastQuery,
+                        locale: document.documentElement.lang,
+                        pos: append ? next : ""
+                    },
+                    signal: controller.signal
+                }
+            );
+            if (error) throw error;
             if (request !== controller || !dialog.open) return;
             if (!Array.isArray(data.results)) throw new Error("Invalid GIF response");
             // Keep the provider's result order and load media directly from KLIPY.
@@ -243,7 +239,7 @@
         if (sending || !window.conversationView?.ready) return false;
         destination = channelId;
         dialog.showModal();
-        feedback(KLIPY_API_KEY.trim() ? "hint" : "missingKey");
+        feedback(window.messagerieSupabase ? "hint" : "missingKey");
         query.value = searchText;
         query.focus();
         if (searchText.trim()) void search();
