@@ -38,7 +38,7 @@
             return;
         }
 
-        // Fetch user contacts rows where current user is involved
+        // Fetch contacts rows involving the current user
         const { data: contacts, error: contactsError } = await supabase
             .from("user_contacts")
             .select("id, status, requester_id, addressee_id, created_at");
@@ -178,11 +178,11 @@
                 return;
             }
 
-            // Lookup target profile by display_name (case-insensitive)
+            // Lookup target profile using wildcard matching (%name%)
             const { data: cibles, error: errCible } = await supabase
                 .from("chat_profiles")
                 .select("id, display_name")
-                .ilike("display_name", nomSaisi);
+                .ilike("display_name", `%${nomSaisi}%`);
 
             if (errCible) {
                 console.error("Profile search error:", errCible);
@@ -195,6 +195,7 @@
                 return;
             }
 
+            // Exclude current user from search results
             const cible = cibles.find(c => c.id !== user.id);
 
             if (!cible) {
@@ -222,7 +223,7 @@
         });
     }
 
-    // Unsubscribe when leaving page
+    // Clean up subscription on unload
     window.addEventListener("pagehide", () => {
         if (realtimeSubscription) {
             void supabase.removeChannel(realtimeSubscription);
