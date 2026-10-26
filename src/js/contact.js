@@ -19,34 +19,48 @@
         feedback.removeAttribute("hidden");
     }
 
+    function creerElementVide(texte) {
+        const li = document.createElement("li");
+        li.textContent = texte;
+        return li;
+    }
+
     async function chargerContacts() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
             window.location.replace("index.html");
             return;
         }
 
-        // 1.Retrieving relationships with associated profiles
-        const { data: contacts, error } = await supabase
+        // fetch raw contacts first to avoid join syntax issues
+        const { data: contacts, error: contactsError } = await supabase
             .from("user_contacts")
-            .select(`
-                id, status, requester_id, addressee_id,
-                requester:chat_profiles!requester_id(display_name),
-                addressee:chat_profiles!addressee_id(display_name)
-            `);
+            .select("id, status, requester_id, addressee_id, created_at");
 
-        if (error) {
-            console.error("Erreur contacts :", error);
+        if (contactsError) {
+            console.error("Contacts loading error:", contactsError);
+            notifier("Impossible de charger les contacts.", true);
             return;
         }
 
-        function creerElementVide(texte) {
-            const li = document.createElement("li");
-            li.textContent = texte;
-            return li;
+        // Fetch profile display names for all associated user IDs
+        const userIds = [
+            ...new Set(contacts.flatMap(c => [c.requester_id, c.addressee_id]))
+        ];
+
+        let profilesMap = new Map();
+        if (userIds.length > 0) {
+            const { data: profiles, error: profilesError } = await supabase
+                .from("chat_profiles")
+                .select("id, display_name")
+                .in("id", userIds);
+
+            if (!profilesError && profiles) {
+                profilesMap = new Map(profiles.map(p => [p.id, p.display_name]));
+            }
         }
-        
-        // 2. Invitations received (pending)
+
+        // Render received pending invitations
         const recues = contacts.filter(c => c.status === "pending" && c.addressee_id === user.id);
         listeRecues.replaceChildren();
 
@@ -55,18 +69,26 @@
         } else {
             recues.forEach(item => {
                 const li = document.createElement("li");
-                const nom = item.requester?.display_name || "Membre";
+                const nom = profilesMap.get(item.requester_id) || "Membre";
                 li.textContent = `${nom} souhaite vous ajouter. `;
 
                 const btnAccepter = document.createElement("button");
                 btnAccepter.type = "button";
                 btnAccepter.textContent = "Accepter";
                 btnAccepter.addEventListener("click", async () => {
-                    await supabase
+                    btnAccepter.disabled = true;
+                    const { error: updateError } = await supabase
                         .from("user_contacts")
                         .update({ status: "accepted" })
                         .eq("id", item.id);
-                    await chargerContacts();
+
+                    if (updateError) {
+                        console.error("Error accepting contact:", updateError);
+                        notifier("Impossible d'accepter l'invitation.", true);
+                        btnAccepter.disabled = false;
+                    } else {
+                        await chargerContacts();
+                    }
                 });
 
                 li.append(btnAccepter);
@@ -74,7 +96,7 @@
             });
         }
 
-        // 3. Invitations sent (pending)
+        // Render sent pending invitations
         const envoyees = contacts.filter(c => c.status === "pending" && c.requester_id === user.id);
         listeEnvoyees.replaceChildren();
 
@@ -83,13 +105,13 @@
         } else {
             envoyees.forEach(item => {
                 const li = document.createElement("li");
-                const nom = item.addressee?.display_name || "Membre";
+                const nom = profilesMap.get(item.addressee_id) || "Membre";
                 li.textContent = `En attente d'une réponse de ${nom}.`;
                 listeEnvoyees.append(li);
             });
         }
 
-        // 4. Confirmed contacts
+        // render confirmed contacts
         const amis = contacts.filter(c => c.status === "accepted");
         listeContacts.replaceChildren();
 
@@ -98,9 +120,8 @@
         } else {
             amis.forEach(item => {
                 const estDemandeur = item.requester_id === user.id;
-                const contactProfil = estDemandeur ? item.addressee : item.requester;
                 const contactId = estDemandeur ? item.addressee_id : item.requester_id;
-                const nom = contactProfil?.display_name || "Contact";
+                const nom = profilesMap.get(contactId) || "Contact";
 
                 const li = document.createElement("li");
                 li.textContent = `${nom} `;
@@ -120,7 +141,7 @@
         }
     }
 
-    // 5.Managing the sending of invitations by full name
+    // Send contact invitation
     if (formAjout) {
         formAjout.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -129,16 +150,20 @@
 
             notifier("Recherche du contact…");
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            if (authError || !user) {
+                window.location.replace("index.html");
+                return;
+            }
 
-            //Search for a profile by its display_name
+            // Lookup profile by display_name
             const { data: cibles, error: errCible } = await supabase
                 .from("chat_profiles")
                 .select("id, display_name")
                 .ilike("display_name", nomSaisi);
 
             if (errCible) {
-                console.error("Erreur recherche profil :", errCible);
+                console.error("Profile search error:", errCible);
                 notifier("Erreur lors de la recherche du profil.", true);
                 return;
             }
@@ -160,7 +185,7 @@
                 .insert({ requester_id: user.id, addressee_id: cible.id });
 
             if (errInsert) {
-                console.error("Détail de l'erreur Supabase :", errInsert);
+                console.error("Supabase insert error:", errInsert);
                 if (errInsert.code === "23505") {
                     notifier("Une invitation existe déjà avec ce membre.", true);
                 } else {
