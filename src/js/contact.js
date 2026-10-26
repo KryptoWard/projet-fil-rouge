@@ -4,6 +4,7 @@
     const supabase = window.messagerieSupabase;
     if (!supabase) return;
 
+    // Cache DOM elements
     const formAjout = document.querySelector("#form-ajouter-contact");
     const inputNom = document.querySelector("#contact-name");
     const feedback = document.querySelector("#contact-status");
@@ -11,6 +12,9 @@
     const listeRecues = document.querySelector("#liste-invitations-recues");
     const listeContacts = document.querySelector("#liste-contacts");
 
+    let realtimeSubscription = null;
+
+    // Display feedback message
     function notifier(message, erreur = false) {
         if (!feedback) return;
         feedback.textContent = message;
@@ -19,12 +23,14 @@
         feedback.removeAttribute("hidden");
     }
 
+    // Helper to create an empty state list item
     function creerElementVide(texte) {
         const li = document.createElement("li");
         li.textContent = texte;
         return li;
     }
 
+    // Fetch and render contacts and invitations
     async function chargerContacts() {
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
@@ -32,7 +38,7 @@
             return;
         }
 
-        // fetch raw contacts first to avoid join syntax issues
+        // Fetch user contacts rows where current user is involved
         const { data: contacts, error: contactsError } = await supabase
             .from("user_contacts")
             .select("id, status, requester_id, addressee_id, created_at");
@@ -43,7 +49,7 @@
             return;
         }
 
-        // Fetch profile display names for all associated user IDs
+        // Fetch display names for all associated user IDs
         const userIds = [
             ...new Set(contacts.flatMap(c => [c.requester_id, c.addressee_id]))
         ];
@@ -60,7 +66,7 @@
             }
         }
 
-        // Render received pending invitations
+        // 1. Render received pending invitations
         const recues = contacts.filter(c => c.status === "pending" && c.addressee_id === user.id);
         listeRecues.replaceChildren();
 
@@ -96,7 +102,7 @@
             });
         }
 
-        // Render sent pending invitations
+        // 2. Render sent pending invitations
         const envoyees = contacts.filter(c => c.status === "pending" && c.requester_id === user.id);
         listeEnvoyees.replaceChildren();
 
@@ -111,7 +117,7 @@
             });
         }
 
-        // render confirmed contacts
+        // 3. Render accepted contacts
         const amis = contacts.filter(c => c.status === "accepted");
         listeContacts.replaceChildren();
 
@@ -141,6 +147,22 @@
         }
     }
 
+    // Subscribe to realtime database changes for instant UI updates
+    function subscribeToContacts() {
+        if (realtimeSubscription) return;
+
+        realtimeSubscription = supabase
+            .channel("realtime:user_contacts")
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "user_contacts" },
+                () => {
+                    void chargerContacts();
+                }
+            )
+            .subscribe();
+    }
+
     // Send contact invitation
     if (formAjout) {
         formAjout.addEventListener("submit", async (e) => {
@@ -156,7 +178,7 @@
                 return;
             }
 
-            // Lookup profile by display_name
+            // Lookup target profile by display_name (case-insensitive)
             const { data: cibles, error: errCible } = await supabase
                 .from("chat_profiles")
                 .select("id, display_name")
@@ -180,6 +202,7 @@
                 return;
             }
 
+            // Insert pending invitation
             const { error: errInsert } = await supabase
                 .from("user_contacts")
                 .insert({ requester_id: user.id, addressee_id: cible.id });
@@ -199,5 +222,14 @@
         });
     }
 
+    // Unsubscribe when leaving page
+    window.addEventListener("pagehide", () => {
+        if (realtimeSubscription) {
+            void supabase.removeChannel(realtimeSubscription);
+            realtimeSubscription = null;
+        }
+    });
+
     void chargerContacts();
+    subscribeToContacts();
 })();
