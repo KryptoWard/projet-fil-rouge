@@ -424,7 +424,7 @@
             decalage.y = Math.max(-(hauteur - tailleCadre) / 2, Math.min((hauteur - tailleCadre) / 2, decalage.y));
             imageRecadrage.style.width = `${largeur}px`;
             imageRecadrage.style.height = `${hauteur}px`;
-            imageRecadrage.style.transform = `translate(calc(-50% + ${decalage.x}px), calc(-50% + ${decalage.y}px))`;
+            imageRecadrage.style.transform = `translate(-50%, -50%) translate(${decalage.x}px, ${decalage.y}px)`;
             const canvas = document.createElement("canvas");
             canvas.width = canvas.height = 96;
             const contexte = canvas.getContext("2d");
@@ -440,7 +440,7 @@
         imageRecadrage.addEventListener("load", () => {
             dimensionsPhoto = { width: imageRecadrage.naturalWidth, height: imageRecadrage.naturalHeight };
             decalage = { x: 0, y: 0 };
-            zoomRecadrage.value = "1";
+            zoomRecadrage.value = "1.2";
             zoneRecadrage.hidden = false;
             profilFormulaire.querySelector('[type="submit"]').disabled = false;
             effacerMessage();

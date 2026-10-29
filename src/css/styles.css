@@ -415,6 +415,7 @@ form a {
 .profile-avatar { object-fit: cover; }
 .profile-initials { display: grid; place-items: center; background: #e9e0d2; color: var(--couleur-principale); font-weight: 700; }
 .profile-crop { display: grid; gap: 8px; justify-items: start; margin: 12px 0; }
+.profile-crop[hidden] { display: none; }
 .profile-crop p { margin: 0; font-size: .85rem; }
 .profile-crop-frame { position: relative; width: 180px; height: 180px; overflow: hidden; border: 2px solid var(--couleur-principale); border-radius: 50%; background: #fff; cursor: grab; touch-action: none; }
 .profile-crop-frame:active { cursor: grabbing; }
