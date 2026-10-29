@@ -718,6 +718,22 @@ footer {
     }
 }
 
+/* Connected user indicator */
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-badge {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--couleur-principale);
+    background: #eedfcb;
+    padding: 4px 10px;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 4px;
+}
+
 /* Account controls keep the same straight autumn borders */
 .account-session {
     margin-top: 28px;

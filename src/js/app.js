@@ -335,6 +335,35 @@
         });
     }
 
+    async function afficherUtilisateurConnecte() {
+        const badgeUtilisateur = document.querySelector("#user-display-name");
+        if (!badgeUtilisateur || !supabase) return;
+
+        try {
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            if (authError || !user) {
+                badgeUtilisateur.textContent = "";
+                badgeUtilisateur.hidden = true;
+                return;
+            }
+
+            // Retrieve display name from chat_profiles table
+            const { data: profile, error: profileError } = await supabase
+                .from("chat_profiles")
+                .select("display_name")
+                .eq("id", user.id)
+                .single();
+
+            const displayName = profile?.display_name || user.email;
+            badgeUtilisateur.textContent = displayName;
+            badgeUtilisateur.hidden = false;
+        } catch (err) {
+            console.error("Unable to load user profile:", err);
+        }
+    }
+
+    void afficherUtilisateurConnecte();
+    
     // 3. Registration form validation
     // Retrieving DOM elements
     const formInscription = document.querySelector("#form-inscription");
