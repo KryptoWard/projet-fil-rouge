@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const messageFields = "*,author:chat_profiles(display_name)";
+    const messageFields = "*,author:chat_profiles(display_name,avatar_path,message_color)";
     const client = () => {
         if (!window.messagerieSupabase) throw new Error("CHAT_UNAVAILABLE");
         return window.messagerieSupabase;

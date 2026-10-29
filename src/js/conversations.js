@@ -232,14 +232,24 @@
                 article.append(paragraph);
             }
             if (message.sender_id === user.id) article.classList.add("local-message");
+            article.style.setProperty("--message-color", message.author?.message_color || "#a64f32");
             const author = document.createElement("h3");
-            author.textContent =
-                message.sender_id === user.id
-                    ? words().me
-                    : message.author?.display_name || words().member;
+            const authorName = message.author?.display_name || words().member;
+            author.textContent = authorName;
             // Keep the date and owner tools beside the author
             const header = document.createElement("header");
             header.className = "message-header";
+            const avatarPath = message.author?.avatar_path;
+            const avatar = document.createElement(avatarPath ? "img" : "span");
+            avatar.className = "message-avatar";
+            if (avatarPath) {
+                avatar.src = window.messagerieSupabase.storage.from("profile-avatars").getPublicUrl(avatarPath).data.publicUrl;
+                avatar.alt = "";
+            } else {
+                avatar.textContent = authorName.trim().split(/\s+/).slice(0, 2).map(part => Array.from(part)[0]).join("").toUpperCase() || "?";
+                avatar.setAttribute("aria-hidden", "true");
+            }
+            header.append(avatar);
             header.append(author);
             article.prepend(header);
             const time = document.createElement("time");

@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title data-i18n="settings_page_title">Paramètres</title>
-        <link rel="stylesheet" href="src/css/styles.css?v=20261026-3" />
+        <link rel="stylesheet" href="src/css/styles.css?v=20261029-2" />
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     </head>
     <body>
@@ -69,6 +69,33 @@
         <main>
             <section>
                 <h2 data-i18n="settings_page_title">Paramètres</h2>
+                <section class="profile-settings" aria-labelledby="profile-heading">
+                    <h3 id="profile-heading" data-i18n="profile_title">Mon profil</h3>
+                    <div id="profile-identity" class="profile-identity" hidden>
+                        <img id="profile-avatar" class="profile-avatar" alt="" hidden />
+                        <span id="profile-initials" class="profile-initials" aria-hidden="true">?</span>
+                        <div><strong id="profile-display-name"></strong><p id="profile-email"></p></div>
+                    </div>
+                    <form id="profile-form" hidden>
+                        <label for="profile-name" data-i18n="profile_pseudo">Pseudo</label>
+                        <input id="profile-name" name="display_name" maxlength="80" required />
+                        <label for="profile-photo" data-i18n="profile_photo">Photo de profil (2 Mo max)</label>
+                        <input id="profile-photo" type="file" accept="image/jpeg,image/png,image/webp" />
+                        <button id="profile-remove-photo" class="profile-remove" type="button" data-i18n="profile_remove_photo">Retirer la photo</button>
+                        <fieldset class="profile-palette">
+                            <legend data-i18n="profile_message_color">Couleur de mes messages</legend>
+                            <label class="profile-color"><input type="radio" name="message_color" value="#a64f32" /><span style="--swatch:#a64f32"></span><span class="profile-color-name" data-i18n="color_terracotta">Terre cuite</span></label>
+                            <label class="profile-color"><input type="radio" name="message_color" value="#6b7051" /><span style="--swatch:#6b7051"></span><span class="profile-color-name" data-i18n="color_olive">Olive</span></label>
+                            <label class="profile-color"><input type="radio" name="message_color" value="#526f80" /><span style="--swatch:#526f80"></span><span class="profile-color-name" data-i18n="color_blue">Bleu</span></label>
+                            <label class="profile-color"><input type="radio" name="message_color" value="#80536b" /><span style="--swatch:#80536b"></span><span class="profile-color-name" data-i18n="color_plum">Prune</span></label>
+                            <label class="profile-color"><input type="radio" name="message_color" value="#342e27" /><span style="--swatch:#342e27"></span><span class="profile-color-name" data-i18n="color_ink">Encre</span></label>
+                        </fieldset>
+                        <p class="profile-preview-label" data-i18n="profile_preview">Aperçu</p>
+                        <p id="profile-preview" class="profile-preview" data-i18n="profile_preview_message">Salut, on discute ?</p>
+                        <button type="submit" data-i18n="profile_save">Enregistrer le profil</button>
+                        <p id="profile-status" class="message-formulaire" role="status" aria-atomic="true" hidden></p>
+                    </form>
+                </section>
                 <!-- Let the user choose a default city for weather cards -->
                 <form id="weather-city-form" class="weather-city-form">
                     <h3 data-i18n="weather_settings_title">Ville pour la météo</h3>
@@ -170,7 +197,7 @@
             </nav>
         </footer>
         <script src="src/js/logout-game.js?v=20261026-3"></script>
-        <script src="src/js/app.js"></script>
+        <script src="src/js/app.js?v=20261029-2"></script>
         <script src="src/js/automn.js"></script>
         <script src="src/js/weather.js?v=20261022-2"></script>
     </body>

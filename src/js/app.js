@@ -36,6 +36,26 @@
             contact_send: "Envoyer le message",
             contact_direct: "Tu peux aussi écrire directement à",
             account_session: "Session",
+            profile_title: "Mon profil",
+            profile_pseudo: "Pseudo",
+            profile_photo: "Photo de profil (2 Mo maximum)",
+            profile_remove_photo: "Retirer la photo",
+            profile_message_color: "Couleur de mes messages",
+            profile_preview: "Aperçu",
+            profile_preview_message: "Salut, on discute ?",
+            profile_save: "Enregistrer le profil",
+            profile_saving: "Enregistrement…",
+            profile_saved: "Profil enregistré.",
+            profile_failed: "Enregistrement impossible : ",
+            profile_load_failed: "Profil indisponible : ",
+            profile_login_required: "Connecte-toi pour modifier ton profil.",
+            profile_name_required: "Saisis un pseudo.",
+            profile_photo_error: "Choisis une image JPEG, PNG ou WebP de 2 Mo maximum.",
+            color_terracotta: "Terre cuite",
+            color_olive: "Olive",
+            color_blue: "Bleu",
+            color_plum: "Prune",
+            color_ink: "Encre",
             logout: "Se déconnecter",
             logging_out: "Déconnexion…",
             logout_error: "La déconnexion a échoué. Vérifie ta connexion et réessaie.",
@@ -125,6 +145,26 @@
             contact_send: "Send message",
             contact_direct: "You can also email us directly at",
             account_session: "Session",
+            profile_title: "My profile",
+            profile_pseudo: "Display name",
+            profile_photo: "Profile photo (2 MB maximum)",
+            profile_remove_photo: "Remove photo",
+            profile_message_color: "My message color",
+            profile_preview: "Preview",
+            profile_preview_message: "Hi, want to chat?",
+            profile_save: "Save profile",
+            profile_saving: "Saving…",
+            profile_saved: "Profile saved.",
+            profile_failed: "Could not save profile: ",
+            profile_load_failed: "Profile unavailable: ",
+            profile_login_required: "Sign in to edit your profile.",
+            profile_name_required: "Enter a display name.",
+            profile_photo_error: "Choose a JPEG, PNG or WebP image up to 2 MB.",
+            color_terracotta: "Terracotta",
+            color_olive: "Olive",
+            color_blue: "Blue",
+            color_plum: "Plum",
+            color_ink: "Ink",
             logout: "Sign out",
             logging_out: "Signing out…",
             logout_error: "Sign out failed. Check your connection and try again.",
@@ -304,6 +344,135 @@
     }
 
     appliquerLangue(langueActuelle);
+
+    const profilFormulaire = document.querySelector("#profile-form");
+    if (profilFormulaire) {
+        const $ = selecteur => document.querySelector(selecteur);
+        const nom = $("#profile-name"), photo = $("#profile-photo"), avatar = $("#profile-avatar");
+        const statut = $("#profile-status"), apercu = $("#profile-preview");
+        const palette = ["#a64f32", "#6b7051", "#526f80", "#80536b", "#342e27"];
+        const stockage = () => supabase.storage.from("profile-avatars");
+        let utilisateur, profil, photoChoisie, retirerPhoto = false, apercuPhoto;
+
+        const message = (cle, detail = "") => {
+            statut.dataset.i18n = cle;
+            statut.dataset.detail = detail;
+            statut.textContent = traductions[langueActuelle][cle] + detail;
+            statut.classList.toggle("erreur", cle.includes("failed") || cle.includes("error") || cle.includes("required"));
+            statut.hidden = false;
+        };
+        const effacerMessage = () => {
+            statut.hidden = true;
+            delete statut.dataset.i18n;
+            delete statut.dataset.detail;
+            statut.classList.remove("erreur");
+        };
+        const urlPhoto = chemin => chemin ? stockage().getPublicUrl(chemin).data.publicUrl : null;
+        const initiales = texte => texte.trim().split(/\s+/).slice(0, 2).map(mot => Array.from(mot)[0]).join("").toUpperCase() || "?";
+        const afficherPhoto = url => {
+            avatar.hidden = !url;
+            $("#profile-initials").hidden = Boolean(url);
+            if (url) avatar.src = url;
+            else avatar.removeAttribute("src");
+        };
+
+        async function chargerProfil() {
+            try {
+                const { data, error } = await supabase.auth.getUser();
+                if (error) throw error;
+                if (!data.user) return message("profile_login_required");
+                utilisateur = data.user;
+                const { data: profile, error: profileError } = await supabase.from("chat_profiles")
+                    .select("display_name,avatar_path,message_color").eq("id", utilisateur.id).single();
+                if (profileError) throw profileError;
+                profil = profile;
+                $("#profile-identity").hidden = false;
+                profilFormulaire.hidden = false;
+                nom.value = profile.display_name;
+                $("#profile-display-name").textContent = profile.display_name;
+                $("#profile-email").textContent = utilisateur.email || "";
+                $("#profile-initials").textContent = initiales(profile.display_name);
+                const color = palette.includes(profile.message_color) ? profile.message_color : palette[0];
+                profilFormulaire.querySelector(`input[name="message_color"][value="${color}"]`).checked = true;
+                apercu.style.color = color;
+                afficherPhoto(urlPhoto(profile.avatar_path));
+            } catch (error) {
+                message("profile_load_failed", error.message ? ` ${error.message}` : "");
+            }
+        }
+
+        profilFormulaire.querySelectorAll('input[name="message_color"]').forEach(input =>
+            input.addEventListener("change", () => apercu.style.color = input.value)
+        );
+        photo.addEventListener("change", () => {
+            const file = photo.files[0];
+            if (!file) return;
+            if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 2_097_152) {
+                photo.value = "";
+                photoChoisie = null;
+                afficherPhoto(urlPhoto(profil?.avatar_path));
+                message("profile_photo_error");
+                return;
+            }
+            photoChoisie = file;
+            retirerPhoto = false;
+            if (apercuPhoto) URL.revokeObjectURL(apercuPhoto);
+            apercuPhoto = URL.createObjectURL(file);
+            afficherPhoto(apercuPhoto);
+            effacerMessage();
+        });
+        $("#profile-remove-photo").addEventListener("click", () => {
+            retirerPhoto = true;
+            photoChoisie = null;
+            photo.value = "";
+            afficherPhoto(null);
+            effacerMessage();
+        });
+        profilFormulaire.addEventListener("submit", async event => {
+            event.preventDefault();
+            const displayName = nom.value.trim();
+            if (!displayName) return message("profile_name_required");
+            const submit = profilFormulaire.querySelector('[type="submit"]');
+            const color = profilFormulaire.querySelector('input[name="message_color"]:checked')?.value || palette[0];
+            let newPath = null;
+            effacerMessage();
+            submit.disabled = true;
+            submit.textContent = traductions[langueActuelle].profile_saving;
+            try {
+                let avatarPath = retirerPhoto ? null : profil.avatar_path;
+                if (photoChoisie) {
+                    newPath = `${utilisateur.id}/${crypto.randomUUID()}`;
+                    const upload = await stockage().upload(newPath, photoChoisie, { contentType: photoChoisie.type });
+                    if (upload.error) throw upload.error;
+                    avatarPath = newPath;
+                }
+                const { data: saved, error } = await supabase.from("chat_profiles")
+                    .update({ display_name: displayName, avatar_path: avatarPath, message_color: color })
+                    .eq("id", utilisateur.id).select("display_name,avatar_path,message_color").single();
+                if (error) throw error;
+                if (profil.avatar_path && profil.avatar_path !== avatarPath) await stockage().remove([profil.avatar_path]).catch(() => null);
+                profil = saved;
+                $("#user-display-name").textContent = saved.display_name;
+                $("#profile-display-name").textContent = saved.display_name;
+                $("#profile-initials").textContent = initiales(saved.display_name);
+                nom.value = saved.display_name;
+                afficherPhoto(urlPhoto(saved.avatar_path));
+                photoChoisie = null;
+                retirerPhoto = false;
+                if (apercuPhoto) URL.revokeObjectURL(apercuPhoto);
+                apercuPhoto = null;
+                photo.value = "";
+                message("profile_saved");
+            } catch (error) {
+                if (newPath) await stockage().remove([newPath]).catch(() => null);
+                message("profile_failed", error.message ? ` ${error.message}` : "");
+            } finally {
+                submit.disabled = false;
+                submit.textContent = traductions[langueActuelle].profile_save;
+            }
+        });
+        void chargerProfil();
+    }
 
     // Sign out of this browser and redirect only after success
     const boutonDeconnexion = document.querySelector("#logout-button");
