@@ -39,6 +39,9 @@
             profile_title: "Mon profil",
             profile_pseudo: "Pseudo",
             profile_photo: "Photo de profil (2 Mo maximum)",
+            profile_photo_loading: "Chargement de la photo…",
+            profile_crop_help: "Fais glisser la photo ou utilise les flèches du clavier pour la positionner.",
+            profile_crop_zoom: "Zoom",
             profile_remove_photo: "Retirer la photo",
             profile_message_color: "Couleur de mes messages",
             profile_preview: "Aperçu",
@@ -148,6 +151,9 @@
             profile_title: "My profile",
             profile_pseudo: "Display name",
             profile_photo: "Profile photo (2 MB maximum)",
+            profile_photo_loading: "Loading photo…",
+            profile_crop_help: "Drag the photo or use the keyboard arrows to position it.",
+            profile_crop_zoom: "Zoom",
             profile_remove_photo: "Remove photo",
             profile_message_color: "My message color",
             profile_preview: "Preview",
@@ -350,9 +356,11 @@
         const $ = selecteur => document.querySelector(selecteur);
         const nom = $("#profile-name"), photo = $("#profile-photo"), avatar = $("#profile-avatar");
         const statut = $("#profile-status"), apercu = $("#profile-preview");
+        const zoneRecadrage = $("#profile-crop"), cadreRecadrage = $("#profile-crop-frame");
+        const imageRecadrage = $("#profile-crop-image"), zoomRecadrage = $("#profile-zoom");
         const palette = ["#a64f32", "#6b7051", "#526f80", "#80536b", "#342e27"];
         const stockage = () => supabase.storage.from("profile-avatars");
-        let utilisateur, profil, photoChoisie, retirerPhoto = false, apercuPhoto;
+        let utilisateur, profil, photoChoisie, retirerPhoto = false, apercuPhoto, dimensionsPhoto, decalage = { x: 0, y: 0 }, glissement;
 
         const message = (cle, detail = "") => {
             statut.dataset.i18n = cle;
@@ -394,22 +402,94 @@
                 $("#profile-initials").textContent = initiales(profile.display_name);
                 const color = palette.includes(profile.message_color) ? profile.message_color : palette[0];
                 profilFormulaire.querySelector(`input[name="message_color"][value="${color}"]`).checked = true;
-                apercu.style.color = color;
+                apercu.style.setProperty("--message-color", color);
                 afficherPhoto(urlPhoto(profile.avatar_path));
             } catch (error) {
                 message("profile_load_failed", error.message ? ` ${error.message}` : "");
             }
         }
 
-        profilFormulaire.querySelectorAll('input[name="message_color"]').forEach(input =>
-            input.addEventListener("change", () => apercu.style.color = input.value)
-        );
+        profilFormulaire.addEventListener("change", event => {
+            if (event.target.matches('input[name="message_color"]')) {
+                apercu.style.setProperty("--message-color", event.target.value);
+            }
+        });
+        function dessinerRecadrage() {
+            if (!dimensionsPhoto) return;
+            const tailleCadre = 180, zoom = Number(zoomRecadrage.value);
+            const tailleSource = Math.min(dimensionsPhoto.width, dimensionsPhoto.height) / zoom;
+            const echelle = tailleCadre / tailleSource;
+            const largeur = dimensionsPhoto.width * echelle, hauteur = dimensionsPhoto.height * echelle;
+            decalage.x = Math.max(-(largeur - tailleCadre) / 2, Math.min((largeur - tailleCadre) / 2, decalage.x));
+            decalage.y = Math.max(-(hauteur - tailleCadre) / 2, Math.min((hauteur - tailleCadre) / 2, decalage.y));
+            imageRecadrage.style.width = `${largeur}px`;
+            imageRecadrage.style.height = `${hauteur}px`;
+            imageRecadrage.style.transform = `translate(calc(-50% + ${decalage.x}px), calc(-50% + ${decalage.y}px))`;
+            const canvas = document.createElement("canvas");
+            canvas.width = canvas.height = 96;
+            const contexte = canvas.getContext("2d");
+            const centreX = dimensionsPhoto.width / 2 - decalage.x / echelle;
+            const centreY = dimensionsPhoto.height / 2 - decalage.y / echelle;
+            contexte.fillStyle = "#fff";
+            contexte.fillRect(0, 0, 96, 96);
+            contexte.drawImage(imageRecadrage, centreX - tailleSource / 2, centreY - tailleSource / 2, tailleSource, tailleSource, 0, 0, 96, 96);
+            avatar.src = canvas.toDataURL("image/jpeg", 0.8);
+            avatar.hidden = false;
+            $("#profile-initials").hidden = true;
+        }
+        imageRecadrage.addEventListener("load", () => {
+            dimensionsPhoto = { width: imageRecadrage.naturalWidth, height: imageRecadrage.naturalHeight };
+            decalage = { x: 0, y: 0 };
+            zoomRecadrage.value = "1";
+            zoneRecadrage.hidden = false;
+            profilFormulaire.querySelector('[type="submit"]').disabled = false;
+            effacerMessage();
+            dessinerRecadrage();
+        });
+        imageRecadrage.addEventListener("error", () => {
+            profilFormulaire.querySelector('[type="submit"]').disabled = false;
+            photoChoisie = null;
+            dimensionsPhoto = null;
+            photo.value = "";
+            zoneRecadrage.hidden = true;
+            if (apercuPhoto) URL.revokeObjectURL(apercuPhoto);
+            apercuPhoto = null;
+            afficherPhoto(urlPhoto(profil?.avatar_path));
+            message("profile_photo_error");
+        });
+        zoomRecadrage.addEventListener("input", dessinerRecadrage);
+        cadreRecadrage.addEventListener("pointerdown", event => {
+            glissement = { pointerX: event.clientX, pointerY: event.clientY, offsetX: decalage.x, offsetY: decalage.y };
+            cadreRecadrage.setPointerCapture(event.pointerId);
+        });
+        cadreRecadrage.addEventListener("pointermove", event => {
+            if (!glissement) return;
+            decalage.x = glissement.offsetX + event.clientX - glissement.pointerX;
+            decalage.y = glissement.offsetY + event.clientY - glissement.pointerY;
+            dessinerRecadrage();
+        });
+        ["pointerup", "pointercancel", "lostpointercapture"].forEach(type => cadreRecadrage.addEventListener(type, () => glissement = null));
+        cadreRecadrage.addEventListener("keydown", event => {
+            const pas = event.shiftKey ? 20 : 5;
+            const mouvements = { ArrowLeft: [-pas, 0], ArrowRight: [pas, 0], ArrowUp: [0, -pas], ArrowDown: [0, pas] };
+            if (!mouvements[event.key]) return;
+            event.preventDefault();
+            decalage.x += mouvements[event.key][0];
+            decalage.y += mouvements[event.key][1];
+            dessinerRecadrage();
+        });
         photo.addEventListener("change", () => {
             const file = photo.files[0];
             if (!file) return;
             if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 2_097_152) {
                 photo.value = "";
                 photoChoisie = null;
+                dimensionsPhoto = null;
+                retirerPhoto = false;
+                zoneRecadrage.hidden = true;
+                profilFormulaire.querySelector('[type="submit"]').disabled = false;
+                if (apercuPhoto) URL.revokeObjectURL(apercuPhoto);
+                apercuPhoto = null;
                 afficherPhoto(urlPhoto(profil?.avatar_path));
                 message("profile_photo_error");
                 return;
@@ -418,13 +498,18 @@
             retirerPhoto = false;
             if (apercuPhoto) URL.revokeObjectURL(apercuPhoto);
             apercuPhoto = URL.createObjectURL(file);
-            afficherPhoto(apercuPhoto);
-            effacerMessage();
+            profilFormulaire.querySelector('[type="submit"]').disabled = true;
+            message("profile_photo_loading");
+            imageRecadrage.src = apercuPhoto;
         });
         $("#profile-remove-photo").addEventListener("click", () => {
             retirerPhoto = true;
             photoChoisie = null;
             photo.value = "";
+            dimensionsPhoto = null;
+            zoneRecadrage.hidden = true;
+            if (apercuPhoto) URL.revokeObjectURL(apercuPhoto);
+            apercuPhoto = null;
             afficherPhoto(null);
             effacerMessage();
         });
@@ -442,7 +527,19 @@
                 let avatarPath = retirerPhoto ? null : profil.avatar_path;
                 if (photoChoisie) {
                     newPath = `${utilisateur.id}/${crypto.randomUUID()}`;
-                    const upload = await stockage().upload(newPath, photoChoisie, { contentType: photoChoisie.type });
+                    const tailleSource = Math.min(dimensionsPhoto.width, dimensionsPhoto.height) / Number(zoomRecadrage.value);
+                    const echelle = 180 / tailleSource;
+                    const centreX = dimensionsPhoto.width / 2 - decalage.x / echelle;
+                    const centreY = dimensionsPhoto.height / 2 - decalage.y / echelle;
+                    const canvas = document.createElement("canvas");
+                    canvas.width = canvas.height = 512;
+                    const contexte = canvas.getContext("2d");
+                    contexte.fillStyle = "#fff";
+                    contexte.fillRect(0, 0, 512, 512);
+                    contexte.drawImage(imageRecadrage, centreX - tailleSource / 2, centreY - tailleSource / 2, tailleSource, tailleSource, 0, 0, 512, 512);
+                    const photoFinale = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.88));
+                    if (!photoFinale) throw new Error("Photo invalide");
+                    const upload = await stockage().upload(newPath, photoFinale, { contentType: "image/jpeg" });
                     if (upload.error) throw upload.error;
                     avatarPath = newPath;
                 }
@@ -459,6 +556,8 @@
                 afficherPhoto(urlPhoto(saved.avatar_path));
                 photoChoisie = null;
                 retirerPhoto = false;
+                dimensionsPhoto = null;
+                zoneRecadrage.hidden = true;
                 if (apercuPhoto) URL.revokeObjectURL(apercuPhoto);
                 apercuPhoto = null;
                 photo.value = "";

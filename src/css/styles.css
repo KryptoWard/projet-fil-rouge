@@ -414,6 +414,13 @@ form a {
 .profile-avatar, .profile-initials { width: 64px; height: 64px; flex: none; border-radius: 50%; }
 .profile-avatar { object-fit: cover; }
 .profile-initials { display: grid; place-items: center; background: #e9e0d2; color: var(--couleur-principale); font-weight: 700; }
+.profile-crop { display: grid; gap: 8px; justify-items: start; margin: 12px 0; }
+.profile-crop p { margin: 0; font-size: .85rem; }
+.profile-crop-frame { position: relative; width: 180px; height: 180px; overflow: hidden; border: 2px solid var(--couleur-principale); border-radius: 50%; background: #fff; cursor: grab; touch-action: none; }
+.profile-crop-frame:active { cursor: grabbing; }
+.profile-crop-frame:focus-visible { outline: 2px solid var(--couleur-texte); outline-offset: 3px; }
+.profile-crop-frame img { position: absolute; top: 50%; left: 50%; max-width: none; user-select: none; pointer-events: none; }
+.profile-crop input[type="range"] { width: min(100%, 260px); }
 .profile-palette { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0; padding: 0; border: 0; }
 .profile-palette legend { margin-bottom: 8px; font-size: .9rem; font-weight: 600; }
 .profile-color { position: relative; display: grid; place-items: center; width: 34px; height: 34px; margin: 0; cursor: pointer; }
@@ -423,7 +430,7 @@ form a {
 .profile-color input:focus-visible + span { outline: 2px solid var(--couleur-texte); outline-offset: 3px; }
 .profile-color-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .profile-preview-label { margin: 8px 0 0; font-size: .85rem; font-weight: 600; }
-.profile-preview { margin: 0; padding: 10px 12px; border-left: 3px solid var(--couleur-principale); background: #fffdf9; }
+.profile-preview { margin: 0; padding: 10px 12px; border-left: 3px solid var(--message-color, var(--couleur-principale)); color: var(--message-color, var(--couleur-texte)); background: #fffdf9; }
 .profile-remove { justify-self: start; min-height: 36px; margin: 0; background: transparent; color: var(--couleur-principale); }
 .conversation-page .chat-panel .message-list article h3 { color: var(--message-color, #626b45); }
 .conversation-page .chat-panel .message-list article.text-message > p { color: var(--message-color, var(--couleur-texte)); }

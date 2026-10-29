@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title data-i18n="settings_page_title">Paramètres</title>
-        <link rel="stylesheet" href="src/css/styles.css?v=20261029-2" />
+        <link rel="stylesheet" href="src/css/styles.css?v=20261029-3" />
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     </head>
     <body>
@@ -81,6 +81,14 @@
                         <input id="profile-name" name="display_name" maxlength="80" required />
                         <label for="profile-photo" data-i18n="profile_photo">Photo de profil (2 Mo max)</label>
                         <input id="profile-photo" type="file" accept="image/jpeg,image/png,image/webp" />
+                        <div id="profile-crop" class="profile-crop" hidden>
+                            <p id="profile-crop-help" data-i18n="profile_crop_help">Fais glisser la photo ou utilise les flèches du clavier pour la positionner.</p>
+                            <div id="profile-crop-frame" class="profile-crop-frame" tabindex="0" role="group" aria-describedby="profile-crop-help">
+                                <img id="profile-crop-image" alt="" draggable="false" />
+                            </div>
+                            <label for="profile-zoom" data-i18n="profile_crop_zoom">Zoom</label>
+                            <input id="profile-zoom" type="range" min="1" max="3" step="0.05" value="1" />
+                        </div>
                         <button id="profile-remove-photo" class="profile-remove" type="button" data-i18n="profile_remove_photo">Retirer la photo</button>
                         <fieldset class="profile-palette">
                             <legend data-i18n="profile_message_color">Couleur de mes messages</legend>
@@ -197,7 +205,7 @@
             </nav>
         </footer>
         <script src="src/js/logout-game.js?v=20261026-3"></script>
-        <script src="src/js/app.js?v=20261029-2"></script>
+        <script src="src/js/app.js?v=20261029-3"></script>
         <script src="src/js/automn.js"></script>
         <script src="src/js/weather.js?v=20261022-2"></script>
     </body>
