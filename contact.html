@@ -66,38 +66,38 @@
             </nav>
         </header>
         <div class="feuilles-automne" aria-hidden="true"></div>
-        <main>
-            <section>
-                <h2 data-i18n="search_contact">Chercher un contact</h2>
-                <!-- Find a profile by its display name and send an invitation -->
-                <form id="form-ajouter-contact">
-                    <label for="contact-name" data-i18n="contact">Nom du contact</label>
-                    <input id="contact-name" name="contact" autocomplete="name"/>
-                    <button type="submit" data-i18n="invite">Inviter</button>
-                    <p id="contact-status" class="logout-error" hidden></p>
-                </form>
-            </section>
+        <main class="page-contacts">
+            <!-- Semantic sidebar for search and invitations -->
+            <aside class="contacts-panneau-recherche" aria-labelledby="titre-recherche">
+                <section>
+                    <h2 id="titre-recherche" data-i18n="search_contact">Chercher un contact</h2>
+                    <p class="contacts-description">
+                        Trouve des personnes par leur nom pour échanger des messages privés.
+                    </p>
+                    <form id="form-ajouter-contact">
+                        <label for="contact-name" data-i18n="contact">Nom du contact</label>
+                        <input id="contact-name" name="contact" autocomplete="name" placeholder="Ex: Jean Dupont" required />
+                        <button type="submit" data-i18n="invite">Inviter</button>
+                        <p id="contact-status" class="logout-error" hidden></p>
+                    </form>
+                </section>
+            </aside>
 
-            <section>
-                <h2>Invitations envoyées</h2>
-                <!-- Keep pending invitations separate from accepted contacts -->
-                <ul id="liste-invitations-envoyees">
-                    <li>Aucune invitation envoyée.</li>
+            <!-- main area containing the contacts and invitations sections -->
+            <section class="contacts-zone-listes">
+                <h2>Contacts</h2>
+                <ul id="liste-contacts" class="liste-cartes-contacts">
+                    <li>Aucun contact pour le moment.</li>
                 </ul>
-            </section>
 
-            <section>
                 <h2>Invitations reçues</h2>
-                <ul id="liste-invitations-recues">
+                <ul id="liste-invitations-recues" class="liste-cartes-contacts">
                     <li>Aucune invitation reçue.</li>
                 </ul>
-            </section>
 
-            <section>
-                <h2>Contacts</h2>
-                <!-- Accepted contacts can open a conversation from this list -->
-                <ul id="liste-contacts">
-                    <li>Aucun contact pour le moment.</li>
+                <h2>Invitations envoyées</h2>
+                <ul id="liste-invitations-envoyees" class="liste-cartes-contacts">
+                    <li>Aucune invitation envoyée.</li>
                 </ul>
             </section>
         </main>
