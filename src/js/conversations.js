@@ -8,6 +8,7 @@
     const list = byId("channel-list");
     const messages = byId("message-list");
     const input = byId("message");
+    const mentionList = byId("mention-suggestions");
     const search = byId("channel-search");
     const dialog = byId("channel-dialog");
     const createForm = byId("channel-create-form");
@@ -16,6 +17,9 @@
     const older = byId("load-older");
     const texts = {
         fr: {
+            mentionLabel: "Personnes à mentionner",
+            unreadCount: count => `${count} message${count > 1 ? "s" : ""} non lu${count > 1 ? "s" : ""}`,
+            mentionCount: count => `${count} mention${count > 1 ? "s" : ""}`,
             channels: "Canaux",
             newChannel: "Créer un canal",
             name: "Nom du canal",
@@ -54,6 +58,9 @@
             actionFailed: "Action impossible. Vérifie ta connexion et les droits du compte."
         },
         en: {
+            mentionLabel: "People to mention",
+            unreadCount: count => `${count} unread message${count > 1 ? "s" : ""}`,
+            mentionCount: count => `${count} mention${count > 1 ? "s" : ""}`,
             channels: "Channels",
             newChannel: "Create a channel",
             name: "Channel name",
@@ -110,12 +117,45 @@
     let connection = "connecting";
     let lastError = null;
     let initializing = false;
+    let profiles = [];
+    let unread = new Map();
+    let unreadMentions = new Map();
+    let notificationSubscription = null;
+    let audioContext = null;
+    let mentionRange = null;
+    let mentionIndex = 0;
+    let activeMentions = [];
+    let previousDraft = input.value;
+    const mentionDrafts = new Map();
     const drafts = new Map();
     const channelName = channel => (channel.is_default ? words().general : channel.name);
     const sorted = context =>
         [...context.rows.values()].sort(
             (a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id)
         );
+
+    function unlockSound() {
+        const Audio = window.AudioContext || window.webkitAudioContext;
+        if (!Audio) return;
+        audioContext ||= new Audio();
+        if (audioContext.state === "suspended") void audioContext.resume().catch(() => {});
+    }
+    // le ping est genere ici sans fichier audio
+    function playPing() {
+        if (!audioContext || audioContext.state !== "running") return;
+        const time = audioContext.currentTime, tone = audioContext.createOscillator(), volume = audioContext.createGain();
+        tone.type = "sine";
+        tone.frequency.setValueAtTime(880, time);
+        tone.frequency.exponentialRampToValueAtTime(660, time + 0.18);
+        volume.gain.setValueAtTime(0.001, time);
+        volume.gain.exponentialRampToValueAtTime(0.12, time + 0.02);
+        volume.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+        tone.connect(volume).connect(audioContext.destination);
+        tone.start(time);
+        tone.stop(time + 0.21);
+    }
+    document.addEventListener("pointerdown", unlockSound, { once: true });
+    document.addEventListener("keydown", unlockSound, { once: true });
 
     function setConnection(state) {
         connection = state;
@@ -142,7 +182,7 @@
             window.location.replace("index.html");
             return;
         }
-        lastError = ["PGRST205", "42P01"].includes(error?.code) ? "setup" : "failed";
+        lastError = ["PGRST202", "PGRST204", "PGRST205", "42P01"].includes(error?.code) ? "setup" : "failed";
         byId("chat-error").textContent = words()[lastError];
         byId("chat-error").hidden = false;
         byId("retry-chat").hidden = false;
@@ -169,9 +209,27 @@
                 button.setAttribute("aria-current", String(channel.id === view?.id));
                 
                 const prefix = channel.recipient_id ? "🔒 " : "";
-                label.textContent = channelName(channel);
+                label.className = "channel-name";
+                label.textContent = `${prefix}${channelName(channel)}`;
                 button.title = channelName(channel);
                 button.append(label);
+                const count = unread.get(channel.id) || 0;
+                button.classList.toggle("has-unread", count > 0);
+                if (count) {
+                    const badge = document.createElement("span");
+                    badge.className = "channel-unread";
+                    badge.textContent = count > 99 ? "99+" : String(count);
+                    badge.setAttribute("aria-label", words().unreadCount(count));
+                    button.append(badge);
+                }
+                const mentionCount = unreadMentions.get(channel.id) || 0;
+                if (mentionCount) {
+                    const badge = document.createElement("span");
+                    badge.className = "channel-mention-count";
+                    badge.textContent = `@${mentionCount > 99 ? "99+" : mentionCount}`;
+                    badge.setAttribute("aria-label", words().mentionCount(mentionCount));
+                    button.append(badge);
+                }
                 button.addEventListener("click", () => selectChannel(channel.id));
                 item.append(button);
                 list.append(item);
@@ -193,6 +251,86 @@
         description.hidden = !description.textContent;
         byId("welcome-title").textContent = `${words().start} # ${channelName(channel)}`;
     }
+
+    function hideMentionList() {
+        mentionRange = null;
+        mentionList.hidden = true;
+        input.setAttribute("aria-expanded", "false");
+        input.removeAttribute("aria-activedescendant");
+    }
+    function updateMentionDraft() {
+        const before = previousDraft, after = input.value;
+        let start = 0, oldEnd = before.length, newEnd = after.length;
+        while (start < oldEnd && start < newEnd && before[start] === after[start]) start++;
+        while (oldEnd > start && newEnd > start && before[oldEnd - 1] === after[newEnd - 1]) { oldEnd--; newEnd--; }
+        const shift = newEnd - oldEnd;
+        activeMentions = activeMentions.filter(mention => {
+            if (oldEnd <= mention.start) { mention.start += shift; mention.end += shift; return true; }
+            return start >= mention.end;
+        });
+        previousDraft = after;
+        if (view) mentionDrafts.set(view.id, activeMentions);
+    }
+    // l identifiant garde la mention fiable si le pseudo change
+    function selectMention(profile) {
+        if (!mentionRange) return;
+        const { start, end } = mentionRange, name = profile.display_name.replace(/\s+/g, " ").trim();
+        const token = `@${name}`, insertion = `${token} `, shift = insertion.length - (end - start);
+        if (input.value.length + shift > input.maxLength) return hideMentionList();
+        activeMentions = activeMentions.filter(mention => {
+            if (end <= mention.start) { mention.start += shift; mention.end += shift; return true; }
+            return start >= mention.end;
+        });
+        input.setRangeText(insertion, start, end, "end");
+        activeMentions.push({ id: profile.id, name: token, start, end: start + token.length });
+        previousDraft = input.value;
+        if (view) mentionDrafts.set(view.id, activeMentions);
+        hideMentionList();
+        input.focus();
+    }
+    function updateMentionList() {
+        const cursor = input.selectionStart, match = /(^|\s)@([^\s@]*)$/.exec(input.value.slice(0, cursor));
+        if (!match || !view) return hideMentionList();
+        const start = cursor - match[0].length + match[1].length;
+        const channel = channels.find(entry => entry.id === view.id);
+        const members = channel?.recipient_id ? [channel.created_by, channel.recipient_id] : null;
+        const results = profiles.filter(profile => profile.id !== user.id && (!members || members.includes(profile.id)) &&
+            normalize(profile.display_name).includes(normalize(match[2]))).slice(0, 6);
+        mentionList.replaceChildren();
+        if (!results.length) return hideMentionList();
+        mentionRange = { start, end: cursor };
+        mentionIndex = 0;
+        mentionList.setAttribute("aria-label", words().mentionLabel);
+        results.forEach((profile, index) => {
+            const option = document.createElement("button");
+            option.type = "button";
+            option.id = `mention-option-${index}`;
+            option.setAttribute("role", "option");
+            option.setAttribute("aria-selected", String(index === mentionIndex));
+            option.textContent = profile.display_name;
+            option.addEventListener("mousedown", event => event.preventDefault());
+            option.addEventListener("click", () => selectMention(profile));
+            mentionList.append(option);
+        });
+        mentionList.hidden = false;
+        input.setAttribute("aria-expanded", "true");
+        input.setAttribute("aria-activedescendant", "mention-option-0");
+    }
+    input.addEventListener("input", () => { updateMentionDraft(); updateMentionList(); });
+    input.addEventListener("keydown", event => {
+        if (mentionList.hidden) return;
+        const options = [...mentionList.children];
+        if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); hideMentionList(); }
+        else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault(); event.stopImmediatePropagation();
+            mentionIndex = (mentionIndex + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
+            options.forEach((option, index) => option.setAttribute("aria-selected", String(index === mentionIndex)));
+            input.setAttribute("aria-activedescendant", options[mentionIndex].id);
+        } else if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault(); event.stopImmediatePropagation();
+            options[mentionIndex]?.click();
+        }
+    }, true);
 
     // Keep message actions compact and accessible without visible text
     function messageAction(label, icon) {
@@ -232,6 +370,7 @@
                 article.append(paragraph);
             }
             if (message.sender_id === user.id) article.classList.add("local-message");
+            if (message.mentions?.includes(user.id)) article.classList.add("mention-for-me");
             article.style.setProperty("--message-color", message.author?.message_color || "#a64f32");
             const author = document.createElement("h3");
             const authorName = message.author?.display_name || words().member;
@@ -300,14 +439,49 @@
         rows.forEach(row => context.rows.set(row.id, row));
         if (view === context) {
             const nearBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90;
-            renderMessages(forceBottom || nearBottom);
+            const reading = forceBottom || nearBottom;
+            renderMessages(reading);
+            if (reading && document.visibilityState === "visible") void markRead(context);
         }
     }
+
+    function nearBottom() {
+        return scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90;
+    }
+    // le salon passe en lu quand les derniers messages sont affiches
+    async function markRead(context) {
+        if (!user || !context || document.visibilityState !== "visible") return;
+        const latest = sorted(context).at(-1), key = latest?.id || "empty";
+        if (context.readKey === key) return;
+        context.readKey = key;
+        try {
+            await api.markRead(user.id, context.id, latest?.created_at || new Date().toISOString(), latest?.id || null);
+            unread.set(context.id, 0);
+            unreadMentions.set(context.id, 0);
+            renderChannels();
+        } catch (error) {
+            context.readKey = null;
+            report(error);
+        }
+    }
+    // le compteur reprend les messages depuis le dernier passage
+    async function refreshUnread() {
+        const counts = await api.unreadCounts();
+        unread = new Map(counts.map(row => [row.channel_id, Number(row.unread_count)]));
+        unreadMentions = new Map(counts.map(row => [row.channel_id, Number(row.mention_count)]));
+        renderChannels();
+    }
+    scroll.addEventListener("scroll", () => {
+        if (ready && view && document.visibilityState === "visible" && nearBottom()) void markRead(view);
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && ready && view && nearBottom()) void markRead(view);
+    });
 
     async function refreshChannels() {
         const data = await api.channels();
         channels = data;
-        renderChannels();
+        await refreshUnread();
         renderHeading();
         if (view && !channels.some(channel => channel.id === view.id)) {
             if (channels.length) await selectChannel(channels[0].id);
@@ -363,7 +537,10 @@
 
     // Keep the current draft before loading another conversation
     async function selectChannel(id) {
-        if (view) drafts.set(view.id, input.value);
+        if (view) {
+            drafts.set(view.id, input.value);
+            mentionDrafts.set(view.id, activeMentions);
+        }
         writable(false);
         clearError();
         setConnection("connecting");
@@ -372,6 +549,9 @@
         const context = { id, rows: new Map(), oldest: null, cursor: null, syncing: false };
         view = context;
         input.value = drafts.get(id) || "";
+        activeMentions = mentionDrafts.get(id) || [];
+        previousDraft = input.value;
+        hideMentionList();
         messages.dataset.channelId = id;
         messages.replaceChildren();
         older.hidden = true;
@@ -429,14 +609,26 @@
             return ready;
         },
         clearDraft(channelId, originalInput) {
-            if (drafts.get(channelId) === originalInput) drafts.delete(channelId);
-            if (view?.id === channelId && input.value === originalInput) input.value = "";
+            const savedDraft = drafts.get(channelId) === originalInput;
+            const currentDraft = view?.id === channelId && input.value === originalInput;
+            if (savedDraft) drafts.delete(channelId);
+            if (currentDraft || (savedDraft && view?.id !== channelId)) mentionDrafts.delete(channelId);
+            if (currentDraft) {
+                mentionDrafts.delete(channelId);
+                input.value = "";
+                activeMentions = [];
+                previousDraft = "";
+                hideMentionList();
+            }
         },
 
         async send(content, channelId = view?.id) {
             if (!user || !channelId || !channels.some(channel => channel.id === channelId))
                 throw new Error("Chat unavailable");
-            const row = await api.send(channelId, user.id, content);
+            const mentions = content.kind === "text" && channelId === view?.id
+                ? [...new Set(activeMentions.filter(item => input.value.slice(item.start, item.end) === item.name && content.body.includes(item.name)).map(item => item.id))]
+                : [];
+            const row = await api.send(channelId, user.id, { ...content, mentions });
             if (view?.id === channelId) merge(view, [row], true);
             return row;
         }
@@ -611,6 +803,13 @@
         renderMessages();
     }
 
+    function incomingMessage(message) {
+        if (!user || message.sender_id === user.id) return;
+        if (message.mentions?.includes(user.id)) playPing();
+        if (view?.id !== message.channel_id || document.visibilityState !== "visible" || !nearBottom())
+            refreshUnread().catch(report);
+    }
+
     // Check the session before loading channels and starting live updates
     async function initialize() {
         if (initializing) return;
@@ -628,8 +827,15 @@
                 authListener = api.onSignOut(() => {
                     writable(false);
                     void api.unsubscribe(subscription);
+                    void api.unsubscribe(notificationSubscription);
+                    notificationSubscription = null;
                     clearInterval(poll);
                     window.location.replace("index.html");
+                });
+            profiles = await api.profiles();
+            if (!notificationSubscription)
+                notificationSubscription = api.subscribeAllMessages(incomingMessage, status => {
+                    if (status === "SUBSCRIBED") refreshUnread().catch(report);
                 });
             await refreshChannels();
             // Open the contact selected on the contacts page

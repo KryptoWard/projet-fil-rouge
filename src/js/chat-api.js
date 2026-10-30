@@ -47,6 +47,20 @@
             );
         },
 
+        profiles() {
+            return result(client().from("chat_profiles").select("id,display_name").order("display_name"));
+        },
+
+        unreadCounts() {
+            return result(client().rpc("chat_unread_counts"));
+        },
+
+        markRead(userId, channelId, lastReadAt, lastReadId) {
+            return result(client().from("chat_channel_reads").upsert({
+                user_id: userId, channel_id: channelId, last_read_at: lastReadAt, last_read_id: lastReadId
+            }, { onConflict: "user_id,channel_id" }));
+        },
+
         createChannel(name, description, userId, recipientId = null) {
             const payload = {
                 id: crypto.randomUUID(),
@@ -127,7 +141,8 @@
                 sender_id: userId,
                 kind: content.kind,
                 body: content.body,
-                weather: content.weather
+                weather: content.weather,
+                mentions: content.mentions || []
             };
             if (content.kind === "gif") message.gif = content.gif;
             if (content.kind === "cat") message.image = content.image;
@@ -171,6 +186,14 @@
                     { event: "*", schema: "public", table: "chat_channels" },
                     onChannel
                 )
+                .subscribe(onStatus);
+        },
+
+        subscribeAllMessages(onMessage, onStatus) {
+            return client().channel(`chat-notifications:${crypto.randomUUID()}`)
+                .on("postgres_changes", {
+                    event: "INSERT", schema: "public", table: "chat_messages"
+                }, payload => onMessage(payload.new))
                 .subscribe(onStatus);
         },
 

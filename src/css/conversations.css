@@ -126,6 +126,11 @@
     white-space: nowrap;
 }
 
+.channel-list .channel-name { flex: 1; min-width: 0; }
+.channel-unread { flex: none; padding: 2px 7px; border-radius: 12px; background: var(--couleur-principale); color: #fff; font-size: .72rem; font-weight: 700; }
+.channel-mention-count { flex: none; color: #8a4a12; font-size: .75rem; font-weight: 700; }
+.channel-list button.has-unread .channel-name { color: #783b26; font-weight: 700; }
+
 .channel-list button:hover {
     background: #e9e0d2;
 }
@@ -386,6 +391,12 @@
 .chat-panel .message-form textarea:focus-visible {
     outline: none;
 }
+
+.mention-suggestions { max-height: 150px; overflow-y: auto; margin: 0; padding: 4px; border-top: 1px solid #d8c8b2; background: #fffdf8; }
+.mention-suggestions[hidden] { display: none; }
+.mention-suggestions button { display: block; width: 100%; padding: 7px 10px; border: 0; background: transparent; color: var(--couleur-texte); text-align: left; font: inherit; cursor: pointer; }
+.mention-suggestions button[aria-selected="true"], .mention-suggestions button:hover { background: #eadcc8; }
+.chat-panel .message-list article.mention-for-me { background: #fff1c6; border-left-color: #c48a22; }
 
 .composer-bottom {
     display: flex;

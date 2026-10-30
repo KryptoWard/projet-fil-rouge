@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title data-i18n="conversations_page_title">Conversations</title>
         <link rel="stylesheet" href="src/css/styles.css?v=20261029-2" />
-        <link rel="stylesheet" href="src/css/conversations.css" />
+        <link rel="stylesheet" href="src/css/conversations.css?v=20261029-3" />
         <!-- Keep the shared stylesheet aligned with the conversations page -->
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     </head>
@@ -155,9 +155,14 @@
                             id="message"
                             rows="2"
                             maxlength="4000"
+                            aria-controls="mention-suggestions"
+                            aria-autocomplete="list"
+                            aria-haspopup="listbox"
+                            aria-expanded="false"
                             placeholder="Écris un message ou /meteo [ville]..."
                             data-i18n-placeholder="message_placeholder"
                         ></textarea>
+                        <div id="mention-suggestions" class="mention-suggestions" role="listbox" hidden></div>
                         <div class="composer-bottom">
                             <div
                                 id="message-toolbar"
@@ -290,11 +295,11 @@
         </dialog>
         <script src="src/js/app.js?v=20261029-2"></script>
         <script src="src/js/automn.js"></script>
-        <script src="src/js/chat-api.js?v=20261029-2"></script>
+        <script src="src/js/chat-api.js?v=20261029-3"></script>
         <script src="src/js/weather.js?v=20261022-2"></script>
         <script src="src/js/gifs.js?v=20261026-1"></script>
         <script src="src/js/cats.js"></script>
-        <script src="src/js/conversations.js?v=20261029-2"></script>
+        <script src="src/js/conversations.js?v=20261029-3"></script>
         <script src="src/js/contact.js"></script>
     </body>
 </html>
