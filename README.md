@@ -98,6 +98,7 @@ projet-fil-rouge/
 │       ├── conversations.js           Canaux et affichage des messages
 │       ├── contact.js                 Contacts et invitations
 │       ├── contact-support.js         Formulaire de contact du site
+|       ├── emojis.js                  Recherche et envoi d'émojis
 │       ├── gifs.js                    Recherche et envoi de GIF
 │       ├── weather.js                 Météo et commandes
 │       ├── cats.js                    Photos de chats
@@ -163,3 +164,4 @@ Open-Meteo et CATAAS sont utilisés sans clé dans cette version. Les crédits d
 Nous envisageons d’ajouter la lecture vocale, la traduction des messages, des sondages et des rappels. Ces fonctions ne sont pas encore intégrées. Pour le moment, le changement de langue concerne uniquement l’interface et ne traduit pas les messages.
 
 Le projet continue d’évoluer selon le temps disponible et les objectifs validés avec le professeur.
+Les derniers ajouts de fonctionnalités ont majoritairement été faits par Gabriel ROQUES car il souhaitait absolument en ajouter d'autres en plus. Cela explique pourquoi les commits des 10-15 derniers jours ont été effectués en grande partie par Gabriel et peu par Louis PORTET. Car sinon, l'ensemble du projet a été fait de façon à peu près équitable.
